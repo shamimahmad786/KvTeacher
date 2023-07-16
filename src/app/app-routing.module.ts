@@ -12,6 +12,7 @@ import { TeacherProfileComponent } from './teacherDetailed/teacher-profile/teach
 import { TeacherComponent } from './teacherEntryForm/teacher.component';
 import { ApplicationFlowComponent } from './utilities/instructions/application-flow/application-flow.component';
 import {LoginComponent} from './login/login.component';
+import { DisclaimerComponent } from './disclaimer/disclaimer.component';
 
 const routes: Routes = [
   // {path:'', component: TDashboardComponent},
@@ -24,6 +25,7 @@ const routes: Routes = [
       {path:'profile',component:TeacherProfileComponent}, 
       {path:'kvsteacherprofile', component:KvsTeacherProfileComponent},
       {path:'kvsteachertransfer', component:KvsTeacherTransferComponent},
+      {path:'disclaimer', component:DisclaimerComponent},
       {path:'changePassword', component:ChangePasswordComponent}
       // {path:'appFlow',component:ApplicationFlowComponent}
     ]},  

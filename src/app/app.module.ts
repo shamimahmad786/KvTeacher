@@ -48,7 +48,8 @@ import { AuthInterceptorService } from './guard/auth-interceptor.service';
 import { DatePipe } from '@angular/common';
 import { ApplicationFlowComponent } from './utilities/instructions/application-flow/application-flow.component';
 import { LoginComponent } from './login/login.component';
-
+import { DisclaimerComponent } from './disclaimer/disclaimer.component';
+// import { MatModuleModule } from './mat/mat-module/mat-module.module';
 // export function HttpLoaderFactory(http: HttpClient) {
 //   return new MultiTranslateHttpLoader(http, [
 //     {prefix: "./assets/translate/core/", suffix:".json"},
@@ -93,6 +94,7 @@ import { LoginComponent } from './login/login.component';
     ChangePasswordComponent,
     MainPageComponent,
     ApplicationFlowComponent,
+    DisclaimerComponent,
 
   ],
   imports: [
@@ -122,7 +124,8 @@ import { LoginComponent } from './login/login.component';
     //     deps:[HttpClient]
     //   }
     // })
-    MatModuleModule
+    MatModuleModule,
+    
   ],
   providers: [DatePipe, TeacherAppPdfService,TeacherTransferPdfService, { provide: HTTP_INTERCEPTORS, useClass: HttpReqInterceptor, multi: true },
     {

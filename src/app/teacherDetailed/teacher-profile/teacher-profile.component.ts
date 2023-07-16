@@ -17,25 +17,49 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 declare const loadScroller: any;
 declare const nextClickCalled: any;
-declare const onNextClick:any;
-declare const onPreviousClick:any;
-
+declare const onNextClick: any;
+declare const onPreviousClick: any;
+declare const changePassword: any;
 import * as moment from 'moment';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { TeacherAppPdfService } from 'src/app/makePDF/teacher-app-pdf.service';
 import { DatePipe } from '@angular/common';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
 
+import {
+  MAT_DATE_FORMATS,
+  DateAdapter,
+  MAT_DATE_LOCALE
+} from '@angular/material/core';
 interface SubjectData {
   subNameCode: string;
   subjectCode: string;
 }
-
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'DD-MM-YYYY',
+  },
+  display: {
+    dateInput: 'DD-MM-YYYY',
+    monthYearLabel: 'YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'YYYY',
+  },
+};
 @Component({
   selector: 'app-teacher-profile',
   templateUrl: './teacher-profile-updated.component.html',
-  styleUrls: ['./teacher-profile.component.css']
+  styleUrls: ['./teacher-profile.component.css'],
+  providers: [
+
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+
+
+  ],
 })
 export class TeacherProfileComponent implements OnInit {
 
@@ -46,14 +70,28 @@ export class TeacherProfileComponent implements OnInit {
   @ViewChild('processFlow', { static: true }) processFlow: TemplateRef<any>;
   @ViewChild('selectSchoolModalInterStation', { static: true }) selectSchoolModalInterStation: TemplateRef<any>;
   @ViewChild('pdfTable') pdfTable: ElementRef;
-
+  @ViewChild('resetPasswordModal', { static: true }) resetPasswordModal: TemplateRef<any>;
+  @ViewChild('spouseFile')
+  spouseFile: ElementRef;
+  @ViewChild('Medical_Certificate')
+  Medical_Certificate: ElementRef;
+  @ViewChild('Single_Parent_Declaration')
+  Single_Parent_Declaration: ElementRef;
+  @ViewChild('DFP_Declaration')
+  DFP_Declaration: ElementRef;
+  @ViewChild('Disability_Certificate')
+  Disability_Certificate: ElementRef;
+  @ViewChild('NJCM_RJCM_Declaration')
+  NJCM_RJCM_Declaration: ElementRef;
   flagUpdatedList: any;
   teacherForm: FormGroup;
+  changePaswordForm: FormGroup;
   correctionProfile: FormGroup;
   tempTeacherId: any;
   isVisible: boolean = false;
   responseData: any;
   stationNameCode: any;
+  careGiverRelationData: any;
   kvNameCode: any;
   profQualMasterList: any;
   acadQualMasterList: any;
@@ -71,7 +109,7 @@ export class TeacherProfileComponent implements OnInit {
   public sh6: boolean = true;
   public sh7: boolean = true;
   public sh8: boolean = true;
-  transferRelatedFormTempId:any;
+  transferRelatedFormTempId: any;
   public sh21: boolean = true;
   public sh22: boolean = true;
   public sh23: boolean = true;
@@ -80,7 +118,7 @@ export class TeacherProfileComponent implements OnInit {
   public sh26: boolean = true;
   public sh27: boolean = true;
   public sh28: boolean = true;
-  responseStatus:any;
+  responseStatus: any;
   currentDateTime: any;
   regionList: any;
   stationList: any
@@ -154,7 +192,7 @@ export class TeacherProfileComponent implements OnInit {
   deleteDocUpdate2: boolean = true;
   deleteDocUpdate3: boolean = true;
   deleteDocUpdate4: boolean = true;
-
+  surveHardYnradioButton: any;
   lastPromotionId: any;
   confirmEnable: boolean = false;
   optionDisable: boolean = false;
@@ -167,21 +205,21 @@ export class TeacherProfileComponent implements OnInit {
   transferGroundList: any;
   showStationChoice18C: boolean = false;
   showStationChoice18: boolean = false;
-  spouseKvsYnDradioButton:any;
-  inlineRadio13radioButton:any;
+  spouseKvsYnDradioButton: any;
+  inlineRadio13radioButton: any;
   spGround: boolean = false;
-  personalStatusSpDradioButton:any;
+  personalStatusSpDradioButton: any;
   dfpGround: boolean = false;
-  personalStatusDfpDradioButton:any;
+  personalStatusDfpDradioButton: any;
   abledChild: boolean = false;
-  childDifferentAbleYnDradioButton:any;
+  childDifferentAbleYnDradioButton: any;
   careGiver: boolean = false;
-  careGiverFaimlyYnDradioButton:any;
+  careGiverFaimlyYnDradioButton: any;
   gkFilemMedical: boolean = false;
-  empTransferradioButton:any;
-  personalStatusMdgDradioButton:any;
-  disciplinaryYnradioButton:any;
-  teacherStationChioce:any;
+  empTransferradioButton: any;
+  personalStatusMdgDradioButton: any;
+  disciplinaryYnradioButton: any;
+  teacherStationChioce: any;
   gkFilebenefit: boolean = false;
   enableUploadButtonRelatedForm0: boolean = false;
   enableUploadButtonRelatedForm1: boolean = false;
@@ -199,34 +237,61 @@ export class TeacherProfileComponent implements OnInit {
   deleteDeclairaionFormDocUpdate6: boolean = false;
   deleteDeclairaionFormDocUpdate7: boolean = false;
   deleteDeclairaionFormDocUpdate8: boolean = false;
+  positionHeld: boolean = false;
   regionShow: boolean = false;
-  zoneShow: boolean=false;
+  zoneShow: boolean = false;
   stationShow: boolean = false;
   schoolShow: boolean = false;
   showSchoolType: boolean = false;
   headQuaterShow: boolean = false;
-  selectHeadQuaterZoneRegion=false
-  selectedKvCode:any;
-  selectedKvname:any;
+  selectHeadQuaterZoneRegion = false
+  selectedKvCode: any;
+  selectedKvname: any;
   headQuaterList: any = [];
   selectRegionList: any = [];
   zoneList: any = [];
-  selectStationName:any;
-  selectedSchoolType:any;
-  selectSchoolType:any;
-  position:any;
+  selectStationName: any;
+  selectedSchoolType: any;
+  selectSchoolType: any;
+  position: any;
   hashId: any;
   gender: any;
+ // For Document Show On PreView Page
+ medicalDocName:any;
+ medicalDocURLName:any;
+ disabilityCertiDocName:any;
+ disabilityCertiDocURLName:any;
+ singleParentDocName:any;
+ singleParentDocURLName:any;
+ dFPDocName:any;
+ dFPDocURLName:any;
+ nJCMRJCMDocName:any;
+ nJCMRJCMDocURLName:any;
+ spouseDeclarationDocUrlName:any;
 
   shiftYN: any;
-
-  stationType:any;
+  maxDate: any;
+  stationType: any;
   patientAilmentData: any;
   medicalCertificateIssueDateData: any;
   singleParentGroundData: any;
   singleParentCertificateIssueDateData: any;
   deathOfFamilyGroundData: any;
   deathCertificateIssueDateData: any;
+  relationWithEmplMdgData: any;
+  buttonVisible: boolean = false;
+  user_name: any;
+  dialogRef: any;
+  fileUpgkFilebenefit: boolean = true;
+  fileUpgkFilemMedical: boolean = true;
+  fileUpspGround: boolean = true;
+  fileUpdfpGround: boolean = true;
+  fileUpcareGiver: boolean = true;
+  fileUppositionHeld: boolean = true;
+  @ViewChild('Physically_Handicap_Certificate')
+  Physically_Handicap_Certificate: ElementRef;
+
+  fileUpload: boolean = true;
 
   myAppointmnet(event) {
     if (event.target.value == "1") {
@@ -268,7 +333,7 @@ export class TeacherProfileComponent implements OnInit {
     onNextClick(index);
   }
 
-  onPreviousClick(index){
+  onPreviousClick(index) {
     onPreviousClick(index);
   }
 
@@ -277,11 +342,22 @@ export class TeacherProfileComponent implements OnInit {
 
   ngOnInit(): void {
     //alert("called");
-    debugger;
-    if(sessionStorage.getItem('displayPopUp') == 'true'){
-      this.modalService.open(this.processFlow, { size: 'xl', backdrop: 'static', keyboard: false })
+    const dtToday = new Date();
+    let month = String(dtToday.getMonth() + 1);
+    let day = String(dtToday.getDate());
+    let year = dtToday.getFullYear();
+    if (parseInt(month, 10) < 10) {
+      month = '0' + month.toString();
     }
-    
+    if (parseInt(day, 10) < 10) {
+      day = '0' + day.toString();
+    }
+    this.maxDate = `2023-07-20`;
+     ;
+    // if(sessionStorage.getItem('displayPopUp') == 'true'){
+    //   this.modalService.open(this.processFlow, { size: 'xl', backdrop: 'static', keyboard: false })
+    // }
+
     // loadScroller(6);
     // this.getDocumentByTeacherId();
     setTimeout(function () {
@@ -303,7 +379,7 @@ export class TeacherProfileComponent implements OnInit {
         'dob': new FormControl('', [Validators.required, this.dateDifferenceFnc.bind(this)]),
         'socialCat': new FormControl(''),
         'religion': new FormControl(''),
-      //  'nationality': new FormControl('', Validators.required),
+        //  'nationality': new FormControl('', Validators.required),
         'mobile': new FormControl('', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern("[8976][0-9]{9}")]),
         'email': new FormControl('', [Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
         'presentStationName': new FormControl('', Validators.required),
@@ -316,9 +392,9 @@ export class TeacherProfileComponent implements OnInit {
         'tariningJnKvs': new FormControl(''),
         'staffType': new FormControl('', Validators.required),
         'staffTypeP': new FormControl('', Validators.required),
-       // 'natureOfAptmnt': new FormControl('', Validators.required),
-       'specialRecruitmentYn': new FormControl('', Validators.required)
-       // 'maritalStatusF': new FormControl('', Validators.required)
+        // 'natureOfAptmnt': new FormControl('', Validators.required),
+        'specialRecruitmentYn': new FormControl('', Validators.required)
+        // 'maritalStatusF': new FormControl('', Validators.required)
       }),
       disabilityForm: new FormGroup({
         'disabilityYN': new FormControl('', Validators.required),
@@ -330,60 +406,62 @@ export class TeacherProfileComponent implements OnInit {
         'disabilityCertNo': new FormControl('', Validators.required),
       }),
       //-------------------------- newform transferRelatedForm  add  start  here---------------------------------
-transferRelatedForm: new FormGroup({
-  'id':new FormControl(''),
-   'absenceDaysOne':new FormControl(''),
-  'disciplinaryYn':new FormControl(''),
-  'teacherId':new FormControl('', Validators.required),
-  'applyTransferYn': new FormControl('', Validators.required),
-  'choiceKv1StationName': new FormControl('', Validators.required),
-  'choiceKv2StationName': new FormControl('', Validators.required),
-  'choiceKv3StationName': new FormControl('', Validators.required),
-  'choiceKv4StationName': new FormControl('', Validators.required),
-  'choiceKv5StationName': new FormControl('', Validators.required),
-  'displacement1StationCode': new FormControl('', Validators.required),
-  'displacement1StationName': new FormControl('', Validators.required),
-  'displacement2StationName': new FormControl('', Validators.required),
-  'displacement2StationCode': new FormControl('', Validators.required),
-  'displacement3StationName': new FormControl('', Validators.required),
-  'displacement3StationCode': new FormControl('', Validators.required),
-  'displacement4StationCode': new FormControl('', Validators.required),
-  'displacement4StationName': new FormControl('', Validators.required),
-  'displacement5StationCode': new FormControl('', Validators.required),
-  'displacement5StationName': new FormControl('', Validators.required),
-  'spouseKvsYnD': new FormControl(),
-  'personalStatusMdgD': new FormControl(),
-  'personalStatusSpD': new FormControl(),
-  'personalStatusDfpD': new FormControl(),
-  'memberJCM': new FormControl(),
-  'careGiverYnD': new FormControl(),
-  'positionOfNjcmRjcm': new FormControl(''),
-  'nameOfFamilyMember': new FormControl('', Validators.required),
-  'medicalCertificateIssueDate': new FormControl('', Validators.required),
-  'singleParentGround': new FormControl('', Validators.required),
-  'deathOfFamilyGround': new FormControl('', Validators.required),
-  'deathCertificateIssueDate': new FormControl('', Validators.required),
-  'singleParentCertificateIssueDate': new FormControl('', Validators.required),
-  'childDifferentAbleYnD': new FormControl(),
-  //'spouseName': new FormControl(''),
-  'spousePost': new FormControl(''),
-  'spouseStationName': new FormControl(''),
-  'careGiverFaimlyYnD': new FormControl(''),
-  'patientName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'patientAilment': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'patientHospital': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'patientMedicalOfficerName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'patientMedicalOfficerDesignation': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'careGiverName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'careGiverRelation': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z0-9 ]*$")]),
-  'careGiverDisabilityName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z0-9 ]*$")]),
-  'careGiverDisabilityPrcnt': new FormControl('', [Validators.required, Validators.maxLength(3), Validators.min(0), Validators.max(100), RxwebValidators.numeric({ allowDecimal: true, isFormat: true })]),
-  'childDifferentName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
-  'childDifferentDisabilityName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z0-9 ]*$")]),
-  'childDifferentDisabilityPrcnt': new FormControl('', [Validators.required, Validators.min(0), Validators.max(100), Validators.maxLength(3), RxwebValidators.numeric({ allowDecimal: true, isFormat: true })]),
-}),
+      transferRelatedForm: new FormGroup({
+        'id': new FormControl(''),
+        'absenceDaysOne': new FormControl('', Validators.required),
+        'disciplinaryYn': new FormControl(''),
+        'teacherId': new FormControl('', Validators.required),
+        'applyTransferYn': new FormControl('', Validators.required),
+        'choiceKv1StationName': new FormControl('', Validators.required),
+        'choiceKv2StationName': new FormControl('', Validators.required),
+        'choiceKv3StationName': new FormControl('', Validators.required),
+        'choiceKv4StationName': new FormControl('', Validators.required),
+        'choiceKv5StationName': new FormControl('', Validators.required),
+        'displacement1StationCode': new FormControl('', Validators.required),
+        'displacement1StationName': new FormControl('', Validators.required),
+        'displacement2StationName': new FormControl('', Validators.required),
+        'displacement2StationCode': new FormControl('', Validators.required),
+        'displacement3StationName': new FormControl('', Validators.required),
+        'displacement3StationCode': new FormControl('', Validators.required),
+        'displacement4StationCode': new FormControl('', Validators.required),
+        'displacement4StationName': new FormControl('', Validators.required),
+        'displacement5StationCode': new FormControl('', Validators.required),
+        'displacement5StationName': new FormControl('', Validators.required),
+        'spouseKvsYnD': new FormControl(),
+        'personalStatusMdgD': new FormControl(),
+        'personalStatusSpD': new FormControl(),
+        'personalStatusDfpD': new FormControl(),
+        'memberJCM': new FormControl(),
+        'surveHardYn': new FormControl(),
+        'careGiverYnD': new FormControl(),
+        'relationWithEmplMdg': new FormControl('', Validators.required),
+        'positionOfNjcmRjcm': new FormControl('', Validators.required),
+        'nameOfFamilyMember': new FormControl('', Validators.required),
+        'medicalCertificateIssueDate': new FormControl('', Validators.required),
+        'singleParentGround': new FormControl('', Validators.required),
+        'deathOfFamilyGround': new FormControl('', Validators.required),
+        'deathCertificateIssueDate': new FormControl('', Validators.required),
+        'singleParentCertificateIssueDate': new FormControl('', Validators.required),
+        'childDifferentAbleYnD': new FormControl(),
+        //'spouseName': new FormControl(''),
+        'spousePost': new FormControl(''),
+        'spouseStationName': new FormControl(''),
+        'careGiverFaimlyYnD': new FormControl(''),
+        'patientName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'patientAilment': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'patientHospital': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'patientMedicalOfficerName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'patientMedicalOfficerDesignation': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'careGiverName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'careGiverRelation': new FormControl('', Validators.required),
+        'careGiverDisabilityName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z0-9 ]*$")]),
+        'careGiverDisabilityPrcnt': new FormControl('', [Validators.required, Validators.maxLength(3), Validators.min(0), Validators.max(100), RxwebValidators.numeric({ allowDecimal: true, isFormat: true })]),
+        'childDifferentName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z ]*$")]),
+        'childDifferentDisabilityName': new FormControl('', [Validators.required, Validators.maxLength(50), Validators.pattern("^[A-Za-z0-9 ]*$")]),
+        'childDifferentDisabilityPrcnt': new FormControl('', [Validators.required, Validators.min(0), Validators.max(100), Validators.maxLength(3), RxwebValidators.numeric({ allowDecimal: true, isFormat: true })]),
+      }),
 
-//------------------------- end here------------------------------------------------------------------------
+      //------------------------- end here------------------------------------------------------------------------
       personalInfoForm: new FormGroup({
         'disabilityYN': new FormControl('', Validators.required),
         'disabilityYNP': new FormControl(''),
@@ -394,14 +472,14 @@ transferRelatedForm: new FormGroup({
         'disabilityPercentage': new FormControl(''),
         'disabilityCertAuth': new FormControl(''),
         'disabilityCertNo': new FormControl(''),
-       // 'bloodGroup': new FormControl(''),
-        'crspndncAddress': new FormControl(''),
-        'crspndncState': new FormControl(''),
-        'crspndncDistrict': new FormControl(''),
+        // 'bloodGroup': new FormControl(''),
+        'crspndncAddress': new FormControl('', Validators.required),
+        'crspndncState': new FormControl('', Validators.required),
+        'crspndncDistrict': new FormControl('', Validators.required),
         'crspndncPinCode': new FormControl('', [Validators.minLength(6), Validators.maxLength(6), Validators.pattern("^[1-9]{1}[0-9]{2}\\s{0,1}[0-9]{3}$")]),
-        'prmntAddress': new FormControl(''),
-        'prmntState': new FormControl(''),
-        'prmntDistrict': new FormControl(''),
+        'prmntAddress': new FormControl('', Validators.required),
+        'prmntState': new FormControl('', Validators.required),
+        'prmntDistrict': new FormControl('', Validators.required),
         'prmntPinCode': new FormControl('', [Validators.minLength(6), Validators.maxLength(6), Validators.pattern("^[1-9]{1}[0-9]{2}\\s{0,1}[0-9]{3}$")]),
         'personalIdNo': new FormControl(''),
         'aadhaarNo': new FormControl('', [Validators.pattern("^[0-9]*$"), Validators.minLength(14), Validators.maxLength(14)]),
@@ -431,6 +509,29 @@ transferRelatedForm: new FormGroup({
       'subjectTaught': new FormArray([])
     })
 
+    this.user_name = JSON.parse(sessionStorage.getItem("authTeacherDetails"))?.user_name;
+    setTimeout(() => {
+      this.changePaswordForm.patchValue({
+        userId:this.user_name
+      })
+    }, 100)
+     
+    const data = {
+      userId: this.user_name
+    }
+    this.outSideService.checkPasswordChanged(data).subscribe((res) => {
+      if (res.status == 1) {
+        this.dialogRef = this.modalService.open(this.resetPasswordModal, { backdrop: 'static', keyboard: false, },);
+      }
+      console.log(res);
+    })
+
+    this.changePaswordForm = new FormGroup({
+      'userId': new FormControl(''),
+      'oldPassword': new FormControl('', Validators.required),
+      'newPassword': new FormControl('', [Validators.required, Validators.maxLength(12), Validators.minLength(8)]),
+      'confirmPassword': new FormControl('', [Validators.required, Validators.maxLength(12), Validators.minLength(8), this.checkConfirmPassword.bind(this)])
+    })
     this.applicationId = environment.applicationId;
     for (let i = 0; i < JSON.parse(sessionStorage.getItem("authTeacherDetails"))?.applicationDetails.length; i++) {
       this.kvicons += JSON.parse(sessionStorage.getItem("authTeacherDetails"))?.applicationDetails[i].application_id + ",";
@@ -454,15 +555,15 @@ transferRelatedForm: new FormGroup({
     }
     this.getKvRegion();
     this.teacherForm.patchValue({
-      transferRelatedForm:{
+      transferRelatedForm: {
         spouseKvsYnD: '0',
         personalStatusMdgD: '0',
-		    personalStatusSpD: '0',
-		    personalStatusDfpD: '0',
-		    careGiverFaimlyYnD: '0',
+        personalStatusSpD: '0',
+        personalStatusDfpD: '0',
+        careGiverFaimlyYnD: '0',
         disciplinaryYn: '0',
-		    childDifferentAbleYnD: '0',
-		    memberJCM: '0'
+        childDifferentAbleYnD: '0',
+        memberJCM: '0'
       }
     });
   }
@@ -477,17 +578,17 @@ transferRelatedForm: new FormGroup({
     return this.teacherForm.get("detailsOfPosting") as FormArray
   }
   newQuantity(data): FormGroup {
-    debugger
-    var experienceType="";
+     
+    var experienceType = "";
 
-    if(data?.experienceType=="1"){
-      experienceType="School";
-    }else if(data?.experienceType=="2"){
-      experienceType="Region";
-    }else if(data?.experienceType=="3"){
-      experienceType="ZIET";
-    }else if(data?.experienceType=="4"){
-      experienceType="Head Quarter";
+    if (data?.experienceType == "1") {
+      experienceType = "School";
+    } else if (data?.experienceType == "2") {
+      experienceType = "Region";
+    } else if (data?.experienceType == "3") {
+      experienceType = "ZIET";
+    } else if (data?.experienceType == "4") {
+      experienceType = "Head Quarter";
     }
     if (data != undefined) {
       return this.fb.group({
@@ -495,15 +596,15 @@ transferRelatedForm: new FormGroup({
         workExperienceId: data.workExperienceId,
         shiftType: data.shiftType,
         experienceType: data.experienceType,
-        groundForTransfer: data.groundForTransfer,
+        groundForTransfer: parseInt(data.groundForTransfer),
         currentlyActiveYn: data.currentlyActiveYn,
         shiftYn: data.shift_yn,
         udiseSchoolName: [data.udiseSchoolName, [Validators.required]],
         udiseSchCode: [data.udiseSchCode, [Validators.required]],
         workStartDate: [data.workStartDate, [Validators.required]],
         workEndDate: [data.workEndDate, [Validators.required]],
-       // natureOfAppointment: [data.natureOfAppointment, [Validators.required]],
-       
+        // natureOfAppointment: [data.natureOfAppointment, [Validators.required]],
+
         positionType: [data.positionType, [Validators.required]],
         appointedForSubject: [data.appointedForSubject, [Validators.required]],
       })
@@ -512,14 +613,14 @@ transferRelatedForm: new FormGroup({
         teacherId: this.tempTeacherId,
         workExperienceId: '',
         experienceType: '',
-        shiftType:'',
+        shiftType: '',
         groundForTransfer: ["", [Validators.required]],
         currentlyActiveYn: '',
         udiseSchoolName: ["", [Validators.required]],
         udiseSchCode: ["", [Validators.required]],
         workStartDate: ["", [Validators.required]],
         workEndDate: ["", [Validators.required]],
-       // natureOfAppointment: ["", [Validators.required]],
+        // natureOfAppointment: ["", [Validators.required]],
         positionType: ["", [Validators.required]],
         appointedForSubject: ["", [Validators.required]],
         shiftYn: '',
@@ -532,32 +633,32 @@ transferRelatedForm: new FormGroup({
   }
   removeQuantity(val) {
 
-    if(this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA'|| this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES'){
+    if (this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA' || this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES') {
       return
-    }else{
-    let deletedData = this.teacherForm.value.detailsOfPosting[val]
-    var data = {
-      "workExperienceId": deletedData.workExperienceId
-    }
-
-    if (this.workExpId == data.workExperienceId) {
-      Swal.fire(
-        'Alert !',
-        'This record cannot be deleted !',
-        'error'
-      )
     } else {
-      this.detailsOfPosting().removeAt(val)
-      this.outSideService.deleteExpByWorkExpId(data).subscribe((response) => {
-        if (response) {
-          Swal.fire(
-            'This record has been deleted !',
-            '',
-            'success'
-          )
-        }
-      })
-    }
+      let deletedData = this.teacherForm.value.detailsOfPosting[val]
+      var data = {
+        "workExperienceId": deletedData.workExperienceId
+      }
+
+      if (this.workExpId == data.workExperienceId) {
+        Swal.fire(
+          'Alert !',
+          'This record cannot be deleted !',
+          'error'
+        )
+      } else {
+        this.detailsOfPosting().removeAt(val)
+        this.outSideService.deleteExpByWorkExpId(data).subscribe((response) => {
+          if (response) {
+            Swal.fire(
+              'This record has been deleted !',
+              '',
+              'success'
+            )
+          }
+        })
+      }
     }
 
 
@@ -593,6 +694,8 @@ transferRelatedForm: new FormGroup({
             ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('workStartDate').disable();
             ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('workEndDate').disable();
             ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('groundForTransfer').disable();
+            ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('positionType').disable();
+            ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('appointedForSubject').disable();
             if (sessionStorage.getItem('shiftAvailable') == '0') {
               ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('shiftType').disable();
             }
@@ -731,12 +834,12 @@ transferRelatedForm: new FormGroup({
   }
   removeAcadQual(val) {
 
-    if(this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA'|| this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES'){
+    if (this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA' || this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES') {
       return
-    }else{
+    } else {
       let deletedData = this.teacherForm.value.acadProfQual[val]
       this.acadProfQual().removeAt(val)
-  
+
       this.outSideService.deteleEducationalQualification(deletedData.teacherEducationalQualificationId).subscribe((response) => {
         if (response.status == '1') {
           Swal.fire(
@@ -746,7 +849,7 @@ transferRelatedForm: new FormGroup({
           )
         }
       })
-    }   
+    }
   }
   getAcdQualList() {
 
@@ -806,22 +909,22 @@ transferRelatedForm: new FormGroup({
   }
   removeProfQual(val) {
 
-    if(this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA'|| this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES'){
+    if (this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA' || this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES') {
       return
-    }else{
-    let deletedData = this.teacherForm.value.profQual[val]
-    this.profQual().removeAt(val)
+    } else {
+      let deletedData = this.teacherForm.value.profQual[val]
+      this.profQual().removeAt(val)
 
-    this.outSideService.deleteProfessionalQualification(deletedData.teacherProfessionalQualificationId).subscribe((response) => {
-      if (response.status == '1') {
-        Swal.fire(
-          'This record has been deleted !',
-          '',
-          'success'
-        )
-      }
-    })
-  }
+      this.outSideService.deleteProfessionalQualification(deletedData.teacherProfessionalQualificationId).subscribe((response) => {
+        if (response.status == '1') {
+          Swal.fire(
+            'This record has been deleted !',
+            '',
+            'success'
+          )
+        }
+      })
+    }
   }
   getProfQualList() {
 
@@ -841,15 +944,23 @@ transferRelatedForm: new FormGroup({
 
   }
   //Add and Remove Academic Professional Form -- End
-  getStationByRegionIdWithCond(event) {
-    var stationByInterCond = {
-      "extcall": "MOE_EXT_GETSTATION_BY_TEACHER_INTER",
-      "conditionvalue": [this.responseData.teacherId, event.target.value, event.target.value, this.responseData.teacherId]
-    }
 
-    this.outSideService.fetchIntraStationSchool(stationByInterCond).subscribe((res) => {
-      this.stationList = res.response.rowValue
+  getStationByRegionIdWithCond(event) {
+    // this.selectedUdiseCode = '';
+    // this.stationList = []
+    // var stationByInterCond = {
+    //   "extcall": "MOE_EXT_GETSTATION_BY_TEACHER_INTER",
+    //   "conditionvalue": [this.responseData.teacherId, event.target.value, event.target.value, this.responseData.teacherId]
+    // }
+
+    const data = { "regionCode": event.target.value };
+
+    this.outSideService.fetchStationByRegionId(data).subscribe((res) => {
+
+      this.stationList = res.rowValue
+      // alert(JSON.stringify(this.stationList));
     })
+    console.log(this.stationList)
   }
 
 
@@ -885,22 +996,22 @@ transferRelatedForm: new FormGroup({
   }
   removeAwardReceived(val) {
 
-    if(this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA'|| this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES'){
+    if (this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA' || this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES') {
       return
-    }else{
-    let deletedData = this.teacherForm.value.awardReceived[val]
-    this.awardReceived().removeAt(val)
+    } else {
+      let deletedData = this.teacherForm.value.awardReceived[val]
+      this.awardReceived().removeAt(val)
 
-    this.outSideService.deleteAwards(deletedData.id).subscribe((response) => {
-      if (response.status == '1') {
-        Swal.fire(
-          'This record has been deleted !',
-          '',
-          'success'
-        )
-      }
-    })
-  }
+      this.outSideService.deleteAwards(deletedData.id).subscribe((response) => {
+        if (response.status == '1') {
+          Swal.fire(
+            'This record has been deleted !',
+            '',
+            'success'
+          )
+        }
+      })
+    }
   }
   getAwardsByTchId() {
     this.awardsList = [];
@@ -950,22 +1061,22 @@ transferRelatedForm: new FormGroup({
   }
   removeTrainingReceived(val) {
 
-    if(this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA'|| this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES'){
+    if (this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA' || this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES') {
       return
-    }else{
-    let deletedData = this.teacherForm.value.trainingReceived[val]
-    this.trainingReceived().removeAt(val)
+    } else {
+      let deletedData = this.teacherForm.value.trainingReceived[val]
+      this.trainingReceived().removeAt(val)
 
-    this.outSideService.deleteTraning(deletedData.id).subscribe((response) => {
-      if (response.status == '1') {
-        Swal.fire(
-          'This record has been deleted !',
-          '',
-          'success'
-        )
-      }
-    })
-  }
+      this.outSideService.deleteTraning(deletedData.id).subscribe((response) => {
+        if (response.status == '1') {
+          Swal.fire(
+            'This record has been deleted !',
+            '',
+            'success'
+          )
+        }
+      })
+    }
   }
   getTrainingByTchId() {
     this.awardsList = [];
@@ -1013,10 +1124,10 @@ transferRelatedForm: new FormGroup({
     return this.teacherForm.get("subjectTaught") as FormArray
   }
   removesubjectTaught(val) {
-    if(this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA'|| this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES'){
+    if (this.formStatusLocale == 'TA' || this.formStatusLocale == 'SEM' || this.formStatusLocale == 'SA' || this.formStatusLocale == 'SE' || this.formStatusLocale == 'SES') {
       return
-    }else{
-    this.subjectTaught().removeAt(val)
+    } else {
+      this.subjectTaught().removeAt(val)
     }
   }
 
@@ -1057,15 +1168,59 @@ transferRelatedForm: new FormGroup({
 
     })
   }
-  getStatus(tempTeacherId){
+
+  // userIdCheck(event) {
+  //   var userIdTemp = event.target.value;
+  //   if (userIdTemp == JSON.parse(sessionStorage.getItem('authTeacherDetails')).user_name) {
+
+  //   } else {
+  //     this.changePaswordForm.patchValue({
+  //       userId: ''
+  //     })
+
+  //     Swal.fire(
+  //       'Incorrect User Id !',
+  //       'Please re-enter again',
+  //       'error'
+  //     )
+  //   }
+  // }
+
+
+
+  checkConfirmPassword(control: FormControl): { [s: string]: boolean } {
+    if (control.value) {
+      if (this.changePaswordForm.value.newPassword != control.value) {
+        return { 'passwordNotSame': true }
+      }
+    }
+    return null;
+  }
+  getStatus(tempTeacherId) {
     this.outSideService.getUpdatedFlag(tempTeacherId).subscribe((res) => {
       this.flagUpdatedList = res.response
     })
   }
-  updateFinalStatus(data:any){
+  updateFinalStatus(data: any) {
     this.outSideService.updateFormStatusFlag(data).subscribe((res) => {
       this.flagUpdatedList = res.response
     })
+  }
+  onSubmitChangePassword() {
+     
+    var res = changePassword(this.user_name, this.changePaswordForm.value.oldPassword, this.changePaswordForm.value.newPassword, this.changePaswordForm.value.confirmPassword);
+
+    console.log(res)
+    if (res == "Password Changed successfully") {
+      this.dialogRef.close();
+    }
+    Swal.fire(
+      '',
+      res,
+    )
+  }
+  changeDateFormat(date: any){
+    return moment(date).format('DD-MM-YYYY')
   }
   onSubmit(event: Event) {
     var activeButton = document.activeElement.id;
@@ -1075,20 +1230,20 @@ transferRelatedForm: new FormGroup({
       this.responseData.udiseSchoolName = this.schName;
       this.responseData.currentUdiseSchCode = this.udiseSchCode;
       this.responseData.teacherId = this.tempTeacherId;
-      this.responseData.teacherDob = this.teacherForm.value.profileForm.dob;
+      this.responseData.teacherDob = moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.dob).toString()))).format('YYYY-MM-DD');
       this.responseData.teacherEmail = this.teacherForm.value.profileForm.email;
       this.responseData.teacherEmployeeCode = this.teacherForm.value.profileForm.empCode;
       this.responseData.teacherGender = this.teacherForm.value.profileForm.gender;
       this.responseData.teacherMobile = this.teacherForm.value.profileForm.mobile;
       this.responseData.teacherName = this.teacherForm.value.profileForm.fullName;
-     // this.responseData.teacherNationality = this.teacherForm.value.profileForm.nationality;
+      // this.responseData.teacherNationality = this.teacherForm.value.profileForm.nationality;
       this.responseData.teacherReligion = this.teacherForm.value.profileForm.religion;
       this.responseData.teacherSocialCategory = this.teacherForm.value.profileForm.socialCat;
       this.responseData.workExperienceAppointedForSubject = this.teacherForm.value.profileForm.presentSubjectName;
-      this.responseData.workExperiencePositionTypePresentStationStartDate = this.teacherForm.value.profileForm.presentStationPostDate;
-      this.responseData.workExperienceWorkStartDatePresentKv = this.teacherForm.value.profileForm.presentKvDate;
+      this.responseData.workExperiencePositionTypePresentStationStartDate = moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentStationPostDate).toString()))).format('YYYY-MM-DD');
+      this.responseData.workExperienceWorkStartDatePresentKv = moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentKvDate).toString()))).format('YYYY-MM-DD');
       this.responseData.lastPromotionPositionType = this.teacherForm.value.profileForm.presentPostName;
-      this.responseData.lastPromotionPositionDate = this.teacherForm.value.profileForm.presentPostDate;
+      this.responseData.lastPromotionPositionDate = moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentPostDate).toString()))).format('YYYY-MM-DD');
       this.responseData.teachingNonteaching = this.teacherForm.value.profileForm.staffType;
       //this.responseData.natureOfAppointment = this.teacherForm.value.profileForm.natureOfAptmnt;
       this.responseData.specialRecruitmentYn = this.teacherForm.value.profileForm.specialRecruitmentYn
@@ -1116,6 +1271,7 @@ transferRelatedForm: new FormGroup({
           '',
           'success'
         )
+        this.getTchExpByTchId();
         this.nextClick(2)
       })
     } else if (activeButton == "submit2") {
@@ -1140,14 +1296,22 @@ transferRelatedForm: new FormGroup({
         this.nextClick(2)
       })
     } else if (activeButton == "submit3") {
-      this.responseData.spouseName=this.teacherForm.value.personalInfoForm.spouseName
+      this.teacherForm.patchValue({
+        profileForm: {
+          dob: moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.dob).toString()))).format('YYYY-MM-DD'),
+          presentStationPostDate :moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentStationPostDate).toString()))).format('YYYY-MM-DD'),
+          presentKvDate : moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentKvDate).toString()))).format('YYYY-MM-DD'),
+          presentPostDate: moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentPostDate).toString()))).format('YYYY-MM-DD')
+        }
+      })
+      this.responseData.spouseName = this.teacherForm.value.personalInfoForm.spouseName
       this.teacherForm.patchValue({
         transferRelatedForm: {
-         // spouseName:this.teacherForm.value.personalInfoForm.spouseName,
-          spouseStationName:this.teacherForm.value.personalInfoForm.spouseStationName
+          // spouseName:this.teacherForm.value.personalInfoForm.spouseName,
+          spouseStationName: this.teacherForm.value.personalInfoForm.spouseStationName
         }
       });
-      debugger
+       
       if (this.teacherForm.value.personalInfoForm.disabilityYN == '1') {
         if (this.documentUploadArray[4].docName == 'Physically_Handicap_Certificate.pdf') {
           this.responseData.teacherDisabilityYn = this.teacherForm.value.personalInfoForm.disabilityYN;
@@ -1157,33 +1321,33 @@ transferRelatedForm: new FormGroup({
           this.responseData.teacherDisabilityDate = this.teacherForm.value.personalInfoForm.disabilityDate;
           this.responseData.teacherDisabilityCertNumber = this.teacherForm.value.personalInfoForm.disabilityCertNo;
           this.responseData.teacherDisabilityCertAuthority = this.teacherForm.value.personalInfoForm.disabilityCertAuth;
-         // this.responseData.teacherBloodGroup = this.teacherForm.value.personalInfoForm.bloodGroup
+          // this.responseData.teacherBloodGroup = this.teacherForm.value.personalInfoForm.bloodGroup
           this.responseData.teacherCorrespondenceAddress = this.teacherForm.value.personalInfoForm.crspndncAddress
           this.responseData.teacherCorrespondenceDistrict = this.teacherForm.value.personalInfoForm.crspndncDistrict
           this.responseData.teacherCorrespondencePin = this.teacherForm.value.personalInfoForm.crspndncPinCode
           this.responseData.teacherCorrespondenceState = this.teacherForm.value.personalInfoForm.crspndncState
           this.responseData.maritalStatus = this.teacherForm.value.personalInfoForm.maritalStatusF;
-          if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+          if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
             this.responseData.teacherParmanentState = this.teacherForm.getRawValue().personalInfoForm.prmntState
-          }else{
+          } else {
             this.responseData.teacherParmanentState = this.teacherForm.value.personalInfoForm.prmntState
           }
-          if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+          if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
             this.responseData.teacherPermanentAddress = this.teacherForm.getRawValue().personalInfoForm.prmntAddress
-          }else{
+          } else {
             this.responseData.teacherPermanentAddress = this.teacherForm.value.personalInfoForm.prmntAddress
           }
-          if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+          if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
             this.responseData.teacherPermanentDistrict = this.teacherForm.getRawValue().personalInfoForm.prmntDistrict
-          }else{
+          } else {
             this.responseData.teacherPermanentDistrict = this.teacherForm.value.personalInfoForm.prmntDistrict
           }
-          if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+          if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
             this.responseData.teacherPermanentPin = this.teacherForm.getRawValue().personalInfoForm.prmntPinCode
-          }else{
+          } else {
             this.responseData.teacherPermanentPin = this.teacherForm.value.personalInfoForm.prmntPinCode
           }
-         // this.responseData.teacherPanNumber = this.teacherForm.value.personalInfoForm.panNo
+          // this.responseData.teacherPanNumber = this.teacherForm.value.personalInfoForm.panNo
           this.responseData.teacherAadhaarNumber = this.teacherForm.value.personalInfoForm.aadhaarNo
           this.responseData.teacherPassportNumber = this.teacherForm.value.personalInfoForm.passportNo
           this.responseData.teacherPersonnelIdentification = this.teacherForm.value.personalInfoForm.personalIdNo
@@ -1237,27 +1401,27 @@ transferRelatedForm: new FormGroup({
         this.responseData.teacherCorrespondencePin = this.teacherForm.value.personalInfoForm.crspndncPinCode
         this.responseData.maritalStatus = this.teacherForm.value.personalInfoForm.maritalStatusF;
         this.responseData.teacherCorrespondenceState = this.teacherForm.value.personalInfoForm.crspndncState
-        if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+        if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
           this.responseData.teacherParmanentState = this.teacherForm.getRawValue().personalInfoForm.prmntState
-        }else{
+        } else {
           this.responseData.teacherParmanentState = this.teacherForm.value.personalInfoForm.prmntState
         }
-        if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+        if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
           this.responseData.teacherPermanentAddress = this.teacherForm.getRawValue().personalInfoForm.prmntAddress
-        }else{
+        } else {
           this.responseData.teacherPermanentAddress = this.teacherForm.value.personalInfoForm.prmntAddress
         }
-        if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+        if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
           this.responseData.teacherPermanentDistrict = this.teacherForm.getRawValue().personalInfoForm.prmntDistrict
-        }else{
+        } else {
           this.responseData.teacherPermanentDistrict = this.teacherForm.value.personalInfoForm.prmntDistrict
         }
-        if(this.teacherForm.value.personalInfoForm.sameAbove == true){
+        if (this.teacherForm.value.personalInfoForm.sameAbove == true) {
           this.responseData.teacherPermanentPin = this.teacherForm.getRawValue().personalInfoForm.prmntPinCode
-        }else{
+        } else {
           this.responseData.teacherPermanentPin = this.teacherForm.value.personalInfoForm.prmntPinCode
         }
-       // this.responseData.teacherPanNumber = this.teacherForm.value.personalInfoForm.panNo
+        // this.responseData.teacherPanNumber = this.teacherForm.value.personalInfoForm.panNo
         this.responseData.teacherAadhaarNumber = this.teacherForm.value.personalInfoForm.aadhaarNo
         this.responseData.teacherPassportNumber = this.teacherForm.value.personalInfoForm.passportNo
         this.responseData.teacherPersonnelIdentification = this.teacherForm.value.personalInfoForm.personalIdNo
@@ -1294,7 +1458,7 @@ transferRelatedForm: new FormGroup({
 
 
     } else if (activeButton == "submit33") {
-      debugger
+       
       if (this.teacherForm.controls.profileForm.status == 'VALID') {
         if (this.teacherForm.controls.acadProfQual.status == 'VALID') {
           if (this.teacherForm.controls.profQual.status == 'VALID') {
@@ -1347,6 +1511,13 @@ transferRelatedForm: new FormGroup({
                         '',
                         'success'
                       )
+                      const data = {
+                        "teacherId": this.tempTeacherId,
+                        "reportType": "2"
+                      }
+                      this.outSideService.sentReport(data).subscribe((res) => {
+                        console.log(res)
+                      })
                     })
                     const flagData = {
                       'teacherId': this.tempTeacherId,
@@ -1406,119 +1577,132 @@ transferRelatedForm: new FormGroup({
         )
       }
     } else if (activeButton == "submit4") {
-  debugger   
+       
       this.getStatus(this.tempTeacherId);
       this.teacherForm.patchValue({
         transferRelatedForm: {
-          teacherId:this.tempTeacherId,
+          teacherId: this.tempTeacherId,
         }
       });
-      if(this.responseData?.spouseStatus== null || this.responseData?.spouseStatus=='5' || this.responseData?.spouseStatus=='')
-      {
-       
+      if (this.responseData?.spouseStatus == null || this.responseData?.spouseStatus == '5' || this.responseData?.spouseStatus == '') {
+
         (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').disable();
-        this.optionDisable=true;
-        this.gkFilebenefit=false
-        this.spouseKvsYnDradioButton=0;
+        this.optionDisable = true;
+        this.gkFilebenefit = false
+        this.spouseKvsYnDradioButton = 0;
         this.teacherForm.patchValue({
           transferRelatedForm: {
             spouseKvsYnD: '0',
-            
+
           }
         })
       }
-      else{
+      else {
         (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').enable();
-        this.optionDisable=false;
-        this.gkFilebenefit=true
-        this.spouseKvsYnDradioButton=1;
-        this.teacherForm.patchValue({
-          transferRelatedForm: {
-            spouseKvsYnD: '1'
-          }
-        })
+        // this.optionDisable = false;
+        // this.gkFilebenefit = true
+        // this.spouseKvsYnDradioButton = 1;
+        // this.teacherForm.patchValue({
+        //   transferRelatedForm: {
+        //     spouseKvsYnD: '1'
+        //   }
+        // })
       }
-this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm).subscribe((res) => {
-  if (res.status == 1) {
-    this.transferRelatedFormTempId=res.response.id
-    this.responseStatus = res.status
-    
-    // this.teacherForm.value.transferRelatedForm.i
-    this.teacherForm.patchValue({
-      declarationRelatedForm: {
-        id: this.transferRelatedFormTempId,
-      }
-    })
+      this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm).subscribe((res) => {
+        if (res.status == 1) {
+          this.transferRelatedFormTempId = res.response.id
+          this.responseStatus = res.status
 
-    this.flagUpdatedList.form4Status = 'TI'
-        this.flagUpdatedList.finalStatus = 'TI'
-        this.updateFinalStatus(this.flagUpdatedList);
+          // this.teacherForm.value.transferRelatedForm.i
+          this.teacherForm.patchValue({
+            declarationRelatedForm: {
+              id: this.transferRelatedFormTempId,
+            }
+          })
 
-      
-    Swal.fire(
-      'Your Data has been saved Successfully!',
-      '',
-      'success'
-    )
-    this.nextClick(5) 
-  } else if (this.responseStatus == '0') {
-    Swal.fire(
-      this.responseStatus.message
-    )}
-   
-})
+          this.flagUpdatedList.form4Status = 'TI'
+          this.flagUpdatedList.finalStatus = 'TI'
+          this.updateFinalStatus(this.flagUpdatedList);
+
+
+          Swal.fire(
+            'Your Data has been saved Successfully!',
+            '',
+            'success'
+          )
+          this.nextClick(5)
+        } else if (this.responseStatus == '0') {
+          Swal.fire(
+            this.responseStatus.message
+          )
+        }
+
+      })
 
     } else if (activeButton == "submit5") {
-debugger
+
+       
       this.getStatus(this.tempTeacherId);
       this.teacherForm.patchValue({
         transferRelatedForm: {
-          teacherId:this.tempTeacherId,
+          teacherId: this.tempTeacherId,
         }
       });
-      if(this.teacherForm.value.transferRelatedForm.absenceDaysOne =='' || this.teacherForm.value.transferRelatedForm.absenceDaysOne ==null)
-      {
+      if (this.teacherForm.value.transferRelatedForm.absenceDaysOne == '' || this.teacherForm.value.transferRelatedForm.absenceDaysOne == null) {
         this.teacherForm.patchValue({
           transferRelatedForm: {
-            absenceDaysOne:0,
+            absenceDaysOne: 0,
           }
         });
       }
-this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm).subscribe((res) => {
-  if (res.status == 1) {
-    this.transferRelatedFormTempId=res.response.id
-    // this.teacherForm.value.transferRelatedForm.i
-    this.teacherForm.patchValue({
-      declarationRelatedForm: {
-        id: this.transferRelatedFormTempId,
-      }
-    })
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        id: this.transferRelatedFormTempId,
-      }
-    })
+      this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm).subscribe((res) => {
+        if (res.status == 1) {
+          this.transferRelatedFormTempId = res.response.id
+          // this.teacherForm.value.transferRelatedForm.i
+          this.teacherForm.patchValue({
+            declarationRelatedForm: {
+              id: this.transferRelatedFormTempId,
+            }
+          })
+          this.teacherForm.patchValue({
+            transferRelatedForm: {
+              id: this.transferRelatedFormTempId,
+            }
+          })
 
-    this.flagUpdatedList.form4Status = 'TI'
-        this.flagUpdatedList.finalStatus = 'TI'
-        this.updateFinalStatus(this.flagUpdatedList);
+          this.flagUpdatedList.form4Status = 'TI'
+          this.flagUpdatedList.finalStatus = 'TI'
+          this.updateFinalStatus(this.flagUpdatedList);
 
-        this.onVerifyClick();
-    Swal.fire(
-      'Your Data has been saved Successfully!',
-      '',
-      'success'
-    )
-    this.nextClick(5) 
-  } else if (this.responseStatus == '0') {
-    Swal.fire(
-      this.responseStatus.message
-    )
-  }
-})
+          this.onVerifyClick();
+
+          Swal.fire(
+            'Your Data has been saved Successfully!',
+            '',
+            'success'
+          )
+          this.getDocumentByTeacherId();
+          this.nextClick(5)
+        } else if (this.responseStatus == '0') {
+          Swal.fire(
+            this.responseStatus.message
+          )
+        }
+      })
     } else if (activeButton == "submit6") {
-      debugger
+      this.teacherForm.patchValue({
+        profileForm: {
+          dob: moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.dob).toString()))).format('YYYY-MM-DD'),
+          presentStationPostDate :moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentStationPostDate).toString()))).format('YYYY-MM-DD'),
+          presentKvDate : moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentKvDate).toString()))).format('YYYY-MM-DD'),
+          presentPostDate: moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.presentPostDate).toString()))).format('YYYY-MM-DD')
+        }
+      })
+       
       for (let i = 0; i < this.teacherForm.value.detailsOfPosting.length; i++) {
+        ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('workStartDate').enable();
+        ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('positionType').enable();
+        ((this.teacherForm.get('detailsOfPosting') as FormArray).at(i) as FormGroup).get('appointedForSubject').enable();
         this.teacherForm.value.detailsOfPosting[i].teacherId = this.tempTeacherId
         if (this.teacherForm.value.detailsOfPosting[i].workExperienceId == this.workExpId) {
           this.teacherForm.value.detailsOfPosting[i].currentlyActiveYn = '1';
@@ -1531,30 +1715,29 @@ this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm)
       }
 
 
-      if(this.responseData?.spouseStatus== null || this.responseData?.spouseStatus=='5' || this.responseData?.spouseStatus=='')
-      {
-       
+      if (this.responseData?.spouseStatus == null || this.responseData?.spouseStatus == '5' || this.responseData?.spouseStatus == '') {
+
         (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').disable();
-        this.optionDisable=true;
-        this.gkFilebenefit=false
-        this.spouseKvsYnDradioButton=0;
+        this.optionDisable = true;
+        this.gkFilebenefit = false
+        this.spouseKvsYnDradioButton = 0;
         this.teacherForm.patchValue({
           transferRelatedForm: {
             spouseKvsYnD: '0',
-            
+
           }
         })
       }
-      else{
+      else {
         (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').enable();
-        this.optionDisable=false;
-        this.gkFilebenefit=true
-        this.spouseKvsYnDradioButton=1;
-        this.teacherForm.patchValue({
-          transferRelatedForm: {
-            spouseKvsYnD: '1'
-          }
-        })
+        // this.optionDisable = false;
+        // this.gkFilebenefit = true
+        // this.spouseKvsYnDradioButton = 1;
+        // this.teacherForm.patchValue({
+        //   transferRelatedForm: {
+        //     spouseKvsYnD: '1'
+        //   }
+        // })
       }
       if (this.teacherForm.controls.detailsOfPosting.status == 'VALID') {
         this.outSideService.saveTchExperience(this.teacherForm.value.detailsOfPosting).subscribe((res) => {
@@ -1587,11 +1770,15 @@ this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm)
         this.outSideService.savePromotion(this.teacherForm.value.promotionDetails).subscribe((res) => {
         })
       } else {
+        ((this.teacherForm.get('detailsOfPosting') as FormArray).at(0) as FormGroup).get('workStartDate').disable();
+        ((this.teacherForm.get('detailsOfPosting') as FormArray).at(0) as FormGroup).get('positionType').disable();
+        ((this.teacherForm.get('detailsOfPosting') as FormArray).at(0) as FormGroup).get('appointedForSubject').disable();
         Swal.fire(
           'Please enter the required data!',
           '',
           'error'
         )
+
       }
     }
   }
@@ -1658,7 +1845,7 @@ this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm)
   }
 
   spouseValueConvt(val) {
-    debugger
+     
     if (val == '1') {
       this.teacherForm.patchValue({
         personalInfoForm: {
@@ -1695,10 +1882,10 @@ this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm)
           spouseStatusNone: 'Yes'
         }
       })
-      
-     // this.teacherForm.value.transferRelatedForm.get('spouseKvsYnD') .disable();
-     // this.teacherForm.value.transferRelatedForm.spouseKvsYnD
-     
+
+      // this.teacherForm.value.transferRelatedForm.get('spouseKvsYnD') .disable();
+      // this.teacherForm.value.transferRelatedForm.spouseKvsYnD
+
 
     }
   }
@@ -1737,7 +1924,7 @@ this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm)
         }
       })
 
-    }else if (event.target.value == '4') {
+    } else if (event.target.value == '4') {
       this.responseData.maritalStatus = '4'
       this.responseData.spouseStatus = '5'
       this.marriedStatusYN = false;
@@ -1775,312 +1962,317 @@ this.outSideService.saveTransProfile(this.teacherForm.value.transferRelatedForm)
 
 
 
-// ---------------------------------------  new change code start here--------------------------
+  // ---------------------------------------  new change code start here--------------------------
 
-stationCoice(val) {
+  stationCoice(val) {
 
-  if (val == '3') {
+    if (val == '3') {
 
-     this.showStationChoice18C = true;
-    // this.showStationChoice18B = false;
+      this.showStationChoice18C = true;
+      // this.showStationChoice18B = false;
 
 
-   } else if (val == '0') {
-    // this.showStationChoice18B = false;
-     this.showStationChoice18C = false;
-     this.teacherForm.patchValue({
-       transferRelatedForm: {
-         choiceKv1StationCode: '',
-         choiceKv2StationCode: '',
-         choiceKv3StationCode: '',
-         choiceKv4StationCode: '',
-         choiceKv5StationCode: '',
-        
-         choiceKv1StationName: '',
-         choiceKv2StationName: '',
-         choiceKv3StationName: '',
-         choiceKv4StationName: '',
-         choiceKv5StationName: '',
+    } else if (val == '0') {
+      // this.showStationChoice18B = false;
+      this.showStationChoice18C = false;
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          choiceKv1StationCode: '',
+          choiceKv2StationCode: '',
+          choiceKv3StationCode: '',
+          choiceKv4StationCode: '',
+          choiceKv5StationCode: '',
 
-       }
-     })
+          choiceKv1StationName: '',
+          choiceKv2StationName: '',
+          choiceKv3StationName: '',
+          choiceKv4StationName: '',
+          choiceKv5StationName: '',
 
-   }
- }
- getTransferProfile(){
- 
-  const data={"teacherId":this.tempTeacherId}
-  debugger
-  //alert(data)
-  this.outSideService.getTransferData(data).subscribe((res) => {
-  this.patientAilmentData=res.response.patientAilment  
-  this.medicalCertificateIssueDateData = this.date.transform(res.response.medicalCertificateIssueDate, 'yyyy-MM-dd');
-  this.singleParentGroundData =res.response.singleParentGround
-  this.singleParentCertificateIssueDateData =  this.date.transform(res.response.singleParentCertificateIssueDate, 'yyyy-MM-dd');  
-  this.deathOfFamilyGroundData=res.response.deathOfFamilyGround
-  this.deathCertificateIssueDateData = this.date.transform(res.response.deathCertificateIssueDate, 'yyyy-MM-dd'); 
+        }
+      })
 
-this.teacherForm.patchValue({
-  transferRelatedForm: {
-    id:res.response.id,
-    teacherId:res.response.teacherId,
-applyTransferYn:res.response.applyTransferYn,
-disciplinaryYn:res.response.disciplinaryYn,
-absenceDaysOne:res.response.absenceDaysOne,
-positionOfNjcmRjcm:res.response.positionOfNjcmRjcm,
-nameOfFamilyMember:res.response.nameOfFamilyMember,
-choiceKv1StationName:res.response.choiceKv1StationName,
-choiceKv2StationName:res.response.choiceKv2StationName,
-choiceKv3StationName:res.response.choiceKv3StationName,
-choiceKv4StationName:res.response.choiceKv4StationName,
-choiceKv5StationName:res.response.choiceKv5StationName,
-displacement1StationCode:res.response.displacement1StationCode,
-displacement1StationName:res.response.displacement1StationName,
-displacement2StationName:res.response.displacement2StationName,
-displacement2StationCode:res.response.displacement2StationCode,
-displacement3StationName:res.response.displacement3StationName,
-displacement3StationCode:res.response.displacement3StationCode,
-displacement4StationCode:res.response.displacement4StationCode,
-displacement4StationName:res.response.displacement4StationName,
-displacement5StationCode:res.response.displacement5StationCode,
-displacement5StationName:res.response.displacement5StationName,
-spouseKvsYnD:res.response.spouseKvsYnD,
-childDifferentAbleYnD:res.response.childDifferentAbleYnD,
-careGiverFaimlyYnD:res.response.careGiverFaimlyYnD,
-careGiverYnD:res.response.careGiverYnD,
-personalStatusMdgD:res.response.personalStatusMdgD,
-personalStatusDfpD:res.response.personalStatusDfpD,
-personalStatusSpD:res.response.personalStatusSpD,
-memberJCM:res.response.memberJCM,
-//spouseEmpCode:res.response.spouseEmpCode,
-//spouseStationName:res.response.spouseStationName,
-//spousePost:res.response.spousePost,
-spouseStation:res.response.spouseStation,
-patientName:res.response.patientName,
-patientAilment:res.response.patientAilment,
-patientHospital:res.response.patientHospital,
-patientMedicalOfficerName:res.response.patientMedicalOfficerName,
-patientMedicalOfficerDesignation:res.response.patientMedicalOfficerDesignation,
-careGiverName:res.response.careGiverName,
-careGiverRelation:res.response.careGiverRelation,
-careGiverDisabilityName:res.response.careGiverDisabilityName,
-careGiverDisabilityPrcnt:res.response.careGiverDisabilityPrcnt,
-childDifferentName:res.response.childDifferentName,
-childDifferentDisabilityName:res.response.childDifferentDisabilityName,
-childDifferentDisabilityPrcnt:res.response.childDifferentDisabilityPrcnt,
-
-  },
-
-})
-// ----------------------------- emp transfer radio button start  here ------------------------------------
-this.empTransferradioButton= this.teacherForm.value.transferRelatedForm.applyTransferYn
-if(this.empTransferradioButton==3)
-{
-  this.showStationChoice18C=true
-}
-if(this.empTransferradioButton==0)
-{
-  this.showStationChoice18C=false
-}
-
-// ---------------------------- end here--------------------------------------------------------------------
-
-// ---------------------------  declairation from radio button start  here ---------------------------------
-console.log(this.teacherForm.value.transferRelatedForm.spouseKvsYnD)
-////////////////////////   spouse  //////////////////////////
-if(this.teacherForm.value.transferRelatedForm.spouseKvsYnD==1)
-{
-  this.spouseKvsYnDradioButton=1;
-  this.gkFilebenefit=true
-  
-}
-if(this.teacherForm.value.transferRelatedForm.spouseKvsYnD=='' || this.teacherForm.value.transferRelatedForm.spouseKvsYnD== null)
-{
-  this.spouseKvsYnDradioButton=0;
-  this.gkFilebenefit=false
-  
-}
-if(this.teacherForm.value.transferRelatedForm.spouseKvsYnD==0)
-{
-  this.spouseKvsYnDradioButton=0;
-  this.gkFilebenefit=false
-}
-/////////////////////////  personalStatusMdgD //////////////////////
- if(this.teacherForm.value.transferRelatedForm.personalStatusMdgD==1)
-{
-  this.personalStatusMdgDradioButton=1;
-  this.gkFilemMedical=true
-}
-if(this.teacherForm.value.transferRelatedForm.personalStatusMdgD=='' || this.teacherForm.value.transferRelatedForm.personalStatusMdgD == null)
-{
-  this.personalStatusMdgDradioButton=0;
-  this.gkFilemMedical=false
-}
- if(this.teacherForm.value.transferRelatedForm.personalStatusMdgD==0)
-{
-  this.personalStatusMdgDradioButton=0;
-  this.gkFilemMedical=false
-}
-//////////////// careGiverFaimlyYnD ///////////////////////////////////
-
- if(this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD==1)
-{
-  this.careGiverFaimlyYnDradioButton=1;
-  this.careGiver=true
-}
-if(this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD=='' || this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD== null)
-{
-  this.careGiverFaimlyYnDradioButton=0;
-  this.careGiver=false
-}
-if(this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD==0)
-{
-  this.careGiverFaimlyYnDradioButton=0;
-  this.careGiver=false
-}
-/////////////////////////// careGiverYnD ////////////////////////
- if(this.teacherForm.value.transferRelatedForm.careGiverYnD==1)
-{
-  this.childDifferentAbleYnDradioButton=1;
-  this.abledChild=true
-} 
-if(this.teacherForm.value.transferRelatedForm.careGiverYnD=='' || this.teacherForm.value.transferRelatedForm.careGiverYnD== null)
-{
-  this.childDifferentAbleYnDradioButton=0;
-  this.abledChild=false
-}
-if(this.teacherForm.value.transferRelatedForm.careGiverYnD==0)
-{
-  this.childDifferentAbleYnDradioButton=0;
-  this.abledChild=false
-}
-//////////////////////////// personalStatusDfpD  ////////////////////
- if(this.teacherForm.value.transferRelatedForm.personalStatusDfpD==1)
-{
-  this.personalStatusDfpDradioButton=1;
-  this.dfpGround=true
-}
-if(this.teacherForm.value.transferRelatedForm.personalStatusDfpD==0)
-{
-  this.personalStatusDfpDradioButton=0;
-  this.dfpGround=false
-}
-if(this.teacherForm.value.transferRelatedForm.personalStatusDfpD=='' || this.teacherForm.value.transferRelatedForm.personalStatusDfpD== null)
-{
-  this.personalStatusDfpDradioButton=0;
-  this.dfpGround=false
-}
-//////////////////////////// personalStatusSpD //////////////////////
- if(this.teacherForm.value.transferRelatedForm.personalStatusSpD==1)
-{
-  this.personalStatusSpDradioButton=1;
-  this.spGround=true
-} 
-if(this.teacherForm.value.transferRelatedForm.personalStatusSpD=='' || this.teacherForm.value.transferRelatedForm.personalStatusSpD== null )
-{
-  this.personalStatusSpDradioButton=0;
-  this.spGround=false
-}
-if(this.teacherForm.value.transferRelatedForm.personalStatusSpD==0)
-{
-  this.personalStatusSpDradioButton=0;
-  this.spGround=false
-}
-//////////////// childDifferentAbleYnD ////////////
-if(this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD==1)
-{
-  this.childDifferentAbleYnDradioButton=1;
-  this.abledChild=true
-}
-if(this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD=='' || this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD== null)
-{
-  this.childDifferentAbleYnDradioButton=0;
-  this.abledChild=false
-}
-if(this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD==0)
-{
-  this.childDifferentAbleYnDradioButton=0;
-  this.abledChild=false
-}
-
-/////////////////////////  memberJCM  ///////////////////////////
-if(this.teacherForm.value.transferRelatedForm.memberJCM==1)
-{
-  this.inlineRadio13radioButton=1;
- // this.abledChild=true
-}
-if(this.teacherForm.value.transferRelatedForm.memberJCM==2){
-  this.inlineRadio13radioButton=2;
-}
-if(this.teacherForm.value.transferRelatedForm.memberJCM=='' || this.teacherForm.value.transferRelatedForm.memberJCM== null)
-{
-  this.inlineRadio13radioButton=0;
-  this.teacherForm.patchValue({
-    transferRelatedForm: { 
-      memberJCM: '0',
     }
-  })
-  //this.abledChild=false
-}
-if(this.teacherForm.value.transferRelatedForm.memberJCM==0)
-{
-  this.inlineRadio13radioButton=0;
-  //this.abledChild=false
-}
-debugger
-if(this.teacherForm.value.transferRelatedForm.disciplinaryYn==1)
-{
-  this.disciplinaryYnradioButton=1;
-}
-if(this.teacherForm.value.transferRelatedForm.disciplinaryYn=='' || this.teacherForm.value.transferRelatedForm.disciplinaryYn== null)
-{
-  this.disciplinaryYnradioButton=0;
-}
-
-if(this.teacherForm.value.transferRelatedForm.disciplinaryYn==0)
-{
-  this.disciplinaryYnradioButton=0;
-}
-// if(this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD==0)
-// {
-//   this.disciplinaryYnradioButton=1;
-// }
-this.teacherForm.patchValue({
-  transferRelatedForm: {
-    spouseStationName: this.responseData.spouseStationName,
-    
   }
-})
-if(this.responseData.spouseStatus== null || this.responseData.spouseStatus=='5' || this.responseData.spouseStatus=='')
-{
- 
-  (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').disable();
-  this.optionDisable=true;
-  this.gkFilebenefit=false
-  this.spouseKvsYnDradioButton=0;
-  this.teacherForm.patchValue({
-    transferRelatedForm: {
-      spouseKvsYnD: '0',
-      
-    }
-  })
-}
-else{
-  (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').enable();
-  this.optionDisable=false;
-  this.gkFilebenefit=true
-  this.spouseKvsYnDradioButton=1;
-  this.teacherForm.patchValue({
-    transferRelatedForm: {
-      spouseKvsYnD: '1'
-    }
-  })
-}
-// --------------------------- end here --------------------------------------------------------------------
-  })
+  getTransferProfile() {
 
-}
+    const data = { "teacherId": this.tempTeacherId }
+     
+    //alert(data)
+    this.outSideService.getTransferData(data).subscribe((res) => {
+      this.patientAilmentData = res.response.patientAilment
+      this.medicalCertificateIssueDateData = this.date.transform(res.response.medicalCertificateIssueDate, 'yyyy-MM-dd');
+      this.singleParentGroundData = res.response.singleParentGround
+      this.singleParentCertificateIssueDateData = this.date.transform(res.response.singleParentCertificateIssueDate, 'yyyy-MM-dd');
+      this.deathOfFamilyGroundData = res.response.deathOfFamilyGround;
+      this.careGiverRelationData = res.response.careGiverRelation;
+      this.relationWithEmplMdgData = res.response.relationWithEmplMdg
+      this.deathCertificateIssueDateData = this.date.transform(res.response.deathCertificateIssueDate, 'yyyy-MM-dd');
 
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          id: res.response.id,
+          teacherId: res.response.teacherId,
+          applyTransferYn: res.response.applyTransferYn,
+          disciplinaryYn: res.response.disciplinaryYn,
+          absenceDaysOne: res.response.absenceDaysOne,
+          positionOfNjcmRjcm: res.response.positionOfNjcmRjcm,
+          nameOfFamilyMember: res.response.nameOfFamilyMember,
+          choiceKv1StationName: res.response.choiceKv1StationName,
+          choiceKv2StationName: res.response.choiceKv2StationName,
+          choiceKv3StationName: res.response.choiceKv3StationName,
+          choiceKv4StationName: res.response.choiceKv4StationName,
+          choiceKv5StationName: res.response.choiceKv5StationName,
+          displacement1StationCode: res.response.displacement1StationCode,
+          displacement1StationName: res.response.displacement1StationName,
+          displacement2StationName: res.response.displacement2StationName,
+          displacement2StationCode: res.response.displacement2StationCode,
+          displacement3StationName: res.response.displacement3StationName,
+          displacement3StationCode: res.response.displacement3StationCode,
+          displacement4StationCode: res.response.displacement4StationCode,
+          displacement4StationName: res.response.displacement4StationName,
+          displacement5StationCode: res.response.displacement5StationCode,
+          displacement5StationName: res.response.displacement5StationName,
+          spouseKvsYnD: res.response.spouseKvsYnD,
+          surveHardYn: res.response.surveHardYn,
+          childDifferentAbleYnD: res.response.childDifferentAbleYnD,
+          careGiverFaimlyYnD: res.response.careGiverFaimlyYnD,
+          careGiverYnD: res.response.careGiverYnD,
+          personalStatusMdgD: res.response.personalStatusMdgD,
+          personalStatusDfpD: res.response.personalStatusDfpD,
+          personalStatusSpD: res.response.personalStatusSpD,
+          memberJCM: res.response.memberJCM,
+          //spouseEmpCode:res.response.spouseEmpCode,
+          //spouseStationName:res.response.spouseStationName,
+          //spousePost:res.response.spousePost,
+          spouseStation: res.response.spouseStation,
+          patientName: res.response.patientName,
+          patientAilment: res.response.patientAilment,
+          patientHospital: res.response.patientHospital,
+          patientMedicalOfficerName: res.response.patientMedicalOfficerName,
+          patientMedicalOfficerDesignation: res.response.patientMedicalOfficerDesignation,
+          careGiverName: res.response.careGiverName,
+          careGiverRelation: res.response.careGiverRelation,
+          careGiverDisabilityName: res.response.careGiverDisabilityName,
+          careGiverDisabilityPrcnt: res.response.careGiverDisabilityPrcnt,
+          childDifferentName: res.response.childDifferentName,
+          childDifferentDisabilityName: res.response.childDifferentDisabilityName,
+          childDifferentDisabilityPrcnt: res.response.childDifferentDisabilityPrcnt,
+
+        },
+
+      })
+      // ----------------------------- emp transfer radio button start  here ------------------------------------
+      this.empTransferradioButton = this.teacherForm.value.transferRelatedForm.applyTransferYn
+      if (this.empTransferradioButton == 3) {
+        this.showStationChoice18C = true
+      }
+      if (this.empTransferradioButton == 0) {
+        this.showStationChoice18C = false
+      }
+
+      // ---------------------------- end here--------------------------------------------------------------------
+
+      // ---------------------------  declairation from radio button start  here ---------------------------------
+      console.log(this.teacherForm.value.transferRelatedForm.spouseKvsYnD)
+      ////////////////////////   spouse  //////////////////////////
+      if (this.teacherForm.value.transferRelatedForm.spouseKvsYnD == 1) {
+        this.spouseKvsYnDradioButton = 1;
+        this.gkFilebenefit = true
+
+      }
+      if (this.teacherForm.value.transferRelatedForm.spouseKvsYnD == '' || this.teacherForm.value.transferRelatedForm.spouseKvsYnD == null) {
+        this.spouseKvsYnDradioButton = 0;
+        this.gkFilebenefit = false
+
+      }
+      if (this.teacherForm.value.transferRelatedForm.spouseKvsYnD == 0) {
+        this.spouseKvsYnDradioButton = 0;
+        this.gkFilebenefit = false
+      }
+      /////////////////////////  personalStatusMdgD //////////////////////
+      if (this.teacherForm.value.transferRelatedForm.personalStatusMdgD == 1) {
+        this.personalStatusMdgDradioButton = 1;
+        this.gkFilemMedical = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.personalStatusMdgD == '' || this.teacherForm.value.transferRelatedForm.personalStatusMdgD == null) {
+        this.personalStatusMdgDradioButton = 0;
+        this.gkFilemMedical = false
+      }
+      if (this.teacherForm.value.transferRelatedForm.personalStatusMdgD == 0) {
+        this.personalStatusMdgDradioButton = 0;
+        this.gkFilemMedical = false
+      }
+      //////////////// careGiverFaimlyYnD ///////////////////////////////////
+
+      if (this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD == 1) {
+        this.careGiverFaimlyYnDradioButton = 1;
+        this.careGiver = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD == '' || this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD == null) {
+        this.careGiverFaimlyYnDradioButton = 0;
+        this.careGiver = false
+      }
+      if (this.teacherForm.value.transferRelatedForm.careGiverFaimlyYnD == 0) {
+        this.careGiverFaimlyYnDradioButton = 0;
+        this.careGiver = false
+      }
+      /////////////////////////// careGiverYnD ////////////////////////
+      if (this.teacherForm.value.transferRelatedForm.careGiverYnD == 1) {
+        this.childDifferentAbleYnDradioButton = 1;
+        this.abledChild = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.careGiverYnD == '' || this.teacherForm.value.transferRelatedForm.careGiverYnD == null) {
+        this.childDifferentAbleYnDradioButton = 0;
+        this.abledChild = false
+      }
+      if (this.teacherForm.value.transferRelatedForm.careGiverYnD == 0) {
+        this.childDifferentAbleYnDradioButton = 0;
+        this.abledChild = false
+      }
+      //////////////////////////// personalStatusDfpD  ////////////////////
+      if (this.teacherForm.value.transferRelatedForm.personalStatusDfpD == 1) {
+        this.personalStatusDfpDradioButton = 1;
+        this.dfpGround = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.personalStatusDfpD == 0) {
+        this.personalStatusDfpDradioButton = 0;
+        this.dfpGround = false
+      }
+      if (this.teacherForm.value.transferRelatedForm.personalStatusDfpD == '' || this.teacherForm.value.transferRelatedForm.personalStatusDfpD == null) {
+        this.personalStatusDfpDradioButton = 0;
+        this.dfpGround = false
+      }
+      //////////////////////////// personalStatusSpD //////////////////////
+      if (this.teacherForm.value.transferRelatedForm.personalStatusSpD == 1) {
+        this.personalStatusSpDradioButton = 1;
+        this.spGround = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.personalStatusSpD == '' || this.teacherForm.value.transferRelatedForm.personalStatusSpD == null || this.teacherForm.value.transferRelatedForm.personalStatusSpD == 'undefined') {
+        //(this.teacherForm.get('transferRelatedForm') as FormGroup).get('personalStatusSpD').disable(); 
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            personalStatusSpD: '0',
+          }
+        })
+        this.personalStatusSpDradioButton = 0;
+        this.spGround = false
+      }
+      if (this.teacherForm.value.transferRelatedForm.personalStatusSpD == 0) {
+        // (this.teacherForm.get('transferRelatedForm') as FormGroup).get('personalStatusSpD').disable(); 
+        // this.teacherForm.patchValue({
+        //   transferRelatedForm: { 
+        //     personalStatusSpD: '0',
+        //   }
+        // })
+        this.personalStatusSpDradioButton = 0;
+        this.spGround = false
+      }
+      //////////////// childDifferentAbleYnD ////////////
+      if (this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD == 1) {
+        this.childDifferentAbleYnDradioButton = 1;
+        this.abledChild = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD == '' || this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD == null) {
+        this.childDifferentAbleYnDradioButton = 0;
+        this.abledChild = false
+      }
+      if (this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD == 0) {
+        this.childDifferentAbleYnDradioButton = 0;
+        this.abledChild = false
+      }
+
+      /////////////////////////  memberJCM  ///////////////////////////
+      if (this.teacherForm.value.transferRelatedForm.memberJCM == 1) {
+        this.inlineRadio13radioButton = 1;
+        this.positionHeld = true
+        // this.abledChild=true
+      }
+      if (this.teacherForm.value.transferRelatedForm.memberJCM == 2) {
+        this.inlineRadio13radioButton = 2;
+        this.positionHeld = true
+      }
+      if (this.teacherForm.value.transferRelatedForm.memberJCM == '' || this.teacherForm.value.transferRelatedForm.memberJCM == null) {
+        this.inlineRadio13radioButton = 0;
+        this.positionHeld = false
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            memberJCM: '0',
+          }
+        })
+        //this.abledChild=false
+      }
+      if (this.teacherForm.value.transferRelatedForm.memberJCM == 0) {
+        this.positionHeld = false
+        this.inlineRadio13radioButton = 0;
+        //this.abledChild=false
+      }
+       
+      if (this.teacherForm.value.transferRelatedForm.disciplinaryYn == 1) {
+        this.disciplinaryYnradioButton = 1;
+      }
+      if (this.teacherForm.value.transferRelatedForm.disciplinaryYn == '' || this.teacherForm.value.transferRelatedForm.disciplinaryYn == null) {
+        this.disciplinaryYnradioButton = 0;
+      }
+
+      if (this.teacherForm.value.transferRelatedForm.disciplinaryYn == 0) {
+        this.disciplinaryYnradioButton = 0;
+      }
+      if (this.teacherForm.value.transferRelatedForm.surveHardYn == 1) {
+        this.surveHardYnradioButton = 1;
+      }
+      if (this.teacherForm.value.transferRelatedForm.surveHardYn == '' || this.teacherForm.value.transferRelatedForm.surveHardYn == null) {
+        this.surveHardYnradioButton = 0;
+      }
+      if (this.teacherForm.value.transferRelatedForm.surveHardYn == 0) {
+        this.surveHardYnradioButton = 0;
+      }
+      // if(this.teacherForm.value.transferRelatedForm.childDifferentAbleYnD==0)
+      // {
+      //   this.disciplinaryYnradioButton=1;
+      // }
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          spouseStationName: this.responseData.spouseStationName,
+
+        }
+      })
+      // if (this.responseData.spouseStatus == null || this.responseData.spouseStatus == '5' || this.responseData.spouseStatus == '' || this.teacherForm.value.transferRelatedForm.spouseKvsYnD ==0) {
+
+      //   (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').disable();
+      //   this.optionDisable = true;
+      //   this.gkFilebenefit = false
+      //   this.spouseKvsYnDradioButton = 0;
+      //   this.teacherForm.patchValue({
+      //     transferRelatedForm: {
+      //       spouseKvsYnD: '0',
+
+      //     }
+      //   })
+      // }
+      // else {
+      //   (this.teacherForm.get('transferRelatedForm') as FormGroup).get('spouseKvsYnD').enable();
+      //   this.optionDisable = false;
+      //   this.gkFilebenefit = true
+      //   this.spouseKvsYnDradioButton = 1;
+      //   this.teacherForm.patchValue({
+      //     transferRelatedForm: {
+      //       spouseKvsYnD: '1'
+      //     }
+      //   })
+      // }
+      // --------------------------- end here --------------------------------------------------------------------
+    })
+
+  }
+
+  checkRjcmNjcm(val: any) {
+    if (val == 'show') {
+      this.positionHeld = true
+    } else {
+      this.positionHeld = false
+    }
+  }
   //----------------------------------------------- Start New Function declarationRelatedForm add Here---------------------
   declarationtransferRelated1(event) {
     if (event.target.value == '1') {
@@ -2154,47 +2346,59 @@ else{
     var data = files.item(0).name
     var splitted = data.split('.', 2)
     if (splitted[1] == 'pdf' || splitted[1] == 'PDF') {
-      if (files.item(0).size <= 204800) {
+      if (files.item(0).size <= 512000) {
         this.fileToRelatedFormUpload = files.item(0);
         if (index == '0') {
+          this.fileUpgkFilemMedical = true;
           this.enableUploadButtonRelatedForm0 = false;
         } else if (index == '1') {
           this.enableUploadButtonRelatedForm1 = false;
         } else if (index == '2') {
+          this.fileUpcareGiver = true;
           this.enableUploadButtonRelatedForm2 = false;
         } else if (index == '3') {
           this.enableUploadButtonRelatedForm3 = false;
         } else if (index == '5') {
+          this.fileUpgkFilebenefit = true;
           this.enableUploadButtonRelatedForm5 = false;
         } else if (index == '6') {
+          this.fileUpspGround = true;
           this.enableUploadButtonRelatedForm6 = false;
         } else if (index == '7') {
+          this.fileUpdfpGround = true;
           this.enableUploadButtonRelatedForm7 = false;
         } else if (index == '8') {
+          this.fileUppositionHeld = true;
           this.enableUploadButtonRelatedForm8 = false;
         }
       } else {
         this.fileToRelatedFormUpload = null;
         Swal.fire(
-          'File size allowed upto 200KB only !',
+          'File size allowed upto 500KB only !',
           '',
           'error'
         )
         if (index == '0') {
+          this.fileUpgkFilemMedical = false;
           this.enableUploadButtonRelatedForm0 = true;
         } else if (index == '1') {
           this.enableUploadButtonRelatedForm1 = true;
         } else if (index == '2') {
+          this.fileUpcareGiver = false;
           this.enableUploadButtonRelatedForm2 = true;
         } else if (index == '3') {
           this.enableUploadButtonRelatedForm3 = true;
         } else if (index == '5') {
+          this.fileUpgkFilebenefit = false;
           this.enableUploadButtonRelatedForm5 = true;
         } else if (index == '6') {
+          this.fileUpspGround = false;
           this.enableUploadButtonRelatedForm6 = true;
         } else if (index == '7') {
+          this.fileUpdfpGround = false;
           this.enableUploadButtonRelatedForm7 = true;
         } else if (index == '8') {
+          this.fileUppositionHeld = false;
           this.enableUploadButtonRelatedForm8 = true;
         }
       }
@@ -2206,150 +2410,165 @@ else{
         'error'
       )
       if (index == '0') {
+        this.fileUpgkFilemMedical = false;
         this.enableUploadButtonRelatedForm0 = true;
       } else if (index == '1') {
         this.enableUploadButtonRelatedForm1 = true;
       } else if (index == '2') {
+        this.fileUpcareGiver = false;
         this.enableUploadButtonRelatedForm2 = true;
       } else if (index == '3') {
         this.enableUploadButtonRelatedForm3 = true;
       } else if (index == '5') {
+        this.fileUpgkFilebenefit = false;
         this.enableUploadButtonRelatedForm5 = true;
       } else if (index == '6') {
+        this.fileUpspGround = false;
         this.enableUploadButtonRelatedForm6 = true;
       } else if (index == '7') {
+        this.fileUpdfpGround = false;
         this.enableUploadButtonRelatedForm7 = true;
       } else if (index == '8') {
+        this.fileUppositionHeld = false;
         this.enableUploadButtonRelatedForm8 = true;
       }
     }
   }
   setSchoolType(event) {
-    debugger;
-    this.selectStationName=''
+     ;
+    this.selectStationName = ''
     //HQ
-    if(event.target.value=='4')
-    {
-      this.regionShow=false
-      this.schoolShow=false
-      this.zoneShow=false;
-      this.headQuaterShow=true
-      this.selectHeadQuaterZoneRegion=true
-      this.showSchoolType=false;
+    if (event.target.value == '4') {
+      this.regionShow = false
+      this.schoolShow = false
+      this.zoneShow = false;
+      this.headQuaterShow = true
+      this.selectHeadQuaterZoneRegion = true
+      this.showSchoolType = false;
     }
     //zone
-    else if(event.target.value=='2')
-    {
-      this.regionShow=false
-      this.stationShow=false
-      this.schoolShow=false
-      this.zoneShow=true;
-      this.headQuaterShow=false
-      this.showSchoolType=false;
-      this.selectHeadQuaterZoneRegion=true
+    else if (event.target.value == '2') {
+      this.regionShow = false
+      this.stationShow = false
+      this.schoolShow = false
+      this.zoneShow = true;
+      this.headQuaterShow = false
+      this.showSchoolType = false;
+      this.selectHeadQuaterZoneRegion = true
     }
     //region
-    else if(event.target.value=='3')
-    {
-      this.regionShow=true
-      this.stationShow=false
-      this.schoolShow=false
-      this.zoneShow=false;
-      this.headQuaterShow=false
-      this.selectHeadQuaterZoneRegion=true
-      this.showSchoolType=false;
+    else if (event.target.value == '3') {
+      this.regionShow = true
+      this.stationShow = false
+      this.schoolShow = false
+      this.zoneShow = false;
+      this.headQuaterShow = false
+      this.selectHeadQuaterZoneRegion = true
+      this.showSchoolType = false;
     }
     //school
-    else if(event.target.value=='1')
-    {
-      this.regionShow=false
-      this.stationShow=false
-      this.schoolShow=false
-      this.zoneShow=false;
-      this.headQuaterShow=false;
-      this.selectHeadQuaterZoneRegion=false;
-      this.showSchoolType=true;
+    else if (event.target.value == '1') {
+      this.regionShow = false
+      this.stationShow = false
+      this.schoolShow = false
+      this.zoneShow = false;
+      this.headQuaterShow = false;
+      this.selectHeadQuaterZoneRegion = false;
+      this.showSchoolType = true;
+    }
+    else if (event.target.value == '5') {
+       
+      this.regionShow = false
+      this.schoolShow = false
+      this.stationShow = false
+      this.zoneShow = false;
+      this.headQuaterShow = false
+      this.selectHeadQuaterZoneRegion = false;
+      this.showSchoolType = false;
     }
     this.selectedSchoolType = event.target.value;
 
     const data: any = {
-  "extcall": "MOE_EXT_GET_HQ_REG_ZN",
-  "conditionvalue": [event.target.value]
-}
-this.getMaster(data,event.target.value);
+      "extcall": "MOE_EXT_GET_HQ_REG_ZN",
+      "conditionvalue": [event.target.value]
+    }
+    this.getMaster(data, event.target.value);
   }
-  getMaster(data,schoolType) {
-    this.selectSchoolType=schoolType;
-    this.outSideService.getMasterData(data).subscribe((res:any) => {
-     if(schoolType==4){
-      this.headQuaterList = res.response.rowValue;
-     }
-     else if(schoolType==2){
-      this.zoneList = res.response.rowValue;
-     }else if(schoolType==3){
-      this.selectRegionList = res.response.rowValue;
-     }
-    
+  getMaster(data, schoolType) {
+    this.selectSchoolType = schoolType;
+    this.outSideService.getMasterData(data).subscribe((res: any) => {
+      if (schoolType == 4) {
+        this.headQuaterList = res.response.rowValue;
+      }
+      else if (schoolType == 2) {
+        this.zoneList = res.response.rowValue;
+      } else if (schoolType == 3) {
+        this.selectRegionList = res.response.rowValue;
+      }
+
       console.log(this.selectRegionList)
     })
   }
-  getStationByHqId(id:any){
-    this.selectStationName='';
-    if(this.selectSchoolType==4){
-    for (let i = 0; i < this.headQuaterList.length; i++) {
-    if(this.headQuaterList[i].kv_code==id.target.value)
-    {
-      this.selectedKvCode=this.headQuaterList[i].kv_code
-        this.selectedKvname=this.headQuaterList[i].kv_name
-      this.selectStationName=this.headQuaterList[i].station_name
-    } 
+  
+  getStationByHqId(id: any) {
+     console.log(id.target.value);
+    this.selectStationName = '';
+    if (this.selectSchoolType == 4) {
+      for (let i = 0; i < this.headQuaterList.length; i++) {
+        if (this.headQuaterList[i].kv_code == id.target.value) {
+          this.selectedKvCode = this.headQuaterList[i].kv_code
+          this.selectedKvname = this.headQuaterList[i].kv_name
+          this.selectStationName = this.headQuaterList[i].station_name
+        }
+      }
     }
-    }
-    else if(this.selectSchoolType==2)
-    {
+    else if (this.selectSchoolType == 2) {
       for (let i = 0; i < this.zoneList.length; i++) {
-      if(this.zoneList[i].kv_code==id.target.value)
-      {
-        this.selectedKvCode=this.zoneList[i].kv_code
-        this.selectedKvname=this.zoneList[i].kv_name
-        this.selectStationName=this.zoneList[i].station_name
-      }
+        if (this.zoneList[i].kv_code == id.target.value) {
+          this.selectedKvCode = this.zoneList[i].kv_code
+          this.selectedKvname = this.zoneList[i].kv_name
+          this.selectStationName = this.zoneList[i].station_name
+        }
       }
     }
-    else if(this.selectSchoolType==3)
-    {
+    else if (this.selectSchoolType == 3) {
       for (let i = 0; i < this.selectRegionList.length; i++) {
-        debugger
-      if(this.selectRegionList[i].kv_code==id.target.value)
-      {
-        this.selectedKvCode=this.selectRegionList[i].kv_code
-        this.selectedKvname=this.selectRegionList[i].kv_name
-        this.selectStationName=this.selectRegionList[i].station_name
-      }
+         
+        if (this.selectRegionList[i].kv_code == id.target.value) {
+          this.selectedKvCode = this.selectRegionList[i].kv_code
+          this.selectedKvname = this.selectRegionList[i].kv_name
+          this.selectStationName = this.selectRegionList[i].station_name
+        }
       }
     }
-    //this.getKvSchoolByKvCode(id.target.value)
-    }
+    console.log(this.selectedKvCode, this.selectedKvname)
+  }
   documentUploadRelatedForm(index) {
     const formData = new FormData();
     if (this.fileToRelatedFormUpload != null) {
       formData.append('teacherId', this.responseData.teacherId);
       formData.append('file', this.fileToRelatedFormUpload);
       if (index == 0) {
+        this.fileUpgkFilemMedical = true;
         formData.append('filename', "Medical_Certificate");
       } else if (index == 1) {
         formData.append('filename', "Board_examination_Proof");
       } else if (index == 2) {
+        this.fileUpcareGiver = true;
         formData.append('filename', "Disability_Certificate");
       } else if (index == 3) {
         formData.append('filename', "Differentially_Abled_Certificate");
       } else if (index == 5) {
+        this.fileUpgkFilebenefit = true;
         formData.append('filename', "Spouse_Declaration");
       } else if (index == 6) {
+        this.fileUpspGround = true;
         formData.append('filename', "Single_Parent_Declaration");
       } else if (index == 7) {
+        this.fileUpdfpGround = true;
         formData.append('filename', "DFP_Declaration");
       } else if (index == 8) {
+        this.fileUppositionHeld = true;
         formData.append('filename', "NJCM_RJCM_Declaration");
       }
 
@@ -2359,27 +2578,33 @@ this.getMaster(data,event.target.value);
           for (let i = 0; i < res.length; i++) {
 
             if (res[i].docName == 'Medical_Certificate.pdf') {
+              this.fileUpgkFilemMedical = false;
               this.deleteDeclairaionFormDocUpdate0 = false;
             }
             if (res[i].docName == 'Board_examination_Proof.pdf') {
               this.deleteDeclairaionFormDocUpdate1 = false;
             }
             if (res[i].docName == 'Disability_Certificate.pdf') {
+              this.fileUpcareGiver = false;
               this.deleteDeclairaionFormDocUpdate2 = false;
             }
             if (res[i].docName == 'Differentially_Abled_Certificate.pdf') {
               this.deleteDeclairaionFormDocUpdate3 = false;
             }
             if (res[i].docName == 'Spouse_Declaration.pdf') {
+              this.fileUpgkFilebenefit = false;
               this.deleteDeclairaionFormDocUpdate5 = false;
             }
             if (res[i].docName == 'Single_Parent_Declaration.pdf') {
+              this.fileUpspGround = false;
               this.deleteDeclairaionFormDocUpdate6 = false;
             }
             if (res[i].docName == 'DFP_Declaration.pdf') {
+              this.fileUpdfpGround = false;
               this.deleteDeclairaionFormDocUpdate7 = false;
             }
             if (res[i].docName == 'NJCM_RJCM_Declaration.pdf') {
+              this.fileUppositionHeld = false;
               this.deleteDeclairaionFormDocUpdate8 = false;
             }
 
@@ -2422,333 +2647,333 @@ this.getMaster(data,event.target.value);
     this.fileToRelatedFormUpload = null;
   }
 
-// ---------------------------------------------------- Start new function TransferRelatedForm add here ---------------------
-restStationSelection(val) {
-  if (val == 1) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        choiceKv1StationCode: '',
-        choiceKv1StationName: ''
-      }
-    })
-  } else if (val == 2) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        choiceKv2StationCode: '',
-        choiceKv2StationName: ''
-      }
-    })
-  } else if (val == 3) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        choiceKv3StationCode: '',
-        choiceKv3StationName: ''
-      }
-    })
-  } else if (val == 4) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        choiceKv4StationCode: '',
-        choiceKv4StationName: ''
-      }
-    })
-  } else if (val == 5) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        choiceKv5StationCode: '',
-        choiceKv5StationName: ''
-      }
-    })
-  } else if (val == 191) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        displacement1StationName: '',
-        displacement1StationCode: ''
-      }
-    })
-  } else if (val == 192) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        displacement2StationName: '',
-        displacement2StationCode: ''
-      }
-    })
-  } else if (val == 193) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        displacement3StationName: '',
-        displacement3StationCode: ''
-      }
-    })
-  } else if (val == 194) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        displacement4StationName: '',
-        displacement4StationCode: ''
-      }
-    })
-  } else if (val == 195) {
-    this.teacherForm.patchValue({
-      transferRelatedForm: {
-        displacement5StationName: '',
-        displacement5StationCode: ''
-      }
-    })
-  } 
-}
-
-// ----------------------------------------------  end here-------------------------------------
-selectTransferFormSchoolByUdise() {
-
-  var str = this.selectedUdiseCode
-  console.log(str)
-  var splitted = str.split("-", 2);
-  debugger
-  if (this.position == '1') {
-    
-   // choiceKv1StationName
-    if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
+  // ---------------------------------------------------- Start new function TransferRelatedForm add here ---------------------
+  restStationSelection(val) {
+    if (val == 1) {
       this.teacherForm.patchValue({
         transferRelatedForm: {
           choiceKv1StationCode: '',
           choiceKv1StationName: ''
         }
       })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          choiceKv1StationName: splitted[1],
-          choiceKv1StationCode: splitted[0]
-        }
-      })
-    }
-
-  } else if (this.position == '2') {
-    if (this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
+    } else if (val == 2) {
       this.teacherForm.patchValue({
         transferRelatedForm: {
           choiceKv2StationCode: '',
           choiceKv2StationName: ''
         }
       })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          choiceKv2StationName: splitted[1],
-          choiceKv2StationCode: splitted[0]
-        }
-      })
-    }
-  } else if (this.position == '3') {
-    if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
+    } else if (val == 3) {
       this.teacherForm.patchValue({
         transferRelatedForm: {
           choiceKv3StationCode: '',
           choiceKv3StationName: ''
         }
       })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          choiceKv3StationName: splitted[1],
-          choiceKv3StationCode: splitted[0]
-        }
-      })
-    }
-  } else if (this.position == '4') {
-    if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
+    } else if (val == 4) {
       this.teacherForm.patchValue({
         transferRelatedForm: {
           choiceKv4StationCode: '',
           choiceKv4StationName: ''
         }
       })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          choiceKv4StationName: splitted[1],
-          choiceKv4StationCode: splitted[0]
-        }
-      })
-    }
-  } else if (this.position == '5') {
-    if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
-      this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
+    } else if (val == 5) {
       this.teacherForm.patchValue({
         transferRelatedForm: {
           choiceKv5StationCode: '',
           choiceKv5StationName: ''
         }
       })
-    } else {
+    } else if (val == 191) {
       this.teacherForm.patchValue({
         transferRelatedForm: {
-          choiceKv5StationName: splitted[1],
-          choiceKv5StationCode: splitted[0]
+          displacement1StationName: '',
+          displacement1StationCode: ''
+        }
+      })
+    } else if (val == 192) {
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          displacement2StationName: '',
+          displacement2StationCode: ''
+        }
+      })
+    } else if (val == 193) {
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          displacement3StationName: '',
+          displacement3StationCode: ''
+        }
+      })
+    } else if (val == 194) {
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          displacement4StationName: '',
+          displacement4StationCode: ''
+        }
+      })
+    } else if (val == 195) {
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          displacement5StationName: '',
+          displacement5StationCode: ''
         }
       })
     }
-  } else if (this.position == '191') {
-    if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement1StationCode: '',
-          displacement1StationName: ''
-        }
-      })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement1StationName: splitted[1],
-          displacement1StationCode: splitted[0]
-        }
-      })
+  }
+
+  // ----------------------------------------------  end here-------------------------------------
+  selectTransferFormSchoolByUdise() {
+
+    var str = this.selectedUdiseCode
+    console.log(str)
+    var splitted = str.split("-", 2);
+     
+    if (this.position == '1') {
+
+      // choiceKv1StationName
+      if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv1StationCode: '',
+            choiceKv1StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv1StationName: splitted[1],
+            choiceKv1StationCode: splitted[0]
+          }
+        })
+      }
+
+    } else if (this.position == '2') {
+      if (this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv2StationCode: '',
+            choiceKv2StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv2StationName: splitted[1],
+            choiceKv2StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '3') {
+      if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv3StationCode: '',
+            choiceKv3StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv3StationName: splitted[1],
+            choiceKv3StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '4') {
+      if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv5StationName == splitted[1]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv4StationCode: '',
+            choiceKv4StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv4StationName: splitted[1],
+            choiceKv4StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '5') {
+      if (this.teacherForm.value.transferRelatedForm.choiceKv2StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv3StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv4StationName == splitted[1] ||
+        this.teacherForm.value.transferRelatedForm.choiceKv1StationName == splitted[1]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv5StationCode: '',
+            choiceKv5StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            choiceKv5StationName: splitted[1],
+            choiceKv5StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '191') {
+      if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement1StationCode: '',
+            displacement1StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement1StationName: splitted[1],
+            displacement1StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '192') {
+      if (this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement2StationCode: '',
+            displacement2StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement2StationName: splitted[1],
+            displacement2StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '193') {
+      if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement3StationCode: '',
+            displacement3StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement3StationName: splitted[1],
+            displacement3StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '194') {
+      if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement4StationCode: '',
+            displacement4StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement4StationName: splitted[1],
+            displacement4StationCode: splitted[0]
+          }
+        })
+      }
+    } else if (this.position == '195') {
+      if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
+        this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0]) {
+        Swal.fire(
+          'Station already selected !',
+          '',
+          'error'
+        )
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement5StationCode: '',
+            displacement5StationName: ''
+          }
+        })
+      } else {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            displacement5StationName: splitted[1],
+            displacement5StationCode: splitted[0]
+          }
+        })
+      }
     }
-  } else if (this.position == '192') {
-    if (this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement2StationCode: '',
-          displacement2StationName: ''
-        }
-      })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement2StationName: splitted[1],
-          displacement2StationCode: splitted[0]
-        }
-      })
-    }
-  } else if (this.position == '193') {
-    if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement3StationCode: '',
-          displacement3StationName: ''
-        }
-      })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement3StationName: splitted[1],
-          displacement3StationCode: splitted[0]
-        }
-      })
-    }
-  } else if (this.position == '194') {
-    if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement5StationCode == splitted[0]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement4StationCode: '',
-          displacement4StationName: ''
-        }
-      })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement4StationName: splitted[1],
-          displacement4StationCode: splitted[0]
-        }
-      })
-    }
-  } else if (this.position == '195') {
-    if (this.teacherForm.value.transferRelatedForm.displacement2StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement3StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement4StationCode == splitted[0] ||
-      this.teacherForm.value.transferRelatedForm.displacement1StationCode == splitted[0]) {
-      Swal.fire(
-        'Station already selected !',
-        '',
-        'error'
-      )
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement5StationCode: '',
-          displacement5StationName: ''
-        }
-      })
-    } else {
-      this.teacherForm.patchValue({
-        transferRelatedForm: {
-          displacement5StationName: splitted[1],
-          displacement5StationCode: splitted[0]
-        }
-      })
-    }
-  } 
-}
+  }
   getSpouseDetails(event) {
 
     this.teacherForm.patchValue({
@@ -2763,7 +2988,7 @@ selectTransferFormSchoolByUdise() {
     this.outSideService.fetchSpouseByEmpCode(event.target.value).subscribe((res) => {
 
       if (res.status == '0') {
-        
+
       }
       this.teacherForm.patchValue({
         personalInfoForm: {
@@ -2804,22 +3029,22 @@ selectTransferFormSchoolByUdise() {
         this.stationName = this.kvSchoolDetails.rowValue[i].station_name;
       }
       sessionStorage.removeItem('isZiet');
-      if(this.stationType){
-        sessionStorage.setItem('isZiet', (this.responseData?.teachingNonteaching == '1' && this.stationType == '2')?'1':'0')
+      if (this.stationType) {
+        sessionStorage.setItem('isZiet', (this.responseData?.teachingNonteaching == '1' && this.stationType == '2') ? '1' : '0')
       }
     })
   }
 
   teacherTypeSelect(event) {
-    if(event.target.value != 22 && event.target.value != 23 && event.target.value != 24 && event.target.value != '22' && event.target.value != '23' && event.target.value != '24'){
+    if (event.target.value != 22 && event.target.value != 23 && event.target.value != 10  && event.target.value != 12 && event.target.value != 24 && event.target.value != '22' && event.target.value != '23' && event.target.value != '24') {
       this.teacherForm.patchValue({
-        profileForm:{
+        profileForm: {
           staffType: '2'
         }
       });
-    }else{
+    } else {
       this.teacherForm.patchValue({
-        profileForm:{
+        profileForm: {
           staffType: '1'
         }
       });
@@ -2827,8 +3052,8 @@ selectTransferFormSchoolByUdise() {
     this.subjectListNameCode = [];
     this.responseData.workExperienceAppointedForSubject = '';
     this.teacherForm.patchValue({
-      profileForm:{
-        presentSubjectName:''
+      profileForm: {
+        presentSubjectName: ''
       }
     });
     var data = {
@@ -2896,7 +3121,13 @@ selectTransferFormSchoolByUdise() {
 
     })
   }
-
+  showSaveBuuton() {
+    if (this.buttonVisible == true) {
+      this.buttonVisible = false;
+    } else {
+      this.buttonVisible = true;
+    }
+  }
   getSubjectByQualAll(event, val, index) {
     this.outSideService.fetchSubByQual(event).subscribe((res) => {
       if (val == 'A') {
@@ -2975,10 +3206,14 @@ selectTransferFormSchoolByUdise() {
     this.teacherForm.reset();
   }
 
+  passwordChange(event: any){
+    console.log(event?.target?.value)
+  }
+
   getTeacherById(id) {
-//alert("calleddd");
+    //alert("calleddd");
     this.outSideService.fetchTeacherById(id).subscribe((res) => {
-debugger
+       
       this.responseData = res.response;
       this.lastPromotionId = this.responseData?.lastPromotionId;
       this.workExpId = this.responseData?.workExperienceIdPresentKv;
@@ -2991,6 +3226,8 @@ debugger
 
       sessionStorage.setItem('systemTeacherCode', this.responseData.teacherSystemGeneratedCode)
       this.tempTeacherId = this.responseData.teacherId;
+      sessionStorage.setItem('teacherId', this.tempTeacherId)
+
 
       this.getFlagStatus(this.tempTeacherId)
 
@@ -3002,6 +3239,13 @@ debugger
       }
 
       if (this.responseData?.maritalStatus == '1') {
+        this.teacherForm.patchValue({
+          transferRelatedForm: {
+            personalStatusSpD: '0',
+          }
+        })
+        this.personalStatusSpDradioButton = 0;
+       // (this.teacherForm.get('transferRelatedForm') as FormGroup).get('personalStatusSpD').disable();
         this.marriedStatusYN = true;
       } else if (this.responseData?.maritalStatus == '4') {
         this.marriedStatusYN = false;
@@ -3038,15 +3282,15 @@ debugger
       this.getQualMasterByTchType();
       this.getTransferProfile();
       this.getDocumentByTeacherId();
-      debugger
+       
       setTimeout(() => {
-        if(this.responseData !=null){
-          
-          if(this.responseData.spouseStatus=="1" || this.responseData.spouseStatus==1){
+        if (this.responseData != null) {
+
+          if (this.responseData.spouseStatus == "1" || this.responseData.spouseStatus == 1) {
             this.teacherForm.patchValue({
               transferRelatedForm: {
                 //spouseName:this.teacherForm.value.personalInfoForm.spouseName,
-                spouseStationName:this.teacherForm.value.personalInfoForm.spouseStationName
+                spouseStationName: this.teacherForm.value.personalInfoForm.spouseStationName
               }
             });
           }
@@ -3275,7 +3519,7 @@ debugger
   }
 
   getKvRegion() {
-    debugger
+     
     this.outSideService.fetchKvRegion(1).subscribe((res) => {
       this.regionList = res.response.rowValue;
 
@@ -3283,11 +3527,27 @@ debugger
   }
 
   getStationByRegionId(event) {
-    this.selectedUdiseCode = '';
-    this.outSideService.fetchStationByRegionId(event.target.value).subscribe((res) => {
-      this.stationList = res.response;
+    // this.selectedUdiseCode = '';
+    // this.stationList = []
+    // var stationByInterCond = {
+    //   "extcall": "MOE_EXT_GETSTATION_BY_TEACHER_INTER",
+    //   "conditionvalue": [this.responseData.teacherId, event.target.value, event.target.value, this.responseData.teacherId]
+    // }
+    const data = { "regionCode": event.target.value };
+    this.outSideService.fetchStationByRegionId(data).subscribe((res) => {
 
+      this.stationList = res.rowValue
     })
+    console.log(this.stationList)
+  }
+
+  getStationByRegionIds(event: any) {
+     
+    const data = { "regionCode": event.target.value };
+    this.outSideService.fetchStationByRegionIds(data).subscribe((res) => {
+      this.stationList = res.rowValue
+    })
+    console.log(this.stationList)
   }
 
   getKvSchoolByStationId(event) {
@@ -3302,27 +3562,30 @@ debugger
 
   selectSchoolByUdise() {
 
+     
+    if (this.selectedSchoolType == 1) {
+      for (let i = 0; i < this.kvSchoolList.length; i++) {
 debugger
-if(this.selectedSchoolType==1)
-{
-    for (let i = 0; i < this.kvSchoolList.length; i++) {
-
-      if (this.kvSchoolList[i].udiseSchCode == this.selectedUdiseCode) {
-        this.shiftYN = this.kvSchoolList[i].shiftYn  
-        this.setTeacherPostingData(this.kvSchoolList[i].kvName, this.kvSchoolList[i].udiseSchCode,this.selectedSchoolType) 
+        if (this.kvSchoolList[i].udiseSchCode == this.selectedUdiseCode) {
+          this.shiftYN = this.kvSchoolList[i].shiftYn
+          this.setTeacherPostingData(this.kvSchoolList[i].kvName, this.kvSchoolList[i].udiseSchCode, this.selectedSchoolType)
+        }
       }
     }
-  }
-  else{
-    this.setTeacherPostingData(this.selectedKvname, this.selectedKvCode,this.selectedSchoolType)
-  }
+    else if(this.selectedSchoolType == 5){
+      this.setTeacherPostingData('DEPUTATION', '77777', this.selectedSchoolType)
+    }
+    else {
+      this.setTeacherPostingData(this.selectedKvname, this.selectedKvCode, this.selectedSchoolType)
+    }
   }
 
-  setTeacherPostingData(name, udiseCode,schoolType) {
+  setTeacherPostingData(name, udiseCode, schoolType) {
+    console.log(name, udiseCode, schoolType);
     ((this.teacherForm.get('detailsOfPosting') as FormArray).at(this.indexNew) as FormGroup).get('udiseSchoolName').patchValue(name);
     ((this.teacherForm.get('detailsOfPosting') as FormArray).at(this.indexNew) as FormGroup).get('experienceType').patchValue(schoolType);
     ((this.teacherForm.get('detailsOfPosting') as FormArray).at(this.indexNew) as FormGroup).get('udiseSchCode').patchValue(udiseCode);
-
+    // console.log(((this.teacherForm.get('detailsOfPosting') as FormArray).at(this.indexNew) as FormGroup).get('udiseSchCode'))
     if (this.shiftYN == '0' || this.shiftYN == 0) {
       ((this.teacherForm.get('detailsOfPosting') as FormArray).at(this.indexNew) as FormGroup).get('shiftYn').patchValue('0');
       ((this.teacherForm.get('detailsOfPosting') as FormArray).at(this.indexNew) as FormGroup).get('shiftType').disable();
@@ -3332,7 +3595,7 @@ if(this.selectedSchoolType==1)
     }
   }
   selectExperianceSchool(val) {
-  
+
 
     this.selectedUdiseCode = '';
     this.indexNew = val;
@@ -3375,10 +3638,23 @@ if(this.selectedSchoolType==1)
   }
 
   experienceDataManagement(event, index) {
+    // alert("called");
+     
+    ((this.teacherForm.get('detailsOfPosting') as FormArray).at(0) as FormGroup).get('workStartDate').enable();
     for (let i = 0; i < this.teacherForm.value.detailsOfPosting.length - 1; i++) {
       var dateFrom = this.teacherForm.value.detailsOfPosting[i].workStartDate;
       var dateTo = this.teacherForm.value.detailsOfPosting[i].workEndDate;
-      var dateCheck = event.target.value;
+      var dateCheck;
+      if (event.target.value == 'undefined') {
+        // alert("if");
+        dateCheck = event.target.value;
+
+      } else {
+        dateCheck = moment(event.value?._d).format("YYYY-MM-DD");
+        // alert("in else");
+      }
+
+      // alert(dateCheck);
       var returnType
       if (dateTo == null || dateTo == 'null') {
         returnType = this.dateGreater(dateFrom, dateCheck);
@@ -3391,12 +3667,23 @@ if(this.selectedSchoolType==1)
           '',
           'error'
         );
-        (<HTMLInputElement>document.getElementById("wordStartDate-" + index)).value = "";
-        (<HTMLInputElement>document.getElementById("wordEndDate-" + index)).value = "";
-        this.teacherForm.value.detailsOfPosting[index].workStartDate = "";
-        this.teacherForm.value.detailsOfPosting[index].workEndDate = "";
+
+        setTimeout(() => {
+
+          (<HTMLInputElement>document.getElementById("wordStartDate-" + index)).value = "";
+          (<HTMLInputElement>document.getElementById("wordEndDate-" + index)).value = "";
+          this.teacherForm.value.detailsOfPosting[index].workStartDate = "";
+          this.teacherForm.value.detailsOfPosting[index].workEndDate = "";
+        }, 200);
+
+        // this.teacherForm.value.detailsOfPosting[index].workStartDate.setValue(null);
+        // this.teacherForm.value.detailsOfPosting[index].workEndDate.setValue(null);
+        // event.stopPropagation();
+
+
       }
     }
+    ((this.teacherForm.get('detailsOfPosting') as FormArray).at(0) as FormGroup).get('workStartDate').disable();
     return false;
   }
 
@@ -3423,53 +3710,67 @@ if(this.selectedSchoolType==1)
 
   profileDateManagement(event, val) {
 
-    var date1 = event.target.value
+     ;
+    var date1
+    var dateVaule
+    if (event.target.value == 'undefined' || event.target.value == null) {
+
+      date1 = event.target.value.split("-").reverse().join("-");
+      var dateVaule = event.target.value.split("-").reverse().join("-");
+
+    } else {
+      date1 = moment(event.value._d).format("DD-MM-YYYY").split("-").reverse().join("-");
+      dateVaule = moment(event.value._d).format("DD-MM-YYYY").split("-").reverse().join("-");
+    }
+
+
+
     var date2 = this.teacherForm.value.profileForm.dob;
     var Time = new Date(date1).getTime() - new Date(date2).getTime();
     var Days = Time / (1000 * 3600 * 24); //Diference in Days
 
     if (val == 'a') {
-      var dateA = event.target.value
+      var dateA = dateVaule
       var dateB = this.teacherForm.value.profileForm.presentStationPostDate
       var dateC = this.teacherForm.value.profileForm.presentPostDate
       var returnType
-      if (dateB == undefined || dateB == '' || dateB == null && dateC == undefined || dateC == '' || dateC == null) {
+      if ((dateB == undefined || dateB == '' || dateB == null) && (dateC == undefined || dateC == '' || dateC == null)) {
         return true;
-      } else if (dateB == undefined && dateC != undefined && dateB == '' && dateB == null && dateB == 'null') {
+      } else if (dateA && dateC && (dateB == undefined || dateB == '' || dateB == null)) {
         returnType = this.check2ProfileDate(dateA, dateC);
-      } else if (dateB != undefined && dateC == undefined && dateC == '' && dateC == null && dateC == 'null') {
+      } else if (dateA && dateB && (dateC == undefined || dateC == '' || dateC == null)) {
         returnType = this.check2ProfileDate(dateA, dateB);
-      } else if (dateB != undefined && dateC != undefined) {
-        returnType = this.check3ProfileDate(dateC, dateB, dateA);
+      } else if (dateA && dateB && dateC) {
+        returnType = this.check3ProfileDate(dateA, dateB, dateC);
       }
     } else if (val == 'b') {
-      var dateB = event.target.value
+      var dateB = dateVaule;
       var dateA = this.teacherForm.value.profileForm.presentKvDate
       var dateC = this.teacherForm.value.profileForm.presentPostDate
       var returnType
-      if (dateA == undefined || dateA == '' || dateA == null && dateC == undefined || dateC == '' || dateC == null) {
+      if ((dateA == undefined || dateA == '' || dateA == null) && (dateC == undefined || dateC == '' || dateC == null)) {
         return true;
-      } else if (dateA == undefined && dateC != undefined && dateA == '' && dateA == null && dateA == 'null') {
+      } else if (dateB && dateC && (dateA == undefined || dateA == '' || dateA == null)) {
         returnType = this.check2ProfileDate(dateB, dateC);
-      } else if (dateA != undefined && dateC == undefined && dateC == '' && dateC == null && dateC == 'null') {
+      } else if (dateA && dateB && (dateC == undefined || dateC == '' || dateC == null)) {
         returnType = this.check2ProfileDate(dateA, dateB);
-      } else if (dateA != undefined && dateC != undefined) {
-        returnType = this.check3ProfileDate(dateC, dateB, dateA);
+      } else if (dateA && dateB && dateC) {
+        returnType = this.check3ProfileDate(dateA, dateB, dateC);
       }
     } else if (val == 'c') {
       if (Days * 1 >= 6570) {
-        var dateC = event.target.value
+        var dateC = dateVaule;
         var dateA = this.teacherForm.value.profileForm.presentKvDate
         var dateB = this.teacherForm.value.profileForm.presentStationPostDate
         var returnType
-        if (dateA == undefined || dateA == '' || dateA == null && dateB == undefined || dateB == '' || dateB == null) {
+        if ((dateA == undefined || dateA == '' || dateA == null) && (dateB == undefined || dateB == '' || dateB == null)) {
           return true;
-        } else if (dateB == undefined && dateA != undefined && dateB == '' && dateB == null && dateB == 'null') {
+        } else if (dateA && dateC && (dateB == undefined || dateB == '' || dateB == null)) {
           returnType = this.check2ProfileDate(dateA, dateC);
-        } else if (dateB != undefined && dateA == undefined && dateA == '' && dateA == null && dateA == 'null') {
+        } else if (dateB && dateC && (dateA == undefined || dateA == '' || dateA == null)) {
           returnType = this.check2ProfileDate(dateB, dateC);
         } else if (dateB != undefined && dateA != undefined) {
-          returnType = this.check3ProfileDate(dateC, dateB, dateA);
+          returnType = this.check3ProfileDate(dateA, dateB, dateC);
         }
       } else {
         this.teacherForm.patchValue({
@@ -3487,7 +3788,7 @@ if(this.selectedSchoolType==1)
 
     if (returnType == 0) {
       Swal.fire(
-        'Dates provide in "Present KV in Present Post Date","Present Station in Present Post Date","Date of Joining in KVS in Present Post" are contradicting !',
+        'Dates provide in "DoJ in Present KV/RO/ZIET/HQ in Present Post","DoJ in Present Station Irrespective of Cadre","DoJ in KVS" are contradicting !',
         'Kindly enter the dates in correct sequence',
         'error'
       );
@@ -3519,23 +3820,69 @@ if(this.selectedSchoolType==1)
     }
   }
 
-  check3ProfileDate(a, b, c) {
-
-    var checkA = new Date(a).getTime();
-    var checkB = new Date(b).getTime();
-    var checkC = new Date(c).getTime();
-    if (checkC >= checkB && checkC >= checkA && checkB >= checkA) {
-      return 1;
+  checkActiveStaty(event){
+    let regex = /^[0-9]*$/;
+    if (regex.test(event.target.value) && event.target.value > -1) {
+      return true
     } else {
-      return 0;
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          absenceDaysOne: '',
+        }
+      });
+      Swal.fire(
+        'Alert !',
+        'Only Numeric are allowed!',
+        'error'
+      )
     }
   }
 
-  check2ProfileDate(a, b) {
+  check3ProfileDate(a, b, c) {
 
-    var checkA = new Date(a).getTime();
-    var checkB = new Date(b).getTime();
-    if (checkA >= checkB) {
+    let dateOne = new Date(b);
+    let dateTwo = new Date(a);
+    let dateThird = new Date(c)
+
+
+    // var checkA = Math.round((new Date(a).getTime()) / (3600000 * 24));
+    // var checkB = Math.round((new Date(b).getTime()) / (3600000 * 24));
+    // var checkC = Math.round((new Date(c).getTime()) / (3600000 * 24));
+
+    // alert("checkA--->"+checkA+"---checkB->"+checkB+"---checkC->"+checkC)
+
+
+    // var final1 = Math.abs(checkB - checkA);
+    // var final2 = Math.abs(checkC - checkB);
+
+
+
+    var final1 = Math.floor((Date.UTC(dateOne.getFullYear(), dateOne.getMonth(), dateOne.getDate()) - Date.UTC(dateThird.getFullYear(), dateThird.getMonth(), dateThird.getDate())) / (1000 * 60 * 60 * 24));
+    var final2 = Math.floor((Date.UTC(dateTwo.getFullYear(), dateTwo.getMonth(), dateTwo.getDate()) - Date.UTC(dateThird.getFullYear(), dateThird.getMonth(), dateThird.getDate())) / (1000 * 60 * 60 * 24));
+    var final3 = Math.floor((Date.UTC(dateTwo.getFullYear(), dateTwo.getMonth(), dateTwo.getDate()) - Date.UTC(dateOne.getFullYear(), dateOne.getMonth(), dateOne.getDate())) / (1000 * 60 * 60 * 24));
+
+    if (final1 >= 0 && final2 >= 0 && final3 >= 0) {
+      return 1;
+    }
+    else {
+      return 0
+    }
+
+    // if (checkC >= checkB && checkC >= checkA && checkB >= checkA) {
+    //   return 1;
+    // } else {
+    //   return 0;
+    // }
+  }
+
+  check2ProfileDate(a, b) {
+    let dateOne = new Date(b);
+    let dateTwo = new Date(a);
+    // var checkA = Math.round((new Date(a).getTime())/(3600000*24));
+    // var checkB = Math.round((new Date(b).getTime())/(3600000*24));
+    // alert("checkA--->"+checkA+"---checkB->"+checkB)
+    var final1 = Math.floor((Date.UTC(dateOne.getFullYear(), dateOne.getMonth(), dateOne.getDate()) - Date.UTC(dateTwo.getFullYear(), dateTwo.getMonth(), dateTwo.getDate())) / (1000 * 60 * 60 * 24));
+    if (final1 < 1) {
       return 1;
     } else {
       return 0;
@@ -3615,12 +3962,12 @@ if(this.selectedSchoolType==1)
 
   fileToUpload: File | null = null;
   handleFileInput(files: FileList, index) {
-
+    this.fileUpload = true;
     var data = files.item(0).name
     var splitted = data.split('.', 2)
 
     if (splitted[1] == 'pdf' || splitted[1] == 'PDF' || splitted[1] == 'Pdf') {
-      if (files.item(0).size <= 204800) {
+      if (files.item(0).size <= 512000) {
         this.fileToUpload = files.item(0);
         if (index == '0') {
           this.enableUploadButton0 = false;
@@ -3636,7 +3983,7 @@ if(this.selectedSchoolType==1)
       } else {
         this.fileToUpload = null;
         Swal.fire(
-          'File size allowed upto 200KB only !',
+          'File size allowed upto 500KB only !',
           '',
           'error'
         )
@@ -3677,7 +4024,7 @@ if(this.selectedSchoolType==1)
 
 
   documentUpload(index) {
-
+    this.fileUpload = true;
     const formData = new FormData();
 
     if (this.fileToUpload != null) {
@@ -3697,7 +4044,7 @@ if(this.selectedSchoolType==1)
 
 
       this.outSideService.uploadDocument(formData).subscribe((res) => {
-
+        this.fileUpload = false;
         Swal.fire(
           'Document Upload Sucessfully',
           '',
@@ -3732,6 +4079,35 @@ if(this.selectedSchoolType==1)
       if (this.documentUploadArray[i].docName == documentName) {
         this.documentUploadArray[i] = {}
       }
+
+    }
+    if (documentName == 'Medical_Certificate.pdf') {
+      this.fileUpgkFilemMedical = true;
+      this.Medical_Certificate.nativeElement.value = "";
+    }
+    if (documentName == 'Single_Parent_Declaration.pdf') {
+      this.fileUpspGround = true;
+      this.Single_Parent_Declaration.nativeElement.value = "";
+    }
+    if (documentName == 'Spouse_Declaration.pdf') {
+      this.fileUpgkFilebenefit = true;
+      this.spouseFile.nativeElement.value = "";
+    }
+    if (documentName == 'DFP_Declaration.pdf') {
+      this.fileUpdfpGround = true;
+      this.DFP_Declaration.nativeElement.value = "";
+    }
+    if (documentName == 'NJCM_RJCM_Declaration.pdf') {
+      this.fileUppositionHeld = true;
+      this.NJCM_RJCM_Declaration.nativeElement.value = "";
+    }
+    if (documentName == 'Disability_Certificate.pdf') {
+      this.fileUpcareGiver = true;
+      this.Disability_Certificate.nativeElement.value = "";
+    }
+    if(documentName == 'Physically_Handicap_Certificate.pdf'){
+      this.fileUpload = true;
+      this.Physically_Handicap_Certificate.nativeElement.value = "";
     }
     var data = {
       "teacherId": this.responseData.teacherId,
@@ -3748,7 +4124,7 @@ if(this.selectedSchoolType==1)
   }
 
   getDocumentByTeacherId() {
-    debugger
+     
     // alert(this.tempTeacherId)
     this.outSideService.fetchUploadedDoc(this.tempTeacherId).subscribe((res) => {
 
@@ -3757,17 +4133,52 @@ if(this.selectedSchoolType==1)
       for (let i = 0; i < res.length; i++) {
 
         if (res[i].docName == 'Medical_Certificate.pdf') {
+          this.fileUpgkFilemMedical=false;
           this.deleteDocUpdate0 = false;
+          this.medicalDocName = res[i].docName;
+          this.medicalDocURLName = res[i].url;
         }
         if (res[i].docName == 'Board_examination_Proof.pdf') {
           this.deleteDocUpdate1 = false;
         }
         if (res[i].docName == 'Disability_Certificate.pdf') {
-          this.deleteDocUpdate2 = false;
+          this.fileUpcareGiver = false;
+          this.disabilityCertiDocName = res[i].docName;
+          this.disabilityCertiDocURLName = res[i].url
         }
         if (res[i].docName == 'Differentially_Abled_Certificate.pdf') {
           this.deleteDocUpdate3 = false;
         }
+        if (res[i].docName == 'Spouse_Declaration.pdf') {
+          this.fileUpgkFilebenefit = false;
+          this.deleteDocUpdate0 = false;
+          this.spouseDeclarationDocUrlName = res[i].url
+        }
+        if (res[i].docName == 'Single_Parent_Declaration.pdf') {
+          this.fileUpspGround = false;
+          this.singleParentDocName = res[i].docName;
+          this.singleParentDocURLName = res[i].url;
+        }
+
+        if (res[i].docName == 'DFP_Declaration.pdf') {
+          this.fileUpdfpGround = false;
+          this.dFPDocName = res[i].docName;
+          this.dFPDocURLName = res[i].url;
+        }
+        if (res[i].docName == 'NJCM_RJCM_Declaration.pdf') {
+          this.fileUppositionHeld = false;
+          this.nJCMRJCMDocName = res[i].docName;
+          this.nJCMRJCMDocURLName = res[i].url;
+        }
+      
+        if (res[i].docName == 'Physically_Handicap_Certificate.pdf') {
+          this.fileUpload = false;
+        }
+        
+        if (res[i].docName == 'Disability_Certificate.pdf') {
+          this.deleteDocUpdate2 = false;
+        }
+       
       }
     })
   }
@@ -3790,7 +4201,23 @@ if(this.selectedSchoolType==1)
       }
     })
   }
-
+  checkPercentageOfDisablity(event: any) {
+    let regex = /^[0-9]*$/;
+    if (regex.test(event.target.value) && event.target.value > 0 && event.target.value <= 100) {
+      return true
+    } else {
+      this.teacherForm.patchValue({
+        transferRelatedForm: {
+          careGiverDisabilityPrcnt: '',
+        }
+      });
+      Swal.fire(
+        'Alert !',
+        'Only numbers are allowed and percentage should be less than 100',
+        'error'
+      )
+    }
+  }
   onVerifyClick() {
 
     this.outSideService.getUpdatedFlag(this.tempTeacherId).subscribe((res) => {
@@ -3799,18 +4226,19 @@ if(this.selectedSchoolType==1)
 
     })
     this.outSideService.fetchConfirmedTchDetails(this.responseData.teacherId).subscribe((res) => {
-      debugger
+       
       this.verifyTchTeacherProfileData = res.response.teacherProfile
       this.verifyTchTeacherAcdQualification = res.response.educationalQualification
       this.verifyTchTeacherProfQualification = res.response.profestinalQualification
-      this.teacherStationChioce= res.response.teacherTrainingProfile
+      this.teacherStationChioce = res.response.teacherTrainingProfile
       this.verifyTchTeacherAward = res.response.awards
       this.verifyTchTeacherTraining = res.response.training
       for (let i = 0; i < res.response.experience.length; i++) {
         if (res.response.experience[i].workEndDate != null || res.response.experience[i].workEndDate != null) {
-          res.response.experience[i].workEndDate = this.date.transform(new Date(res.response.experience[i].workEndDate * 1), 'yyyy-MM-dd')
+          // res.response.experience[i].workEndDate = this.date.transform(new Date(res.response.experience[i].workEndDate * 1), 'yyyy-MM-dd')
+          res.response.experience[i].workEndDate =res.response.experience[i].workEndDate;
         }
-        res.response.experience[i].workStartDate = this.date.transform(new Date(res.response.experience[i].workStartDate * 1), 'yyyy-MM-dd')
+        res.response.experience[i].workStartDate = res.response.experience[i].workStartDate;
       }
       this.verifyTchTeacherWorkExp = res.response.experience
     })
@@ -3820,15 +4248,14 @@ if(this.selectedSchoolType==1)
 
     this.selectedUdiseCode = event.target.value;
   }
-  menuClick(menuvalue:any)
-  {
+  menuClick(menuvalue: any) {
     this.nextClick(menuvalue)
   }
   teacherPdf() {
     this.onVerifyClick();
     setTimeout(() => {
-      this.pdfServive.testFnc(this.verifyTchTeacherProfileData, this.kvNameCode, this.stationNameCode, 
-          this.verifyTchTeacherWorkExp, this.teacherStationChioce);
+      this.pdfServive.testFnc(this.verifyTchTeacherProfileData, this.kvNameCode, this.stationNameCode,
+        this.verifyTchTeacherWorkExp, this.teacherStationChioce);
     }, 1000);
 
   }

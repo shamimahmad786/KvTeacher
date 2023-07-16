@@ -1,11 +1,15 @@
 export const environment = {
   production: true,
 
+
+
+ //Local
+
   // BASE_URL_DATA: 'http://10.25.26.10:8014/api/teacher/',
   // udiseApi:'https://demo.udiseplus.gov.in/api-v1/public/getSchoolMaster/',
   // auth_service:'http://' + "10.25.26.251:8090/meuser"+'/api/userCradential',
   // LOGIN_URL_JWT:'http://10.25.26.251:8014/api/login/',
-  // //Local
+ 
   // BASE_URL_DATA_TEACHER: 'http://10.25.26.251:8014/api/teacher/',
   // BASE_URL_DATA_MASTER: 'http://10.25.26.251:8014/api/master/',
   // BASE_URL_DATA_QUESTION: 'http://10.25.26.251:8014/api/question/',
@@ -70,7 +74,7 @@ export const environment = {
   BASE_URL_REPORT:'https://kvsonlinetransfer.kvs.gov.in/MOE-KVS-PDF/api/kvsreport/',
   BASE_URL_DATA_MASTER1:'https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/unee-api/v1/master/',
   BASE_URL_DATA_MAPPING:'https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/unee-api/v1/mapping/',
-
+ 
   //Demo 1
   // BASE_URL_DATA_TEACHER: 'https://pgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/teacher/',
   // BASE_URL_DATA_MASTER: 'https://pgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/master/',

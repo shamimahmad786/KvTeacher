@@ -35,7 +35,7 @@ textarea.ng-invalid{
 }
 
 input {
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
 }
 
 ::-webkit-input-placeholder {
@@ -462,3 +462,71 @@ tr:nth-child(even) {
 tr {
     border-bottom: 1px solid rgba(0, 0, 0, .12);
 }
+.tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    width: 170%;
+    color: white;
+    font-size: 12px;
+    background-color: #333436;
+    border-radius: 10px;
+    padding: 10px 15px 10px 15px;
+  }
+  
+  .hover-text:hover .tooltip-text {
+    visibility: visible;
+  }
+  
+  #top {
+    top: -126px;
+    left: -11%;
+  }
+  
+  #bottom {
+    top: 25px;
+    left: -50%;
+  }
+  
+  #left {
+    top: -8px;
+    right: 120%;
+  }
+  
+  #right {
+    top: -8px;
+    left: 120%;
+  }
+  
+  .hover-text {
+    position: relative;
+    display: inline-block;
+   
+    font-family: Arial;
+    text-align: center;
+  }
+  input.ng-invalid.ng-touched{
+    border-left: 3px solid red;
+  }
+  input.ng-valid.ng-touched{
+    border-left: 3px solid green;
+  }
+  
+  
+  .required-asterisk{
+  
+    margin-left: 3px;
+    font-size: 14px;
+  }
+  label {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'medium';
+    margin-bottom: 6px;
+  }
+  .cardLogin{width: 491px; margin: 0px auto; padding:25px; background-color: white; border-radius: 5px;}
+
+  .mat-form-field-infix {
+    border-top: none !important; 
+  }

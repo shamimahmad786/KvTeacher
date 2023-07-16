@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { RxwebValidators } from '@rxweb/reactive-form-validators';
 import * as moment from 'moment';
@@ -52,7 +53,7 @@ export class KvsTeacherTransferComponent implements OnInit {
   teacherTypeDataNameCode: any;
   stationList: any;
   tempFalse: boolean = false;
-
+  disabled  = true;
 
   kvSchoolDetails: any;
   stationNameCode: any;
@@ -114,7 +115,7 @@ export class KvsTeacherTransferComponent implements OnInit {
   preferenceStationList: any = [];
   preferenceSchoolList: any;
   reponseDataForPdf: any;
-
+  empTransferradioButton:any;
   absenceTc: number = 0;
   transfer5b: boolean = true;
   transfer7b: boolean = true;
@@ -159,9 +160,28 @@ export class KvsTeacherTransferComponent implements OnInit {
   disableWidow: boolean = false;
 
   isZiet:any;
+  spouseStationName: any;
+  responseTcDcData: any;
+  totaldaysPresent: any;
+  totaldaysPresentTc: any;
+  dcStayAtStation: any;
+  dcPeriodAbsence: any;
+  dcReturnStation: any;
+  tcStayAtStation: any;
+  tcPeriodAbsence: any;
+  tcReturnStation: any;
+  spouseAtSmaeStation: boolean;
+  spouseAtCentralGovt: boolean;
+  spouseAtStateGovt: boolean;
+  wooomanEmp: boolean;
+  tcSpouseAtSmaeStation: boolean;
+  tcSpouseAtCentralGovt: boolean;
+  tcSpouseAtStateGovt: boolean;
+  tcWooomanEmp: boolean;
+  transDisable: boolean;
+  
 
-
-  constructor(private date: DatePipe, private formData: FormDataService, private dataService: DataService, private outSideService: OutsideServicesService, private fb: FormBuilder, private modalService: NgbModal,
+  constructor(private date: DatePipe, private formData: FormDataService, private router: Router, private dataService: DataService, private outSideService: OutsideServicesService, private fb: FormBuilder, private modalService: NgbModal,
     private transferPdfService: TeacherTransferPdfService) {
 
     // this.onNextClick(2);
@@ -363,18 +383,20 @@ export class KvsTeacherTransferComponent implements OnInit {
   ngOnInit(): void {
 
     this.isZiet = sessionStorage.getItem('isZiet');
-
+    this.kvCode=JSON.parse(sessionStorage.authTeacherDetails).applicationDetails[0].business_unit_type_code;
     this.formDataList = this.formData.formData();
     this.transferGroundList = this.formDataList.transferGround;
     this.fromStatus = sessionStorage.getItem('finalStatus')
     this.disableShiftType = ((sessionStorage.getItem('shiftYn')) == '0') ? true : false;
+   
     this.getAllMaster();
     this.getStateMaster();
 
     for (let i = 0; i < JSON.parse(sessionStorage.getItem("authTeacherDetails"))?.applicationDetails.length; i++) {
-      this.tempTeacherId = JSON.parse(sessionStorage.getItem("authTeacherDetails"))?.user_name;
+      this.tempTeacherId = sessionStorage.getItem("teacherId");
       this.kvCode = JSON.parse(sessionStorage.getItem("authTeacherDetails"))?.applicationDetails[i].business_unit_type_code;
-      this.getTransferBasicProfileByTchId()
+      //this.getTransferBasicProfileByTchId()
+      this.checkDeclairationStatus();
       this.getSchoolDetailsByKvCode();
     }
 
@@ -383,208 +405,76 @@ export class KvsTeacherTransferComponent implements OnInit {
     }, 1000);
 
     this.transferForm = new FormGroup({
-      basicDetails: new FormGroup({
-        'teacherName': new FormControl,
-        'teacherEmployeeCode': new FormControl,
-        'teacherDob': new FormControl,
-        'teacherParmanentState': new FormControl,
-        'teacherGender': new FormControl,
-        'teacherPermanentDistrict': new FormControl,
-        'lastPromotionPositionType': new FormControl,
-        'lastPromotionPositionDate': new FormControl,
-        'workExperiencePositionTypePresentStationStartDate': new FormControl,
-        'workExperienceWorkStartDatePresentKv': new FormControl,
-        'presentStationName': new FormControl,
-        'currentSchoolName': new FormControl,
-        'workExperienceAppointedForSubject': new FormControl,
-        'natureOfAppointment': new FormControl,
-        'teacherId': new FormControl
-      }),
+     
       stationChoice: new FormGroup({
-        'recruitedSpclDriveNer': new FormControl('', Validators.required),
-        'shiftChangeSameSchool': new FormControl('', Validators.required),
-        'choiceKv1UdiseCodePresentStation': new FormControl('', Validators.required),
-        'choiceKv2UdiseCodePresentStation': new FormControl,
-        'choiceKv3UdiseCodePresentStation': new FormControl,
-        'choiceKv4UdiseCodePresentStation': new FormControl,
-        'choiceKv5UdiseCodePresentStation': new FormControl,
-        'choiceKv1StationCode': new FormControl('', Validators.required),
-        'choiceKv2StationCode': new FormControl,
-        'choiceKv3StationCode': new FormControl,
-        'choiceKv4StationCode': new FormControl,
-        'choiceKv5StationCode': new FormControl,
-        'displacement1StationCode': new FormControl('', Validators.required),
-        'displacement2StationCode': new FormControl,
-        'displacement3StationCode': new FormControl,
-        'displacement4StationCode': new FormControl,
-        'displacement5StationCode': new FormControl,
-        'transferApplicationNumber': new FormControl,
-        'choiceKv1UdiseNamePresentStation': new FormControl('', Validators.required),
-        'choiceKv2UdiseNamePresentStation': new FormControl,
-        'choiceKv3UdiseNamePresentStation': new FormControl,
-        'choiceKv4UdiseNamePresentStation': new FormControl,
-        'choiceKv5UdiseNamePresentStation': new FormControl,
-        'choiceKv1StationName': new FormControl('', Validators.required),
-        'choiceKv2StationName': new FormControl,
-        'choiceKv3StationName': new FormControl,
-        'choiceKv4StationName': new FormControl,
-        'choiceKv5StationName': new FormControl,
-        'displacement1StationName': new FormControl('', Validators.required),
-        'displacement2StationName': new FormControl,
-        'displacement3StationName': new FormControl,
-        'displacement4StationName': new FormControl,
-        'displacement5StationName': new FormControl,
-
-        'choiceKv1StationCodeUdiseCode1': new FormControl(),
-        'choiceKv1StationCodeUdiseCode2': new FormControl(),
-        'choiceKv1StationCodeUdiseCode3': new FormControl(),
-        'choiceKv2StationCodeUdiseCode1': new FormControl(),
-        'choiceKv2StationCodeUdiseCode2': new FormControl(),
-        'choiceKv2StationCodeUdiseCode3': new FormControl(),
-        'choiceKv3StationCodeUdiseCode1': new FormControl(),
-        'choiceKv3StationCodeUdiseCode2': new FormControl(),
-        'choiceKv3StationCodeUdiseCode3': new FormControl(),
-        'choiceKv4StationCodeUdiseCode1': new FormControl(),
-        'choiceKv4StationCodeUdiseCode2': new FormControl(),
-        'choiceKv4StationCodeUdiseCode3': new FormControl(),
-        'choiceKv5StationCodeUdiseCode1': new FormControl(),
-        'choiceKv5StationCodeUdiseCode2': new FormControl(),
-        'choiceKv5StationCodeUdiseCode3': new FormControl(),
-
-        'choiceKv1StationCodeUdiseName1': new FormControl(),
-        'choiceKv1StationCodeUdiseName2': new FormControl(),
-        'choiceKv1StationCodeUdiseName3': new FormControl(),
-        'choiceKv2StationCodeUdiseName1': new FormControl(),
-        'choiceKv2StationCodeUdiseName2': new FormControl(),
-        'choiceKv2StationCodeUdiseName3': new FormControl(),
-        'choiceKv3StationCodeUdiseName1': new FormControl(),
-        'choiceKv3StationCodeUdiseName2': new FormControl(),
-        'choiceKv3StationCodeUdiseName3': new FormControl(),
-        'choiceKv4StationCodeUdiseName1': new FormControl(),
-        'choiceKv4StationCodeUdiseName2': new FormControl(),
-        'choiceKv4StationCodeUdiseName3': new FormControl(),
-        'choiceKv5StationCodeUdiseName1': new FormControl(),
-        'choiceKv5StationCodeUdiseName2': new FormControl(),
-        'choiceKv5StationCodeUdiseName3': new FormControl(),
-
-        'stationWithin100km1': new FormControl(),
-        'stationWithin100km2': new FormControl(),
-        'stationWithin100km3': new FormControl(),
-        'stationWithin100km4': new FormControl(),
-        'stationWithin100km5': new FormControl(),
+        'applyTransferYn': new FormControl('', Validators.required),
+        //   'id':new FormControl(''),
+          // 'transferStatus':new FormControl(''),
+           'teacherId':new FormControl(''),
+           'choiceKv1StationCode':  new FormControl,
+           'choiceKv2StationCode':  new FormControl,
+           'choiceKv3StationCode':  new FormControl,
+           'choiceKv4StationCode':  new FormControl,
+           'choiceKv5StationCode':  new FormControl,
+           'choiceKv1StationName': new FormControl('', Validators.required),
+           'choiceKv2StationName': new FormControl('', Validators.required),
+           'choiceKv3StationName': new FormControl('', Validators.required),
+           'choiceKv4StationName': new FormControl('', Validators.required),
+           'choiceKv5StationName': new FormControl('', Validators.required)
+           // 'displacement1StationCode': new FormControl,
+           // 'displacement2StationCode': new FormControl,
+           // 'displacement3StationCode': new FormControl,
+           // 'displacement4StationCode': new FormControl,
+           // 'displacement5StationCode': new FormControl,
+           // 'displacement1StationName': new FormControl('', Validators.required),
+           // 'displacement2StationName': new FormControl,
+           // 'displacement3StationName': new FormControl,
+           // 'displacement4StationName': new FormControl,
+           // 'displacement5StationName': new FormControl
       }),
+
+      
       displacementCount: new FormGroup({
-        'numberOfWorkingDays': new FormControl(),//1
-        'absenceDaysOne': new FormControl(''),//1
-        'absenceDaysTwo': new FormControl('', [Validators.required]),//1
-        'actualNumberOfWorkingDays': new FormControl(),//1
-        'workExperiencePositionTypePresentStationStartDate': new FormControl(), //1
-        'presentStationName': new FormControl(), //1
-        'presentStationCode': new FormControl(), //1
-        'q1DPt': new FormControl(),//1
-        'apprGradeYr1': new FormControl(), //2
-        'apprGrade1': new FormControl('', [Validators.required, Validators.max(10), RxwebValidators.numeric({ allowDecimal: true, isFormat: true })]), //2
-        'apprGradeYr2': new FormControl(), //2
-        'apprGrade2': new FormControl('', [Validators.required, Validators.max(10), RxwebValidators.numeric({ allowDecimal: true, isFormat: true })]), //2
-        'q2DPt': new FormControl(),
-        'teacherDob': new FormControl,//3
-        'hardStationCode': new FormControl(), //3
-        'hardStationName': new FormControl(), //3
-        'hardStationWorkStartDate': new FormControl(), //3
-        'hardStationWorkEndDate': new FormControl(), //3
-        'q3DYn': new FormControl(),//3
-        'q3DPt': new FormControl(),//3
-        'personalStatus': new FormControl('', [Validators.required]), //4
-        'personalStatusLtrDc': new FormControl(), //4
-        'personalStatusDfpDc': new FormControl(), //4
-        'personalStatusMdgDc': new FormControl(), //4
-        'personalStatusWidDc': new FormControl(), //4
-        'personalStatusSpDc': new FormControl(), //4
-        'personalStatusDefaultDc': new FormControl(),
-        'q4DPt': new FormControl(),
-        'spouseStatus': new FormControl(),//5
-        'spouseKvsYn': new FormControl(),//5
-        'spouseStateGvotYn': new FormControl(),//5
-        'spouseCentralGvotYn': new FormControl(),//5
-        'unmarriedWomanYn': new FormControl(),//5
-        'spouseNa': new FormControl(),//5
-        'q5DPt': new FormControl(),//5
-        'teacherDisabilityYn': new FormControl(), //6
-        'q9DPt': new FormControl(),//6
-        'associationMemberYn': new FormControl('', [Validators.required]), //7
-        'q10DPt': new FormControl(),//7   
-        'presidentAward': new FormControl(), //8
-        'nationalAward': new FormControl(), //8
-        'regionalAward': new FormControl(), //8
-        'q11DPt': new FormControl(),//8
-        'child_10_12_yn': new FormControl('', [Validators.required]), //9
-        'q12DPt': new FormControl(),//9
-        'careGiverYn': new FormControl('', [Validators.required]), //10
-        'q13DPt': new FormControl(), //10
-        'totalDisplacementCount': new FormControl(),
-        'stationWithin100kmDispYn': new FormControl('', Validators.required),
-        'spouseStatusDisplacement': new FormControl()
+        'kvCode': new FormControl(),
+        'teacherId': new FormControl(),
+        'transferId': new FormControl(),
+        'teacherEmployeeCode': new FormControl(),
+        //'workExperiencePositionTypePresentStationStartDate': new FormControl(), //1
+       // 'presentStationName': new FormControl(), //1
+       // 'presentStationCode': new FormControl(), //1
+        'dcStayStationPoint': new FormControl(),//1
+       // 'teacherDob': new FormControl,//3    
+        //'hardStationWorkStartDate': new FormControl(), //3
+       // 'hardStationWorkEndDate': new FormControl(), //3
+        'dcTenureHardPoint': new FormControl(),//3
+        'dcPhysicalChallengedPoint': new FormControl(),//3     
+        'dcMdDfGroungPoint': new FormControl(),   
+        'dcLtrPoint': new FormControl(),//5   
+        'dcSinglePoint': new FormControl(),//6
+        'dcSpousePoint': new FormControl(),//6    
+        'dcRjcmNjcmPoint': new FormControl(),//7        
+        'dcTotalPoint': new FormControl(),
       }),
       transferCount: new FormGroup({
-        'applyTransferYn': new FormControl('', Validators.required),
-        'numberOfWorkingDays': new FormControl(),//1
-        'absenceDaysTcone': new FormControl('', [Validators.required, Validators.min(0), RxwebValidators.numeric({ allowDecimal: false, isFormat: false })]),
-        'absenceDaysOne': new FormControl(),//1
-        'absenceDaysTwo': new FormControl(),//1
-        'actualNumberOfWorkingTcdays': new FormControl(),//1
-        'workExperiencePositionTypePresentStationStartDate': new FormControl(), //1
-        'presentStationName': new FormControl(), //1
-        'presentStationCode': new FormControl(), //1
-        'q1TPt': new FormControl(),//1
-        'apprGradeYr1': new FormControl(), //2
-        'apprGrade1': new FormControl(), //2
-        'apprGradeYr2': new FormControl(), //2
-        'apprGrade2': new FormControl(), //2
-        'q2TPt': new FormControl(),//2
-        'presidentAward': new FormControl(), //3
-        'nationalAward': new FormControl(), //3
-        'regionalAward': new FormControl(), //3
-        'q3TPt': new FormControl(),//3
-        'tSpouseStatus': new FormControl(),
-        'spouseKvsYn': new FormControl(),//5
-        'spouseStateGvotYn': new FormControl(),//4
-        'spouseCentralGvotYn': new FormControl(),//4
-        'unmarriedWomanYn': new FormControl(),//4
-        'spouseNa': new FormControl(),
-        'q4TPt': new FormControl(),//4
-        'personalStatusLtr': new FormControl(), //6
-        'personalStatusDfp': new FormControl(), //6
-        'personalStatusMdg': new FormControl(), //6
-        'personalStatusWid': new FormControl(), //6
-        'personalStatusSp': new FormControl(), //6
-        'personalStatusDefault': new FormControl(),//6
-        'isLastTransferGroundPersonalStatusYn': new FormControl(''),//6
-        'q6TPt': new FormControl(),//6
-        'q6TYyn': new FormControl(),//6
-        'personalStatus': new FormControl(), //6
-        'teacherDob': new FormControl,//7
-        'hardStationCode': new FormControl(), //7
-        'hardStationName': new FormControl(), //7
-        'hardStationWorkStartDate': new FormControl(), //7
-        'hardStationWorkEndDate': new FormControl(), //7
-        'q9TPt': new FormControl(),
-        'q7TPt': new FormControl(),
-        'q7TYyn': new FormControl(),
-        'q8TPt': new FormControl(),
-        'q8TYyn': new FormControl(),
-        'q10TPt': new FormControl(),
-        'q10TYyn': new FormControl(),
-        'childDifferentAbleYn': new FormControl('', Validators.required),
-        'teacherDisabilityYnT': new FormControl(),
-        'isLastTransferGroundTeacherDisabilityYn': new FormControl(''),
-        'associationMemberYnT': new FormControl(),
-        'totalTransferCount': new FormControl(),
-        'spouseStatusTransfer': new FormControl(),
-
-        'doptStationOneCode': new FormControl(),
-        'doptStationOneName': new FormControl(),
-        'doptStationTwoCode': new FormControl(),
-        'doptStationTwoName': new FormControl(),
+        'kvCode': new FormControl(),
+        'teacherId': new FormControl(),
+        'transferId': new FormControl(),
+        'teacherEmployeeCode': new FormControl(),
+      //  'workExperiencePositionTypePresentStationStartDate': new FormControl(), //1
+      //  'presentStationName': new FormControl(), //1
+       // 'presentStationCode': new FormControl(), //1
+        'tcStayStationPoint': new FormControl(),//1
+       // 'teacherDob': new FormControl,//3    
+       // 'hardStationWorkStartDate': new FormControl(), //3
+        //'hardStationWorkEndDate': new FormControl(), //3
+        'tcTenureHardPoint': new FormControl(),//3
+        'tcPhysicalChallengedPoint': new FormControl(),//3     
+        'tcMdDfGroungPoint': new FormControl(),   
+        'tcLtrPoint': new FormControl(),//5   
+        'tcSinglePoint': new FormControl(),//6
+        'tcSpousePoint': new FormControl(),//6    
+        'tcRjcmNjcmPoint': new FormControl(),//7        
+        'tcTotalPoint': new FormControl(),
       }),
       declaration: new FormGroup({
         'spouseKvsYnD': new FormControl(),
@@ -622,668 +512,272 @@ export class KvsTeacherTransferComponent implements OnInit {
       }),
       'previousPostingDetails': new FormArray([]),
     })
+    this.getTransferProfile();
+
+    this.setTcDcReceivedData();
+    this.getTransferBasicProfileByTchId();
+    
   }
 
   //Add Posting Form --Start
   previousPostingDetails(): FormArray {
     return this.transferForm.get("previousPostingDetails") as FormArray
   }
-  newQuantity(data): FormGroup {
-    return this.fb.group({
-      teacherId: data.teacherId,
-      workExperienceId: data.workExperienceId,
-      stationName: data.stationName,
-      udiseSchoolName: [data.udiseSchoolName, [Validators.required]],
-      kvCode: [data.kvCode, [Validators.required]],
-      workStartDate: [data.workStartDate, [Validators.required]],
-      workEndDate: [data.workEndDate, [Validators.required]],
-      natureOfAppointment: [data.natureOfAppointment, [Validators.required]],
-      positionType: [data.positionType, [Validators.required]],
-      // appointedForSubject: [data.appointedForSubject, [Validators.required]],
-      stationType: [data.stationType, [Validators.required]],
-      groundForTransfer: [data.groundForTransfer],
-      shiftType: [data.shiftType, [Validators.required]],
-      udiseSchCode: [data.udiseSchCode]
-    })
-  }
-  addQuantity(data) {
-    this.previousPostingDetails().push(this.newQuantity(data));
-  }
 
   //Add Posting Form --Start
-
-  getTransferBasicProfileByTchId() {
-    this.outSideService.fetchTransferBasicProfileByTchId(this.tempTeacherId).subscribe((res) => {
-
-      this.profileData = res.response.profileDetails
-      this.responseData = res.response.profileDetails;
-      this.reponseDataForPdf = this.responseData
-
-      this.teacherExperienceData = res.response.teacherExperience;
-      this.transferStatusOperation = res.response.profileDetails.transferStatus;
-      this.formStatusLocale = res.response.profileDetails.transferStatus;
-
-      if (this.responseData.hasOwnProperty('transferApplicationNumber')) {
-        this.transferApplicationNumberVal = this.responseData?.transferApplicationNumber;
-      } else {
-        this.transferApplicationNumberVal = 'Transfer Not Initiated';
-      }
-
-      if ((this.responseData.tpersonalStatusLtr == null || this.responseData.tpersonalStatusLtr == undefined) && (this.responseData.tpersonalStatusDfp == null || this.responseData.tpersonalStatusDfp == undefined) &&
-        (this.responseData.tpersonalStatusMdg == null || this.responseData.tpersonalStatusMdg == undefined) && (this.responseData.tpersonalStatusWid == null
-          || this.responseData.tpersonalStatusWid == undefined) && (this.responseData.tpersonalStatusSp == null || this.responseData.tpersonalStatusSp == undefined)) {
-
-        this.transferForm.patchValue({
-          displacementCount: {
-            personalStatus: '1',
-            personalStatusDefault: '1'
-          }
-        })
-      }
-
-      setTimeout(() => {
-        this.getDistrictByStateId(this.profileData.teacherParmanentState)
-      }, 300);
-
-      this.setReceivedData(this.responseData)
-      this.outSideService.fetchUploadedDoc(this.responseData.teacherId).subscribe((res) => {
-        this.documentUploadArray = res;
-
-        for (let i = 0; i < res.length; i++) {
-
-          if (res[i].docName == 'Medical_Certificate.pdf') {
-            this.deleteDocUpdate0 = false;
-          }
-          if (res[i].docName == 'Board_examination_Proof.pdf') {
-            this.deleteDocUpdate1 = false;
-          }
-          if (res[i].docName == 'Disability_Certificate.pdf') {
-            this.deleteDocUpdate2 = false;
-          }
-          if (res[i].docName == 'Differentially_Abled_Certificate.pdf') {
-            this.deleteDocUpdate3 = false;
-          }
-        }
-      })
-    })
-  }
-
-  getInitiatedTeacherDetails() {
-    this.outSideService.fetchInitiateTeacherTransfer(this.tempTeacherId).subscribe((res) => {
-      this.responseData = res.response;
-      this.existingTransferId = this.responseData.transferApplicationNumber
-
-    })
-  }
-
-  setReceivedData(setData) {
-    const data = {
-      "applicationId": environment.applicationId,
-      "teacherTypeId": setData.lastPromotionPositionType
+  checkDeclairationStatus()
+  {
+    debugger
+   
+    this.outSideService.getTransferDeclaration(this.tempTeacherId).subscribe((res) => {
+      console.log(res)
+      
+      if(res.status=='0' || res.status==0)
+      {
+        this.router.navigate(['/teacher/disclaimer']);
     }
-    setTimeout(() => {
-      this.getSubjectByTchType(data);
-      if (this.kvSchoolList == "" || this.kvSchoolList == undefined) {
-        var intraStationCond = {
-          "extcall": "MOE_EXT_GETSTATION_BY_TEACHER_INTRA",
-          "conditionvalue": [this.responseData.teacherId, this.responseData.teacherId]
-        }
-        this.getKvSchoolByStationId(intraStationCond);
-      }
-
-    }, 300);
-    if (setData != null) {
-      this.absenceTc = setData.absenceDaysTcone;
-      sessionStorage.setItem('q5DPt', setData.q5DPt)
-      sessionStorage.setItem('spouseStatus', setData.spouseStatus)
-
-      if (setData.spouseStatusTransfer == '1' || setData.spouseStatusTransfer == '2' || setData.spouseStatusTransfer == '3') {
-        if (setData?.stationWithin100km1 != '1' && setData?.stationWithin100km2 != '1' && setData?.stationWithin100km3 != '1' && setData?.stationWithin100km4 != '1' && setData?.stationWithin100km5 != '1') {
-          var temp_q4TPt = 0;
-          if (setData.teacherGender == '2' || setData.teacherGender == 2) {
-            var temp_q9TPt = '20';
-            var temp_unmarriedWomanYn = '4';
-          } else {
-            temp_q9TPt = setData.q9TPt;
-            temp_unmarriedWomanYn = setData.unmarriedWomanYn;
-          }
-        } else {
-          if (setData.spouseStatusTransfer == '1') {
-            temp_q4TPt = 50;
-            temp_q9TPt = '0';
-            temp_unmarriedWomanYn = '0';
-          } else if (setData.spouseStatusTransfer == '2') {
-            temp_q4TPt = 40;
-            temp_q9TPt = '0';
-            temp_unmarriedWomanYn = '0';
-          } else if (setData.spouseStatusTransfer == '3') {
-            temp_q4TPt = 30;
-            temp_q9TPt = '0';
-            temp_unmarriedWomanYn = '0';
-          }
-        }
-      } else if (setData.spouseStatusTransfer == '4') {
-        temp_q4TPt = setData.q4TPt;
-        temp_q9TPt = setData.q9TPt;
-        temp_unmarriedWomanYn = setData.unmarriedWomanYn;
-      } else if (setData.spouseStatusTransfer == '5') {
-        temp_q4TPt = setData.q4TPt;
-        temp_q9TPt = setData.q9TPt;
-        temp_unmarriedWomanYn = setData.unmarriedWomanYn;
-      }
-
-      sessionStorage.setItem('q9TPt', temp_q9TPt == null ? '0' : temp_q9TPt == 'null' ? '0' : temp_q9TPt)
-      sessionStorage.setItem('unmarriedWomanYn', temp_unmarriedWomanYn)
-
-      if (setData.personalStatusSp == '1' || setData.personalStatusWid == '1') {
-        temp_q9TPt = '0';
-        temp_unmarriedWomanYn = '0';
-      }
-
-      if ((moment().diff(setData.teacherDob, 'years')) < 57) {
-        this.transferForm.get('displacementCount').get('personalStatusLtrDc').disable();
-      }
-
-      if (setData.personalStatusLtr == '9' || ((moment().diff(setData.teacherDob, 'years')) < 57)) {
-        this.disableLTR = true;
-        this.transferForm.get('transferCount').get('personalStatusLtr').disable();
-      }
-      if (setData.personalStatusDfp == '9') {
-        this.disableDFP = true;
-        this.transferForm.get('transferCount').get('personalStatusDfp').disable();
-      }
-      if (setData.personalStatusMdg == '9') {
-        this.disableMDG = true;
-        this.transferForm.get('transferCount').get('personalStatusMdg').disable();
-      }
-      if (setData.personalStatusSp == '9') {
-        this.disableSP = true;
-        this.transferForm.get('transferCount').get('personalStatusSp').disable();
-      }
-      if (setData.personalStatusWid == '9') {
-        this.disableWidow = true;
-        this.transferForm.get('transferCount').get('personalStatusWid').disable();
-      }
-      if (setData.teacherDisabilityYn == '0') {
-        this.transfer7b = true;
-      } else {
-        this.transfer7b = false;
-      }
-      if (setData.applyTransferYn == '1') {
-        this.enableTransferFormYn = true;
-        this.enableTransferFormYnVal = '1'
-      } else if (setData.applyTransferYn == '0') {
-        this.enableTransferFormYn = false;
-        this.enableTransferFormYnVal = '0'
-      } else {
-        this.enableTransferFormYn = true;
-        this.enableTransferFormYnVal = ''
-      }
-      if (setData.q6TPt == '0' || setData.q6TPt == 0) {
-        this.transfer5b = true;
-      } else {
-        this.transfer5b = false;
-      }
-      if (setData.choiceKv1StationCode != null && setData.choiceKv1StationCode != "") {
-        this.preferenceStationList.push(setData.choiceKv1StationCode)
-      }
-      if (setData.choiceKv2StationCode != null && setData.choiceKv2StationCode != "") {
-        this.preferenceStationList.push(setData.choiceKv2StationCode)
-      }
-      if (setData.choiceKv3StationCode != null && setData.choiceKv3StationCode != "") {
-        this.preferenceStationList.push(setData.choiceKv3StationCode)
-      }
-      if (setData.choiceKv4StationCode != null && setData.choiceKv4StationCode != "") {
-        this.preferenceStationList.push(setData.choiceKv4StationCode)
-      }
-      if (setData.choiceKv5StationCode != null && setData.choiceKv5StationCode != "") {
-        this.preferenceStationList.push(setData.choiceKv5StationCode)
-      }
-      var finalList = {
-        "stationList": this.preferenceStationList,
-      }
-      if (setData.presidentAward == '1') {
-        this.presidentAward = true;
-        this.noAward = false;
-      }
-      if (setData.nationalAward == '1') {
-        this.nationalAward = true;
-        this.noAward = false;
-      }
-      if (setData.regionalAward == '1') {
-        this.regionalAward = true;
-        this.noAward = false;
-      }
-      if (setData.spouseKvsYnd == '1' || setData.spouseKvsYn == '1') {
-        this.gkFilebenefit = true
-
-      } if (setData?.personalStatusMdgD == '1' || setData?.personalStatusMdg == '1') {
-        this.gkFilemMedical = true
-
-      } if (setData?.personalStatusSpD == '1' || setData?.personalStatusSp == '1') {
-        this.spGround = true
-
-      } if (setData?.personalStatusDfpD == '1' || setData?.personalStatusDfp == '1') {
-        this.dfpGround = true
-
-      } if (setData?.associationMemberYn == '1' || setData?.associationMemberYn == '2') {
-        this.memJCM = true
-
-      } if (setData?.childDifferentAbleYnD == '1' || setData?.childDifferentAbleYn == '1') {
-        this.abledChild = true
-
-      } if (setData?.child_10_12_yn == '1') {
-        this.boardExam = true
-
-      } if (setData?.child_10_12_yn == '0') {
-        this.boardExam = false
-
-      } if (setData?.careGiverYn == '1') {
-        this.careGiver = true
-
-      } if (setData?.childDifferentAbleYn == '1') {
-        this.abledChild = true
-      }
-      if (setData.presidentAward != '1' && setData.nationalAward != '1' && setData.regionalAward != '1') {
-        this.noAward = true;
-      }
-      if (setData.shiftChangeSameSchool == '2') {
-        // this.showStationChoice18 = true;
-
-      }
-      if ((setData.choiceKv1UdiseCodePresentStation != null && setData.choiceKv1UdiseCodePresentStation != 'null'
-        && setData.choiceKv1UdiseCodePresentStation != '' || setData.choiceKv2UdiseCodePresentStation != null && setData.choiceKv2UdiseCodePresentStation != 'null'
-        && setData.choiceKv2UdiseCodePresentStation != '') || setData.shiftChangeSameSchool == '2') {
-
-        this.showStationChoice18B = true;
-
-      } if (setData.choiceKv1StationCode != null && setData.choiceKv1StationCode != 'null' &&
-        setData.choiceKv1StationCode != '' || setData.shiftChangeSameSchool == '3') {
-        this.showStationChoice18C = true;
-      }
-
-      if (setData.presidentAward == '1') {
-        var awardPoint = -6
-      } else if (setData.presidentAward == '1' && setData.nationalAward == '1' && setData.regionalAward == '1') {
-        var awardPoint = -6
-      } else if (setData.presidentAward != '1' && setData.nationalAward == '1' && setData.regionalAward == '1') {
-        var awardPoint = -6
-      } else if (setData.presidentAward != '1' && setData.nationalAward == '1' && setData.regionalAward != '1') {
-        var awardPoint = -4
-      } else if (setData.presidentAward != '1' && setData.nationalAward != '1' && setData.regionalAward == '1') {
-        var awardPoint = -2
-      } else {
-        var awardPoint = 0;
-      }
-    }
-
-
-
-
-    this.transferForm.patchValue({
-      basicDetails: {
-        teacherId: setData.teacherId,
-        teacherName: setData.teacherName,
-        teacherEmployeeCode: setData.teacherEmployeeCode,
-        teacherDob: setData.teacherDob,
-        teacherParmanentState: setData.teacherParmanentState,
-        teacherPermanentDistrict: setData.teacherPermanentDistrict,
-        teacherGender: setData.teacherGender,
-        lastPromotionPositionType: setData.lastPromotionPositionType,
-        lastPromotionPositionDate: setData.lastPromotionPositionDate,
-        workExperiencePositionTypePresentStationStartDate: setData.workExperiencePositionTypePresentStationStartDate,
-        workExperienceWorkStartDatePresentKv: setData.workExperienceWorkStartDatePresentKv,
-        workExperienceAppointedForSubject: setData.workExperienceAppointedForSubject,
-        natureOfAppointment: setData.natureOfAppointment
-      },
-      stationChoice: {
-        recruitedSpclDriveNer: setData.recruitedSpclDriveNer,
-        shiftChangeSameSchool: setData.shiftChangeSameSchool,
-        choiceKv1UdiseCodePresentStation: setData.choiceKv1UdiseCodePresentStation,
-        choiceKv2UdiseCodePresentStation: setData.choiceKv2UdiseCodePresentStation,
-        choiceKv3UdiseCodePresentStation: setData.choiceKv3UdiseCodePresentStation,
-        choiceKv4UdiseCodePresentStation: setData.choiceKv4UdiseCodePresentStation,
-        choiceKv5UdiseCodePresentStation: setData.choiceKv5UdiseCodePresentStation,
-        choiceKv1StationCode: setData.choiceKv1StationCode,
-        choiceKv2StationCode: setData.choiceKv2StationCode,
-        choiceKv3StationCode: setData.choiceKv3StationCode,
-        choiceKv4StationCode: setData.choiceKv4StationCode,
-        choiceKv5StationCode: setData.choiceKv5StationCode,
-        displacement1StationCode: setData.displacement1StationCode,
-        displacement2StationCode: setData.displacement2StationCode,
-        displacement3StationCode: setData.displacement3StationCode,
-        displacement4StationCode: setData.displacement4StationCode,
-        displacement5StationCode: setData.displacement5StationCode,
-        transferApplicationNumber: setData.transferApplicationNumber,
-        choiceKv1UdiseNamePresentStation: setData.choiceKv1UdiseNamePresentStation,
-        choiceKv2UdiseNamePresentStation: setData.choiceKv2UdiseNamePresentStation,
-        choiceKv3UdiseNamePresentStation: setData.choiceKv3UdiseNamePresentStation,
-        choiceKv4UdiseNamePresentStation: setData.choiceKv4UdiseNamePresentStation,
-        choiceKv5UdiseNamePresentStation: setData.choiceKv5UdiseNamePresentStation,
-        choiceKv1StationName: setData.choiceKv1StationName,
-        choiceKv2StationName: setData.choiceKv2StationName,
-        choiceKv3StationName: setData.choiceKv3StationName,
-        choiceKv4StationName: setData.choiceKv4StationName,
-        choiceKv5StationName: setData.choiceKv5StationName,
-        displacement1StationName: setData.displacement1StationName,
-        displacement2StationName: setData.displacement2StationName,
-        displacement3StationName: setData.displacement3StationName,
-        displacement4StationName: setData.displacement4StationName,
-        displacement5StationName: setData.displacement5StationName,
-        choiceKv1StationCodeUdiseCode1: setData.choiceKv1StationCodeUdiseCode1,
-        choiceKv1StationCodeUdiseCode2: setData.choiceKv1StationCodeUdiseCode2,
-        choiceKv1StationCodeUdiseCode3: setData.choiceKv1StationCodeUdiseCode3,
-        choiceKv2StationCodeUdiseCode1: setData.choiceKv2StationCodeUdiseCode1,
-        choiceKv2StationCodeUdiseCode2: setData.choiceKv2StationCodeUdiseCode2,
-        choiceKv2StationCodeUdiseCode3: setData.choiceKv2StationCodeUdiseCode3,
-        choiceKv3StationCodeUdiseCode1: setData.choiceKv3StationCodeUdiseCode1,
-        choiceKv3StationCodeUdiseCode2: setData.choiceKv3StationCodeUdiseCode2,
-        choiceKv3StationCodeUdiseCode3: setData.choiceKv3StationCodeUdiseCode3,
-        choiceKv4StationCodeUdiseCode1: setData.choiceKv4StationCodeUdiseCode1,
-        choiceKv4StationCodeUdiseCode2: setData.choiceKv4StationCodeUdiseCode2,
-        choiceKv4StationCodeUdiseCode3: setData.choiceKv4StationCodeUdiseCode3,
-        choiceKv5StationCodeUdiseCode1: setData.choiceKv5StationCodeUdiseCode1,
-        choiceKv5StationCodeUdiseCode2: setData.choiceKv5StationCodeUdiseCode2,
-        choiceKv5StationCodeUdiseCode3: setData.choiceKv5StationCodeUdiseCode3,
-        choiceKv1StationCodeUdiseName1: setData.choiceKv1StationCodeUdiseName1,
-        choiceKv1StationCodeUdiseName2: setData.choiceKv1StationCodeUdiseName2,
-        choiceKv1StationCodeUdiseName3: setData.choiceKv1StationCodeUdiseName3,
-        choiceKv2StationCodeUdiseName1: setData.choiceKv2StationCodeUdiseName1,
-        choiceKv2StationCodeUdiseName2: setData.choiceKv2StationCodeUdiseName2,
-        choiceKv2StationCodeUdiseName3: setData.choiceKv2StationCodeUdiseName3,
-        choiceKv3StationCodeUdiseName1: setData.choiceKv3StationCodeUdiseName1,
-        choiceKv3StationCodeUdiseName2: setData.choiceKv3StationCodeUdiseName2,
-        choiceKv3StationCodeUdiseName3: setData.choiceKv3StationCodeUdiseName3,
-        choiceKv4StationCodeUdiseName1: setData.choiceKv4StationCodeUdiseName1,
-        choiceKv4StationCodeUdiseName2: setData.choiceKv4StationCodeUdiseName2,
-        choiceKv4StationCodeUdiseName3: setData.choiceKv4StationCodeUdiseName3,
-        choiceKv5StationCodeUdiseName1: setData.choiceKv5StationCodeUdiseName1,
-        choiceKv5StationCodeUdiseName2: setData.choiceKv5StationCodeUdiseName2,
-        choiceKv5StationCodeUdiseName3: setData.choiceKv5StationCodeUdiseName3,
-
-        stationWithin100km1: setData.stationWithin100km1,
-        stationWithin100km2: setData.stationWithin100km2,
-        stationWithin100km3: setData.stationWithin100km3,
-        stationWithin100km4: setData.stationWithin100km4,
-        stationWithin100km5: setData.stationWithin100km5,
-      },
-      displacementCount: {
-        numberOfWorkingDays: setData.numberOfWorkingDays,//1
-        absenceDaysOne: setData.absenceDaysOne,//1
-        absenceDaysTwo: setData.absenceDaysTwo,//1
-        actualNumberOfWorkingDays: setData.actualNumberOfWorkingDays,//1
-        workExperiencePositionTypePresentStationStartDate: setData?.workExperiencePositionTypePresentStationStartDate, //1
-        presentStationName: setData.presentStationName, //1
-        presentStationCode: setData.presentStationCode, //1
-        q1DPt: setData.q1DPt,//1
-        apprGradeYr1: setData.apprGradeYr1, //2
-        apprGrade1: setData.apprGrade1, //2
-        apprGradeYr2: setData.apprGradeYr2, //2
-        apprGrade2: setData.apprGrade2, //2
-        q2DPt: setData.q2DPt,//2
-        teacherDob: setData?.teacherDob,//3
-        hardStationCode: setData.hardStationCode, //3
-        hardStationName: setData.hardStationName, //3
-        hardStationWorkStartDate: setData?.hardStationWorkStartDate, //3
-        hardStationWorkEndDate: setData?.hardStationWorkEndDate, //3
-        q3DYn: setData.q3DYn, //3
-        q3DPt: setData.q3DPt,//3
-        personalStatus: '1', //4
-        personalStatusLtrDc: setData.personalStatusLtrDc, //4
-        personalStatusDfpDc: setData.personalStatusDfpDc,//4
-        personalStatusMdgDc: setData.personalStatusMdgDc, //4
-        personalStatusWidDc: setData.personalStatusWidDc, //4
-        personalStatusSpDc: setData.personalStatusSpDc, //4
-        q4DPt: setData.q4DPt, //4
-        spouseStatus: setData.spouseStatus, //5
-        spouseKvsYn: setData.spouseKvsYn, //5
-        spouseStateGvotYn: setData.spouseStateGvotYn, //5
-        spouseCentralGvotYn: setData.spouseCentralGvotYn, //5
-        unmarriedWomanYn: (setData.unmarriedWomanYn == '4') ? '4' : '0', //5
-        spouseNa: setData.spouseNa,
-        q5DPt: setData.q5DPt,//5
-        teacherDisabilityYn: setData.teacherDisabilityYn,//6
-        q9DPt: setData.q9DPt,//6
-        associationMemberYn: setData.associationMemberYn, //7  
-        q10DPt: setData.q10DPt,//7 
-        presidentAward: setData.presidentAward, //8
-        nationalAward: setData.nationalAward, //8
-        regionalAward: setData.regionalAward, //8
-        q11DPt: awardPoint,//8
-        child_10_12_yn: setData.child_10_12_yn, //9
-        q12DPt: setData.q12DPt,//9
-        careGiverYn: setData.careGiverYn,  //10
-        q13DPt: setData.q13DPt,//10
-        totalDisplacementCount: setData.totalDisplacementCount,
-        stationWithin100kmDispYn: setData?.stationWithin100kmDispYn,
-        spouseStatusDisplacement: setData?.spouseStatusDisplacement,
-
-        personalStatusDefaultDc: ((setData.personalStatusLtrDc == null || setData.personalStatusLtrDc == undefined || setData.personalStatusLtrDc == "9") &&
-          (setData.personalStatusDfpDc == null || setData.personalStatusDfpDc == undefined || setData.personalStatusDfpDc == "9") &&
-          (setData.personalStatusMdgDc == null || setData.personalStatusMdgDc == undefined || setData.personalStatusMdgDc == "9") &&
-          (setData.personalStatusWidDc == null || setData.personalStatusWidDc == undefined || setData.personalStatusWidDc == "9") &&
-          (setData.personalStatusSpDc == null || setData.personalStatusSpDc == undefined || setData.personalStatusSpDc == "9")) ? '1' : null
-      },
-      transferCount: {
-        applyTransferYn: setData.applyTransferYn,
-        numberOfWorkingDays: setData.numberOfWorkingDays,
-        absenceDaysOne: setData.absenceDaysOne,
-        absenceDaysTwo: setData.absenceDaysTwo,
-        absenceDaysTcone: setData.absenceDaysTcone,
-        actualNumberOfWorkingTcdays: setData.actualNumberOfWorkingTcdays,
-        workExperiencePositionTypePresentStationStartDate: setData?.workExperiencePositionTypePresentStationStartDate,
-        presentStationName: setData.presentStationName,
-        presentStationCode: setData.presentStationCode,
-        q1TPt: setData.q1TPt,
-        apprGradeYr1: setData.apprGradeYr1,
-        apprGrade1: setData.apprGrade1,
-        apprGradeYr2: setData.apprGradeYr2,
-        apprGrade2: setData.apprGrade2,
-        q2TPt: setData.q2TPt,
-        presidentAward: setData.presidentAward,
-        nationalAward: setData.nationalAward,
-        regionalAward: setData.regionalAward,
-        q3TPt: setData.q3TPt,
-        spouseStatusTransfer: setData.spouseStatusTransfer,
-        tSpouseStatus: setData.spouseStatus,
-        spouseKvsYn: setData.spouseKvsYn,
-        spouseStateGvotYn: setData.spouseStateGvotYn,
-        spouseCentralGvotYn: setData.spouseCentralGvotYn,
-        unmarriedWomanYn: (temp_unmarriedWomanYn == '4') ? '4' : '0',
-        spouseNa: setData.spouseNa,
-        q4TPt: temp_q4TPt,
-        personalStatusLtr: setData.personalStatusLtr,
-        personalStatusDfp: setData.personalStatusDfp,
-        personalStatusMdg: setData.personalStatusMdg,
-        personalStatusWid: setData.personalStatusWid,
-        personalStatusSp: setData.personalStatusSp,
-        isLastTransferGroundPersonalStatusYn: setData.isLastTransferGroundPersonalStatusYn,
-        q6TPt: setData.q6TPt,
-        q6TYyn: setData.q6TYyn,
-        personalStatus: setData.personalStatus,
-        teacherDob: setData.teacherDob,
-        hardStationCode: setData.hardStationCode,
-        hardStationName: setData.hardStationName,
-        hardStationWorkStartDate: setData.hardStationWorkStartDate,
-        hardStationWorkEndDate: setData.hardStationWorkEndDate,
-        q9TPt: temp_q9TPt,
-        q7TPt: setData.q7TPt,
-        q7TYyn: setData.q7TYyn,
-        q8TPt: setData.q8TPt,
-        q8TYyn: setData.q8TYyn,
-        q10TPt: setData.q10TPt,
-        q10TYyn: setData.q10TYyn,
-        childDifferentAbleYn: setData.childDifferentAbleYn,
-        teacherDisabilityYnT: setData.teacherDisabilityYn,
-        isLastTransferGroundTeacherDisabilityYn: setData.isLastTransferGroundTeacherDisabilityYn,
-        associationMemberYnT: setData.associationMemberYn,
-        totalTransferCount: setData.totalTransferCount,
-
-        doptStationOneCode: setData.doptStationOneCode,
-        doptStationOneName: setData.doptStationOneName,
-        doptStationTwoCode: setData.doptStationTwoCode,
-        doptStationTwoName: setData.doptStationTwoName,
-
-        personalStatusDefault: ((setData.personalStatusLtr == null || setData.personalStatusLtr == undefined || setData.personalStatusLtr == "9") &&
-          (setData.personalStatusDfp == null || setData.personalStatusDfp == undefined || setData.personalStatusDfp == "9") &&
-          (setData.personalStatusMdg == null || setData.personalStatusMdg == undefined || setData.personalStatusMdg == "9") &&
-          (setData.personalStatusWid == null || setData.personalStatusWid == undefined || setData.personalStatusWid == "9") &&
-          (setData.personalStatusSp == null || setData.personalStatusSp == undefined || setData.personalStatusSp == "9")) ? '1' : null
-
-      },
-      declaration: {
-        spouseKvsYnD: setData.spouseKvsYnd,
-        personalStatusMdgD: setData.personalStatusMdg == '1' ? '1' : '0',
-        personalStatusSpD: setData.personalStatusSp == '1' ? '1' : '0',
-        personalStatusDfpD: setData.personalStatusDfp == '1' ? '1' : '0',
-        memberJCM: setData.associationMemberYn == '3' ? '0' : '1',
-        child_10_12_ynD: setData.child_10_12_yn,
-        careGiverYnD: setData.careGiverYn,
-        childDifferentAbleYnD: setData.childDifferentAbleYn,
-
-        spouseEmpCode: setData.spouseEmpCode,
-        spousePost: setData.spousePost,
-        spouseStationName: setData.spouseStationName,
-        patientName: setData.patientName,
-        patientAilment: setData.patientAilment,
-        patientHospital: setData.patientHospital,
-        patientMedicalOfficerName: setData.patientMedicalOfficerName,
-        patientMedicalOfficerDesignation: setData.patientMedicalOfficerDesignation,
-        child_10_12_name: setData.child1012Name,
-        child_10_12_class: setData.child1012Class,
-        child_10_12_school: setData.child1012School,
-        child_10_12_board: setData.child1012Board,
-        careGiverName: setData.careGiverName,
-        careGiverRelation: setData.careGiverRelation,
-        careGiverDisabilityName: setData.careGiverDisabilityName,
-        careGiverDisabilityPrcnt: setData.careGiverDisabilityPrcnt,
-        childDifferentName: setData.childDifferentName,
-        childDifferentDisabilityName: setData.childDifferentDisabilityName,
-        childDifferentDisabilityPrcnt: setData.childDifferentDisabilityPrcnt,
-      }
     });
-    this.displacementTotalPoint();
-    this.transferTotalPoint();
-
-    (this.transferForm.controls['previousPostingDetails'] as FormArray).clear();
-    for (let i = 0; i < this.teacherExperienceData.length; i++) {
-      const tempExpData = JSON.parse(JSON.stringify(this.teacherExperienceData[i]))
-      if (tempExpData.workEndDate != null && tempExpData.workEndDate != "null") {
-        tempExpData.workEndDate = this.date.transform(new Date(tempExpData.workEndDate * 1), 'yyyy-MM-dd')
-      }
-      tempExpData.workStartDate = this.date.transform(new Date(tempExpData.workStartDate * 1), 'yyyy-MM-dd')
-      this.addQuantity(tempExpData)
-    }
+  }
+  getTransferBasicProfileByTchId() {
+    debugger
+    console.log(this.tempTeacherId)
+    this.outSideService.fetchTransferBasicProfileByTchId(this.tempTeacherId).subscribe((res) => {  
+      this.spouseStationName=res.response.profileDetails.spouseStationName;
+    })
   }
 
-  initiateTeacherTransfer() {
-    if (this.responseData.hasOwnProperty('transferApplicationNumber')) {
-      if (this.responseData?.transferApplicationNumber == null || this.responseData?.transferApplicationNumber == 'null'
-        || this.responseData?.transferApplicationNumber == '') {
 
-        this.outSideService.initiateTeacherTransfer(this.transferForm.value.previousPostingDetails).subscribe((res) => {
-          this.responseData = res.response;
-          this.transferStatusOperation = res.response.transferStatus;
-          this.formStatusLocale = res.response.transferStatus;
-          Swal.fire(
-            'Your transfer application has been initiated!',
-            'Application Number : ' + this.responseData.transferApplicationNumber,
-            'success'
-          )
+  setTcDcReceivedData()
+  {
+   // debugger
+    const data = {
+           "kvCode":this.kvCode,
+           "teacherId": this.tempTeacherId
+       }
+         this.outSideService.fetchTcDcData(data).subscribe((res) => {
+          console.log("all  tcdc data")
+          console.log(res)
+         this.responseTcDcData=res;
+         if(this.responseTcDcData.transferId !=null &&  this.responseTcDcData.transferId !=''){
+          this.transDisable=true;
+        }
+         this.totaldaysPresent=this.responseTcDcData.dcStayAtStation+this.responseTcDcData.dcReturnStation-this.responseTcDcData.dcPeriodAbsence
+         this.totaldaysPresentTc=this.responseTcDcData.tcStayAtStation-this.responseTcDcData.tcPeriodAbsence
+         this.dcStayAtStation =this.responseTcDcData.dcStayAtStation,
+         this.dcPeriodAbsence =this.responseTcDcData.dcPeriodAbsence,
+         this.dcReturnStation=this.responseTcDcData.dcReturnStation,
+         this.tcStayAtStation =this.responseTcDcData.tcStayAtStation,
+         this.tcPeriodAbsence =this.responseTcDcData.tcPeriodAbsence,
+         this.tcReturnStation=this.responseTcDcData.tcReturnStation,
+         this.transferForm.patchValue({
+          displacementCount: {
+            kvCode:this.kvCode,
+            teacherId:this.tempTeacherId,
+            dcStayStationPoint: this.responseTcDcData.dcStayStationPoint,
+            dcTenureHardPoint: this.responseTcDcData.dcTenureHardPoint,
+            dcPhysicalChallengedPoint: this.responseTcDcData.dcPhysicalChallengedPoint,
+            dcMdDfGroungPoint: this.responseTcDcData.dcMdDfGroungPoint,
+            dcLtrPoint: this.responseTcDcData.dcLtrPoint,
+            dcRjcmNjcmPoint: this.responseTcDcData.dcRjcmNjcmPoint,
+            dcTotalPoint: this.responseTcDcData.dcTotalPoint
+          },
         })
-        this.getTransferBasicProfileByTchId();
-      } else {
-        // Swal.fire(
-        //   'Transfer already initiated !',
-        //   this.responseData.transferApplicationNumber
-        // )
-      }
-    } else {
-      this.outSideService.initiateTeacherTransfer(this.transferForm.value.previousPostingDetails).subscribe((res) => {
+        this.transferForm.patchValue({
+          transferCount: {
+            kvCode:this.kvCode,
+            teacherId:this.tempTeacherId,
+            tcStayStationPoint: this.responseTcDcData.tcStayStationPoint,
+            tcTenureHardPoint: this.responseTcDcData.tcTenureHardPoint,
+            tcPhysicalChallengedPoint: this.responseTcDcData.tcPhysicalChallengedPoint,
+            tcMdDfGroungPoint: this.responseTcDcData.tcMdDfGroungPoint,
+            tcLtrPoint: this.responseTcDcData.tcLtrPoint,
+            tcRjcmNjcmPoint: this.responseTcDcData.tcRjcmNjcmPoint,
+            tcTotalPoint: this.responseTcDcData.tcTotalPoint
+          },
+        })
+        this.canculateDcPoint();
+        this.canculateTcPoint();
+    })
 
-        this.responseData = res.response;
-        this.transferStatusOperation = res.response.transferStatus;
-        this.formStatusLocale = res.response.transferStatus;
-        Swal.fire(
-          'Your transfer application has been initiated!',
-          'Application Number : ' + this.responseData.transferApplicationNumber,
-          'success'
-        )
-        this.getTransferBasicProfileByTchId();
+    
+}
 
+canculateDcPoint()
+{
+  if(this.responseTcDcData.dcSinglePoint=='-12')
+        {
+          this.transferForm.patchValue({
+            displacementCount: {
+              dcSinglePoint: this.responseTcDcData.dcSinglePoint
+            },
+          })
+        }
+        else{
+          this.transferForm.patchValue({
+            displacementCount: {
+              dcSpousePoint: this.responseTcDcData.dcSpousePoint
+            },
+          })
+          if(this.responseTcDcData.dcSpousePoint=='-10')
+          {
+            this.spouseAtSmaeStation=true;
+          }
+          if(this.responseTcDcData.dcSpousePoint=='-8')
+          {
+            this.spouseAtCentralGovt=true;
+          }
+          if(this.responseTcDcData.dcSpousePoint=='-6')
+          {
+            this.spouseAtStateGovt=true;
+          }
+          if(this.responseTcDcData.dcSpousePoint=='-4')
+          {
+            this.wooomanEmp=true;
+          }
+        
+        }
+}
+
+canculateTcPoint()
+{
+  debugger
+  if(this.responseTcDcData.tcSinglePoint=='25')
+        {
+          this.transferForm.patchValue({
+            transferCount: {
+              tcSinglePoint: this.responseTcDcData.dcSinglePoint
+            },
+          })
+        }
+        else{
+          this.transferForm.patchValue({
+            transferCount: {
+              tcSpousePoint: this.responseTcDcData.tcSpousePoint
+            },
+          })
+          if(this.responseTcDcData.tcSpousePoint=='15')
+          {
+            this.tcSpouseAtSmaeStation=true;
+          }
+          if(this.responseTcDcData.tcSpousePoint=='12')
+          {
+            this.tcSpouseAtCentralGovt=true;
+          }
+          if(this.responseTcDcData.tcSpousePoint=='10')
+          {
+            this.tcSpouseAtStateGovt=true;
+          }
+          if(this.responseTcDcData.tcSpousePoint=='8')
+          {
+            this.tcWooomanEmp=true;
+          }
+        
+        }
+}
+  // getInitiatedTeacherDetails() {
+  //   this.outSideService.fetchInitiateTeacherTransfer(this.tempTeacherId).subscribe((res) => {
+  //     this.responseData = res.response;
+  //     this.existingTransferId = this.responseData.transferApplicationNumber
+
+  //   })
+  // }
+
+ 
+
+  getTransferProfile(){
+    debugger
+    if(this.tempTeacherId==null){
+      this.transferForm.patchValue({
+        stationChoice: {
+          applyTransferYn: '0',
+
+        }
       })
     }
+    const data={"teacherId":this.tempTeacherId}
+    debugger
+    this.outSideService.getTransferData(data).subscribe((res) => { 
+    if(res.response!=null || res.response=='')
+    {
+  this.transferForm.patchValue({
+  stationChoice: {
+  id:res.response.id,
+  teacherId:res.response.teacherId,
+  applyTransferYn:res.response.applyTransferYn,
+  choiceKv1StationCode:res.response.choiceKv1StationCode,
+  choiceKv2StationCode:res.response.choiceKv2StationCode,
+  choiceKv3StationCode:res.response.choiceKv3StationCode,
+  choiceKv4StationCode:res.response.choiceKv4StationCode,
+  choiceKv5StationCode:res.response.choiceKv5StationCode,
+  choiceKv1StationName:res.response.choiceKv1StationName,
+  choiceKv2StationName:res.response.choiceKv2StationName,
+  choiceKv3StationName:res.response.choiceKv3StationName,
+  choiceKv4StationName:res.response.choiceKv4StationName,
+  choiceKv5StationName:res.response.choiceKv5StationName,
+  displacement1StationCode:res.response.displacement1StationCode,
+  displacement1StationName:res.response.displacement1StationName,
+  displacement2StationName:res.response.displacement2StationName,
+  displacement2StationCode:res.response.displacement2StationCode,
+  displacement3StationName:res.response.displacement3StationName,
+  displacement3StationCode:res.response.displacement3StationCode,
+  displacement4StationCode:res.response.displacement4StationCode,
+  displacement4StationName:res.response.displacement4StationName,
+  displacement5StationCode:res.response.displacement5StationCode,
+  displacement5StationName:res.response.displacement5StationName,
+    },
+  
+  })
   }
+  debugger
+  this.empTransferradioButton= res.response.applyTransferYn
+  if(this.empTransferradioButton==null || this.empTransferradioButton==""){
+   
+  this.empTransferradioButton=0;
+  this.disabled  = true;
+ }
+ if(this.empTransferradioButton==1 || this.empTransferradioButton=='1'){
 
-  checkCheckBoxvalue(event) {
-    this.proceed = event.checked;
+  this.empTransferradioButton=1;
+  this.disabled  = false;
+ }
+ if(this.empTransferradioButton==0 || this.empTransferradioButton=='0'){
+ 
+  this.empTransferradioButton=0;
+  this.disabled  = true;
+ }
+})
+  
   }
+  manageChoice(val){
+    //this.transferStatus=val;
+    if(val==1)
+    {
+    this.disabled=false;
+    }
+    else{
+      this.disabled=true;
+    }
+      }
+
 
   onSubmit(event: Event) {
-    this.displacementTotalPoint();
-    this.transferTotalPoint();
-    if (this.transferStatusOperation == 'TRA' || this.transferStatusOperation == 'TRE' || this.transferStatusOperation == 'TRS' || this.transferStatusOperation == 'TRR') {
-      return;
-    }
+    debugger
+   // this.displacementTotalPoint();
+    //this.transferTotalPoint();
+    // if (this.transferStatusOperation == 'TRA' || this.transferStatusOperation == 'TRE' || this.transferStatusOperation == 'TRS' || this.transferStatusOperation == 'TRR') {
+    //   return;
+    // }
     var activeButton = document.activeElement.id;
 
     if (activeButton == 'submit3') {
-      this.responseData.numberOfWorkingDays = this.transferForm.value.displacementCount.numberOfWorkingDays
-      this.responseData.absenceDaysOne = this.transferForm.value.displacementCount.absenceDaysOne
-      this.responseData.absenceDaysTwo = this.transferForm.value.displacementCount.absenceDaysTwo
-      this.responseData.actualNumberOfWorkingDays = this.transferForm.value.displacementCount.actualNumberOfWorkingDays
-      this.responseData.workExperiencePositionTypePresentStationStartDate = this.transferForm.value.displacementCount.workExperiencePositionTypePresentStationStartDate
-      this.responseData.presentStationName = this.transferForm.value.displacementCount.presentStationName
-      this.responseData.presentStationCode = this.transferForm.value.displacementCount.presentStationCode
-      this.responseData.q1DPt = this.transferForm.value.displacementCount.q1DPt
-      this.responseData.apprGradeYr1 = this.transferForm.value.displacementCount.apprGradeYr1
-      this.responseData.apprGrade1 = this.transferForm.value.displacementCount.apprGrade1
-      this.responseData.apprGradeYr2 = this.transferForm.value.displacementCount.apprGradeYr2
-      this.responseData.apprGrade2 = this.transferForm.value.displacementCount.apprGrade2
-      this.responseData.q2DPt = this.transferForm.value.displacementCount.q2DPt
-      this.responseData.q2TPt = this.transferForm.value.transferCount.q2TPt
-      this.responseData.teacherDob = this.transferForm.value.displacementCount.teacherDob
-      this.responseData.hardStationCode = this.transferForm.value.displacementCount.hardStationCode
-      this.responseData.hardStationName = this.transferForm.value.displacementCount.hardStationName
-      this.responseData.hardStationWorkStartDate = this.transferForm.value.displacementCount.hardStationWorkStartDate
-      this.responseData.hardStationWorkEndDate = this.transferForm.value.displacementCount.hardStationWorkEndDate
-      this.responseData.q3DYn = this.transferForm.value.displacementCount.q3DYn
-      this.responseData.q3DPt = this.transferForm.value.displacementCount.q3DPt
-      this.responseData.personalStatus = this.transferForm.value.displacementCount.personalStatus
-      this.responseData.personalStatusLtrDc = this.transferForm.value.displacementCount.personalStatusLtrDc
-      this.responseData.personalStatusDfpDc = this.transferForm.value.displacementCount.personalStatusDfpDc
-      this.responseData.personalStatusMdgDc = this.transferForm.value.displacementCount.personalStatusMdgDc
-      this.responseData.personalStatusWidDc = this.transferForm.value.displacementCount.personalStatusWidDc
-      this.responseData.personalStatusSpDc = this.transferForm.value.displacementCount.personalStatusSpDc
-      this.responseData.q4DPt = this.transferForm.value.displacementCount.q4DPt
-      this.responseData.spouseStatus = this.transferForm.value.displacementCount.spouseStatus
-      this.responseData.spouseKvsYn = this.transferForm.value.displacementCount.spouseKvsYn
-      this.responseData.spouseStateGvotYn = this.transferForm.value.displacementCount.spouseStateGvotYn
-      this.responseData.spouseCentralGvotYn = this.transferForm.value.displacementCount.spouseCentralGvotYn
-      this.responseData.unmarriedWomanYn = this.transferForm.value.displacementCount.unmarriedWomanYn
-      this.responseData.q5DPt = this.transferForm.value.displacementCount.q5DPt
-      this.responseData.teacherDisabilityYn = this.transferForm.value.displacementCount.teacherDisabilityYn
-      this.responseData.q9DPt = this.transferForm.value.displacementCount.q9DPt
-      this.responseData.associationMemberYn = this.transferForm.value.displacementCount.associationMemberYn
-      this.responseData.q10DPt = this.transferForm.value.displacementCount.q10DPt
-      this.responseData.presidentAward = this.transferForm.value.displacementCount.presidentAward
-      this.responseData.nationalAward = this.transferForm.value.displacementCount.nationalAward
-      this.responseData.regionalAward = this.transferForm.value.displacementCount.regionalAward
-      this.responseData.q11DPt = this.transferForm.value.displacementCount.q11DPt
-      this.responseData.child_10_12_yn = this.transferForm.value.displacementCount.child_10_12_yn
-      this.responseData.q12DPt = this.transferForm.value.displacementCount.q12DPt
-      this.responseData.careGiverYn = this.transferForm.value.displacementCount.careGiverYn
-      this.responseData.q13DPt = this.transferForm.value.displacementCount.q13DPt
-      this.responseData.totalDisplacementCount = this.transferForm.value.displacementCount.totalDisplacementCount
-      this.responseData.stationWithin100kmDispYn = this.transferForm.value.displacementCount.stationWithin100kmDispYn
-      this.responseData.spouseStatusDisplacement = this.transferForm.value.displacementCount.spouseStatusDisplacement
+   
       this.responseData.transferStatus = 'TRI'
 
       this.outSideService.saveInitiatedTeacherTransfer(this.responseData).subscribe((res) => {
         if (res.status == 1 || res.status == '1') {
           this.responseData = res.response;
           this.transferStatusOperation = res.response.transferStatus;
-          this.setReceivedData(this.responseData)
+          //this.setReceivedData(this.responseData)
           // nextTempClick();
           this.formStatusLocale = 'TRI'
           Swal.fire(
@@ -1300,311 +794,73 @@ export class KvsTeacherTransferComponent implements OnInit {
           )
         }
       })
-    } else if (activeButton == 'submit4') {
-      this.responseData.recruitedSpclDriveNer = this.transferForm.value.stationChoice.recruitedSpclDriveNer
-      this.responseData.shiftChangeSameSchool = this.transferForm.value.stationChoice.shiftChangeSameSchool
-      this.responseData.choiceKv1UdiseCodePresentStation = this.transferForm.value.stationChoice.choiceKv1UdiseCodePresentStation
-      this.responseData.choiceKv2UdiseCodePresentStation = this.transferForm.value.stationChoice.choiceKv2UdiseCodePresentStation
-      this.responseData.choiceKv3UdiseCodePresentStation = this.transferForm.value.stationChoice.choiceKv3UdiseCodePresentStation
-      this.responseData.choiceKv4UdiseCodePresentStation = this.transferForm.value.stationChoice.choiceKv4UdiseCodePresentStation
-      this.responseData.choiceKv5UdiseCodePresentStation = this.transferForm.value.stationChoice.choiceKv5UdiseCodePresentStation
-      this.responseData.choiceKv1StationCode = this.transferForm.value.stationChoice.choiceKv1StationCode
-      this.responseData.choiceKv2StationCode = this.transferForm.value.stationChoice.choiceKv2StationCode
-      this.responseData.choiceKv3StationCode = this.transferForm.value.stationChoice.choiceKv3StationCode
-      this.responseData.choiceKv4StationCode = this.transferForm.value.stationChoice.choiceKv4StationCode
-      this.responseData.choiceKv5StationCode = this.transferForm.value.stationChoice.choiceKv5StationCode
-      this.responseData.displacement1StationCode = this.transferForm.value.stationChoice.displacement1StationCode
-      this.responseData.displacement2StationCode = this.transferForm.value.stationChoice.displacement2StationCode
-      this.responseData.displacement3StationCode = this.transferForm.value.stationChoice.displacement3StationCode
-      this.responseData.displacement4StationCode = this.transferForm.value.stationChoice.displacement4StationCode
-      this.responseData.displacement5StationCode = this.transferForm.value.stationChoice.displacement5StationCode
-      this.responseData.transferApplicationNumber = this.transferForm.value.stationChoice.transferApplicationNumber
-      this.responseData.choiceKv1UdiseNamePresentStation = this.transferForm.value.stationChoice.choiceKv1UdiseNamePresentStation
-      this.responseData.choiceKv2UdiseNamePresentStation = this.transferForm.value.stationChoice.choiceKv2UdiseNamePresentStation
-      this.responseData.choiceKv3UdiseNamePresentStation = this.transferForm.value.stationChoice.choiceKv3UdiseNamePresentStation
-      this.responseData.choiceKv4UdiseNamePresentStation = this.transferForm.value.stationChoice.choiceKv4UdiseNamePresentStation
-      this.responseData.choiceKv5UdiseNamePresentStation = this.transferForm.value.stationChoice.choiceKv5UdiseNamePresentStation
-      this.responseData.choiceKv1StationName = this.transferForm.value.stationChoice.choiceKv1StationName
-      this.responseData.choiceKv2StationName = this.transferForm.value.stationChoice.choiceKv2StationName
-      this.responseData.choiceKv3StationName = this.transferForm.value.stationChoice.choiceKv3StationName
-      this.responseData.choiceKv4StationName = this.transferForm.value.stationChoice.choiceKv4StationName
-      this.responseData.choiceKv5StationName = this.transferForm.value.stationChoice.choiceKv5StationName
-      this.responseData.displacement1StationName = this.transferForm.value.stationChoice.displacement1StationName
-      this.responseData.displacement2StationName = this.transferForm.value.stationChoice.displacement2StationName
-      this.responseData.displacement3StationName = this.transferForm.value.stationChoice.displacement3StationName
-      this.responseData.displacement4StationName = this.transferForm.value.stationChoice.displacement4StationName
-      this.responseData.displacement5StationName = this.transferForm.value.stationChoice.displacement5StationName
+    } else if (activeButton == 'submit1') {
+      this.transferForm.patchValue({
+        stationChoice: {
+          teacherId:this.tempTeacherId,
+        }
+      });
+      //this.responseData.transferStatus = 'TRI'
+      console.log(this.transferForm.value.stationChoice)
 
-      this.responseData.choiceKv1StationCodeUdiseCode1 = this.transferForm.value.stationChoice.choiceKv1StationCodeUdiseCode1
-      this.responseData.choiceKv1StationCodeUdiseCode2 = this.transferForm.value.stationChoice.choiceKv1StationCodeUdiseCode2
-      this.responseData.choiceKv1StationCodeUdiseCode3 = this.transferForm.value.stationChoice.choiceKv1StationCodeUdiseCode3
-      this.responseData.choiceKv2StationCodeUdiseCode1 = this.transferForm.value.stationChoice.choiceKv2StationCodeUdiseCode1
-      this.responseData.choiceKv2StationCodeUdiseCode2 = this.transferForm.value.stationChoice.choiceKv2StationCodeUdiseCode2
-      this.responseData.choiceKv2StationCodeUdiseCode3 = this.transferForm.value.stationChoice.choiceKv2StationCodeUdiseCode3
-      this.responseData.choiceKv3StationCodeUdiseCode1 = this.transferForm.value.stationChoice.choiceKv3StationCodeUdiseCode1
-      this.responseData.choiceKv3StationCodeUdiseCode2 = this.transferForm.value.stationChoice.choiceKv3StationCodeUdiseCode2
-      this.responseData.choiceKv3StationCodeUdiseCode3 = this.transferForm.value.stationChoice.choiceKv3StationCodeUdiseCode3
-      this.responseData.choiceKv4StationCodeUdiseCode1 = this.transferForm.value.stationChoice.choiceKv4StationCodeUdiseCode1
-      this.responseData.choiceKv4StationCodeUdiseCode2 = this.transferForm.value.stationChoice.choiceKv4StationCodeUdiseCode2
-      this.responseData.choiceKv4StationCodeUdiseCode3 = this.transferForm.value.stationChoice.choiceKv4StationCodeUdiseCode3
-      this.responseData.choiceKv5StationCodeUdiseCode1 = this.transferForm.value.stationChoice.choiceKv5StationCodeUdiseCode1
-      this.responseData.choiceKv5StationCodeUdiseCode2 = this.transferForm.value.stationChoice.choiceKv5StationCodeUdiseCode2
-      this.responseData.choiceKv5StationCodeUdiseCode3 = this.transferForm.value.stationChoice.choiceKv5StationCodeUdiseCode3
-      this.responseData.choiceKv1StationCodeUdiseName1 = this.transferForm.value.stationChoice.choiceKv1StationCodeUdiseName1
-      this.responseData.choiceKv1StationCodeUdiseName2 = this.transferForm.value.stationChoice.choiceKv1StationCodeUdiseName2
-      this.responseData.choiceKv1StationCodeUdiseName3 = this.transferForm.value.stationChoice.choiceKv1StationCodeUdiseName3
-      this.responseData.choiceKv2StationCodeUdiseName1 = this.transferForm.value.stationChoice.choiceKv2StationCodeUdiseName1
-      this.responseData.choiceKv2StationCodeUdiseName2 = this.transferForm.value.stationChoice.choiceKv2StationCodeUdiseName2
-      this.responseData.choiceKv2StationCodeUdiseName3 = this.transferForm.value.stationChoice.choiceKv2StationCodeUdiseName3
-      this.responseData.choiceKv3StationCodeUdiseName1 = this.transferForm.value.stationChoice.choiceKv3StationCodeUdiseName1
-      this.responseData.choiceKv3StationCodeUdiseName2 = this.transferForm.value.stationChoice.choiceKv3StationCodeUdiseName2
-      this.responseData.choiceKv3StationCodeUdiseName3 = this.transferForm.value.stationChoice.choiceKv3StationCodeUdiseName3
-      this.responseData.choiceKv4StationCodeUdiseName1 = this.transferForm.value.stationChoice.choiceKv4StationCodeUdiseName1
-      this.responseData.choiceKv4StationCodeUdiseName2 = this.transferForm.value.stationChoice.choiceKv4StationCodeUdiseName2
-      this.responseData.choiceKv4StationCodeUdiseName3 = this.transferForm.value.stationChoice.choiceKv4StationCodeUdiseName3
-      this.responseData.choiceKv5StationCodeUdiseName1 = this.transferForm.value.stationChoice.choiceKv5StationCodeUdiseName1
-      this.responseData.choiceKv5StationCodeUdiseName2 = this.transferForm.value.stationChoice.choiceKv5StationCodeUdiseName2
-      this.responseData.choiceKv5StationCodeUdiseName3 = this.transferForm.value.stationChoice.choiceKv5StationCodeUdiseName3
-      this.responseData.stationWithin100km1 = this.transferForm.value.stationChoice.stationWithin100km1
-      this.responseData.stationWithin100km2 = this.transferForm.value.stationChoice.stationWithin100km2
-      this.responseData.stationWithin100km3 = this.transferForm.value.stationChoice.stationWithin100km3
-      this.responseData.stationWithin100km4 = this.transferForm.value.stationChoice.stationWithin100km4
-      this.responseData.stationWithin100km5 = this.transferForm.value.stationChoice.stationWithin100km5
-      this.responseData.transferStatus = 'TRI'
-
-      this.outSideService.saveInitiatedTeacherTransfer(this.responseData).subscribe((res) => {
-
-        this.responseData = res.response;
-        this.transferStatusOperation = res.response.transferStatus;
-        this.setReceivedData(this.responseData)
-        this.formStatusLocale = 'TRI'
-        Swal.fire(
-          'Your data has been saved successfully!',
-          '',
-          'success'
-        )
-        this.onNextClick(4)
+      this.outSideService.saveStationChoice(this.transferForm.value.stationChoice).subscribe((res) => {
+        if (res.status == 1) {   
+          Swal.fire(
+            'Your Data has been saved Successfully!',
+            '',
+            'success'
+          )
+        
+          this.onNextClick(2)
+        }
       })
     } else if (activeButton == 'submit5') {
 
-      this.responseData.applyTransferYn = this.transferForm.value.transferCount.applyTransferYn
-      this.responseData.absenceDaysTcone = this.transferForm.value.transferCount.absenceDaysTcone
-      this.responseData.actualNumberOfWorkingTcdays = this.transferForm.value.transferCount.actualNumberOfWorkingTcdays
-      this.responseData.q1TPt = this.transferForm.value.transferCount.q1TPt
-      this.responseData.q2TPt = this.transferForm.value.transferCount.q2TPt
-      this.responseData.q3TPt = this.transferForm.value.transferCount.q3TPt
-      this.responseData.spouseKvsYn = this.transferForm.value.transferCount.spouseKvsYn
-      this.responseData.spouseStateGvotYn = this.transferForm.value.transferCount.spouseStateGvotYn
-      this.responseData.spouseCentralGvotYn = this.transferForm.value.transferCount.spouseCentralGvotYn
-      this.responseData.unmarriedWomanYn = this.transferForm.value.transferCount.unmarriedWomanYn
-      this.responseData.q4TPt = this.transferForm.value.transferCount.q4TPt
-      this.responseData.isLastTransferGroundPersonalStatusYn = this.transferForm.value.transferCount.isLastTransferGroundPersonalStatusYn
-      this.responseData.q6TPt = this.transferForm.value.transferCount.q6TPt
-      this.responseData.q6TYyn = this.transferForm.value.transferCount.q6TYyn
-      this.responseData.personalStatus = this.transferForm.value.transferCount.personalStatus
-      if (this.profileData.personalStatusLtr == '9') {
-        this.responseData.personalStatusLtr = this.transferForm.getRawValue().transferCount.personalStatusLtr
-      } else {
-        this.responseData.personalStatusLtr = this.transferForm.value.transferCount.personalStatusLtr
-      }
+      const data={
+        kvCode:this.transferForm.value.displacementCount.kvCode,
+        teacherId:this.transferForm.value.displacementCount.teacherId,
+        dcStayStationPoint: this.transferForm.value.displacementCount.dcStayStationPoint,
+        dcTenureHardPoint: this.transferForm.value.displacementCount.dcTenureHardPoint,
+        dcPhysicalChallengedPoint: this.transferForm.value.displacementCount.dcPhysicalChallengedPoint,
+        dcMdDfGroungPoint: this.transferForm.value.displacementCount.dcMdDfGroungPoint,
+        dcLtrPoint: this.transferForm.value.displacementCount.dcLtrPoint,
+        dcRjcmNjcmPoint: this.transferForm.value.displacementCount.dcRjcmNjcmPoint,
+        dcTotalPoint: this.transferForm.value.displacementCount.dcTotalPoint,
+        tcStayStationPoint: this.transferForm.value.transferCount.tcStayStationPoint,
+        tcTenureHardPoint:  this.transferForm.value.transferCount.tcTenureHardPoint,
+        tcPhysicalChallengedPoint: this.transferForm.value.transferCount.tcPhysicalChallengedPoint,
+        tcMdDfGroungPoint:  this.transferForm.value.transferCount.tcMdDfGroungPoint,
+        tcLtrPoint:  this.transferForm.value.transferCount.tcLtrPoint,
+        tcRjcmNjcmPoint:  this.transferForm.value.transferCount.tcRjcmNjcmPoint,
+        tcTotalPoint:  this.transferForm.value.transferCount.tcTotalPoint,
+        dcSpousePoint: this.transferForm.value.displacementCount.dcSpousePoint,
+        tcSpousePoint: this.transferForm.value.displacementCount.tcSpousePoint,
+        tcSinglePoint: this.transferForm.value.displacementCount.tcSinglePoint,
+        dcSinglePoint:this.transferForm.value.displacementCount.dcSinglePoint,
+        dcStayAtStation: this.dcStayAtStation,
+        dcPeriodAbsence: this.dcPeriodAbsence,
+        dcReturnStation: this.dcReturnStation,
+        tcStayAtStation:this.tcStayAtStation,
+        tcPeriodAbsence:this.tcPeriodAbsence,
+        tcReturnStation:this.tcReturnStation
+      };
+     
+    
+      this.outSideService.saveTransferDCTCPoints(data).subscribe((res) => {
+       // alert(JSON.stringify(res))
+        if(res.transferId!=null && res.transferId!='')
+       {   
+         Swal.fire(
+           'Your Transfer has been Initiated and Your transfer Id: ' + res.transferId,
+           '',
+           'success'
+         );
+       this.transDisable=true;
+       this.setTcDcReceivedData();
+       }
+     })
 
-      if (this.profileData.personalStatusDfp == '9') {
-        this.responseData.personalStatusDfp = this.transferForm.getRawValue().transferCount.personalStatusDfp
-      } else {
-        this.responseData.personalStatusDfp = this.transferForm.value.transferCount.personalStatusDfp
-      }
-
-      if (this.profileData.personalStatusMdg == '9') {
-        this.responseData.personalStatusMdg = this.transferForm.getRawValue().transferCount.personalStatusMdg
-      } else {
-        this.responseData.personalStatusMdg = this.transferForm.value.transferCount.personalStatusMdg
-      }
-
-      if (this.profileData.personalStatusWid == '9') {
-        this.responseData.personalStatusWid = this.transferForm.getRawValue().transferCount.personalStatusWid
-      } else {
-        this.responseData.personalStatusWid = this.transferForm.value.transferCount.personalStatusWid
-      }
-
-      if (this.profileData.personalStatusSp == '9') {
-        this.responseData.personalStatusSp = this.transferForm.getRawValue().transferCount.personalStatusSp
-      } else {
-        this.responseData.personalStatusSp = this.transferForm.value.transferCount.personalStatusSp
-      }
-      this.responseData.q9TPt = this.transferForm.value.transferCount.q9TPt
-      this.responseData.q7TPt = this.transferForm.value.transferCount.q7TPt
-      this.responseData.q7TYyn = this.transferForm.value.transferCount.q7TYyn
-      this.responseData.q8TPt = this.transferForm.value.transferCount.q8TPt
-      this.responseData.q8TYyn = this.transferForm.value.transferCount.q8TYyn
-      this.responseData.q10TPt = this.transferForm.value.transferCount.q10TPt
-      this.responseData.q10TYyn = this.transferForm.value.transferCount.q10TYyn
-      this.responseData.childDifferentAbleYn = this.transferForm.value.transferCount.childDifferentAbleYn
-      this.responseData.isLastTransferGroundTeacherDisabilityYn = this.transferForm.value.transferCount.isLastTransferGroundTeacherDisabilityYn
-      this.responseData.childDifferentDisabilityPrcnt = this.transferForm.value.declaration.childDifferentDisabilityPrcnt
-      this.responseData.totalTransferCount = this.transferForm.value.transferCount.totalTransferCount
-      this.responseData.doptStationOneCode = this.transferForm.value.transferCount.doptStationOneCode
-      this.responseData.doptStationOneName = this.transferForm.value.transferCount.doptStationOneName
-      this.responseData.doptStationTwoCode = this.transferForm.value.transferCount.doptStationTwoCode
-      this.responseData.doptStationTwoName = this.transferForm.value.transferCount.doptStationTwoName
-      this.responseData.transferStatus = 'TRI'
-
-      this.outSideService.saveInitiatedTeacherTransfer(this.responseData).subscribe((res) => {
-
-        this.responseData = res.response;
-        this.transferStatusOperation = res.response.transferStatus;
-        this.setReceivedData(this.responseData)
-        this.formStatusLocale = 'TRI'
-        Swal.fire(
-          'Your data has been saved successfully!',
-          '',
-          'success'
-        )
-        this.onNextClick(5)
-      })
-
-    } else if (activeButton == 'submit6') {
-
-      this.responseData.spouseEmpCode = this.transferForm.value.declaration.spouseEmpCode
-      this.responseData.spousePost = this.transferForm.value.declaration.spousePost
-      this.responseData.spouseStation = this.transferForm.value.declaration.spouseStation
-      this.responseData.patientName = this.transferForm.value.declaration.patientName
-      this.responseData.patientAilment = this.transferForm.value.declaration.patientAilment
-      this.responseData.patientHospital = this.transferForm.value.declaration.patientHospital
-      this.responseData.patientMedicalOfficerName = this.transferForm.value.declaration.patientMedicalOfficerName
-      this.responseData.patientMedicalOfficerDesignation = this.transferForm.value.declaration.patientMedicalOfficerDesignation
-      this.responseData.child1012Name = this.transferForm.value.declaration.child_10_12_name
-      this.responseData.child1012Class = this.transferForm.value.declaration.child_10_12_class
-      this.responseData.child1012School = this.transferForm.value.declaration.child_10_12_school
-      this.responseData.child1012Board = this.transferForm.value.declaration.child_10_12_board
-      this.responseData.careGiverName = this.transferForm.value.declaration.careGiverName
-      this.responseData.careGiverRelation = this.transferForm.value.declaration.careGiverRelation
-      this.responseData.careGiverDisabilityName = this.transferForm.value.declaration.careGiverDisabilityName
-      this.responseData.careGiverDisabilityPrcnt = this.transferForm.value.declaration.careGiverDisabilityPrcnt
-      this.responseData.childDifferentName = this.transferForm.value.declaration.childDifferentName
-      this.responseData.childDifferentDisabilityName = this.transferForm.value.declaration.childDifferentDisabilityName
-      this.responseData.childDifferentDisabilityPrcnt = this.transferForm.value.declaration.childDifferentDisabilityPrcnt
-      this.responseData.transferStatus = 'TRS'
-
-
-      var submitDeclaration0: boolean;
-      var submitDeclaration1: boolean;
-      var submitDeclaration2: boolean;
-      var submitDeclaration3: boolean;
-      var submitDeclaration5: boolean;
-      var submitDeclaration6: boolean;
-      var submitDeclaration7: boolean;
-      var submitDeclaration8: boolean;
-      var submitDeclarationFinal: boolean;
-
-      if (this.gkFilemMedical) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "Medical_Certificate.pdf" || this.documentUploadArray[i].docName == "Medical_Certificate") {
-            submitDeclaration0 = true;
-            break;
-          } else {
-            submitDeclaration0 = false;
-          }
-        }
-      }
-      if (this.boardExam) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "Board_examination_Proof.pdf" || this.documentUploadArray[i].docName == "Board_examination_Proof") {
-            submitDeclaration1 = true;
-            break;
-          } else {
-            submitDeclaration1 = false;
-          }
-        }
-      }
-      if (this.careGiver) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "Disability_Certificate.pdf" || this.documentUploadArray[i].docName == "Disability_Certificate") {
-            submitDeclaration2 = true;
-            break;
-          } else {
-            submitDeclaration2 = false;
-          }
-        }
-      }
-      if (this.abledChild) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "Differentially_Abled_Certificate.pdf" || this.documentUploadArray[i].docName == "Differentially_Abled_Certificate") {
-            submitDeclaration3 = true;
-            break;
-          } else {
-            submitDeclaration3 = false;
-          }
-        }
-      }
-      if (this.gkFilebenefit) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "Spouse_Declaration.pdf" || this.documentUploadArray[i].docName == "Spouse_Declaration") {
-            submitDeclaration5 = true;
-            break;
-          } else {
-            submitDeclaration5 = false;
-          }
-        }
-      }
-      if (this.spGround) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "Single_Parent_Declaration.pdf" || this.documentUploadArray[i].docName == "Single_Parent_Declaration") {
-            submitDeclaration6 = true;
-            break;
-          } else {
-            submitDeclaration6 = false;
-          }
-        }
-      }
-      if (this.dfpGround) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "DFP_Declaration.pdf" || this.documentUploadArray[i].docName == "DFP_Declaration") {
-            submitDeclaration7 = true;
-            break;
-          } else {
-            submitDeclaration7 = false;
-          }
-        }
-      }
-      if (this.memJCM) {
-        for (let i = 0; i < this.documentUploadArray.length; i++) {
-          if (this.documentUploadArray[i].docName == "NJCM_RJCM_Declaration.pdf" || this.documentUploadArray[i].docName == "NJCM_RJCM_Declaration") {
-            submitDeclaration8 = true;
-            break;
-          } else {
-            submitDeclaration8 = false;
-          }
-        }
-      }
-      if (submitDeclaration0 == false || submitDeclaration1 == false || submitDeclaration2 == false || submitDeclaration8 == false ||
-        submitDeclaration3 == false || submitDeclaration5 == false || submitDeclaration6 == false || submitDeclaration7 == false) {
-        submitDeclarationFinal = false;
-      } else {
-        submitDeclarationFinal = true;
-      }
-
-      if (submitDeclarationFinal) {
-
-        this.outSideService.saveInitiatedTeacherTransfer(this.responseData).subscribe((res) => {
-
-          this.responseData = res.response;
-          this.transferStatusOperation = res.response.transferStatus;
-          this.setReceivedData(this.responseData)
-          this.formStatusLocale = 'TRS'
-          Swal.fire(
-            'Your transfer application has been submitted successfully !',
-            this.responseData.transferApplicationNumber,
-            'success'
-          )
-        })
-      } else {
-        Swal.fire(
-          'Kindly upload the required documents !',
-          '',
-          'error'
-        )
-      }
-    }
+    } 
   }
 
   getAllMaster() {
@@ -2210,11 +1466,21 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   selectSchool(val) {
-
+debugger
     this.position = val;
+   
+  
     this.getKvRegion();
-    this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
+  }
 
+  getKvRegion() {
+    debugger
+    this.outSideService.fetchKvRegion(1).subscribe((res) => {
+      this.regionList = res.response.rowValue;
+
+     // alert(JSON.stringify(this.regionList));
+      this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
+    })
   }
 
   resetStationChoices() {
@@ -2233,35 +1499,51 @@ export class KvsTeacherTransferComponent implements OnInit {
       }
     })
   }
+  
+//   getKvRegion() {
+// debugger
+//     var data = {
+//       "teacherID": this.tempTeacherId,
+//       "nerFlag": this.transferForm.value.stationChoice.recruitedSpclDriveNer == '1' ? 'Y' : 'N',
+//       "dfpFlag": this.transferForm.value.displacementCount.personalStatusDfp == '1' ? 'Y' : 'N',
+//       "jcmFlag": this.transferForm.value.displacementCount.associationMemberYn == '1' ? 'Y' : 'N',
+//     }
+//     this.outSideService.fetchTransferRegion(data).subscribe((res) => {
+//       this.regionList = res.response;
+//     })
+//   }
 
-  getKvRegion() {
+  // getStationByRegionId(event) {
+  //   this.stationList = [];
+  //   this.selectedUdiseCode = '';
+  //   var data = {
+  //     "teacherId": this.responseData.teacherId,
+  //     "regionCode": event.target.value
+  //   }
 
-    var data = {
-      "teacherID": this.responseData.teacherId,
-      "nerFlag": this.transferForm.value.stationChoice.recruitedSpclDriveNer == '1' ? 'Y' : 'N',
-      "dfpFlag": this.transferForm.value.displacementCount.personalStatusDfp == '1' ? 'Y' : 'N',
-      "jcmFlag": this.transferForm.value.displacementCount.associationMemberYn == '1' ? 'Y' : 'N',
-    }
-    this.outSideService.fetchTransferRegion(data).subscribe((res) => {
-      this.regionList = res.response;
-    })
-  }
+  //   this.outSideService.fetchTransferStation(data).subscribe((res) => {
+  //     this.stationList = res.response;
+  //   })
+  // }
 
   getStationByRegionId(event) {
-    this.stationList = [];
-    this.selectedUdiseCode = '';
-    var data = {
-      "teacherId": this.responseData.teacherId,
-      "regionCode": event.target.value
-    }
-
+    
+    const data={
+      "regionCode":event.target.value,
+      "teacherId":this.tempTeacherId
+  };
+   // alert("called--->"+JSON.stringify(data));
     this.outSideService.fetchTransferStation(data).subscribe((res) => {
-      this.stationList = res.response;
+     debugger
+      this.stationList =res.response
+  //alert(JSON.stringify(this.stationList));
     })
+    console.log(this.stationList)
   }
 
 
   getStationByRegionIdWithCond(event) {
+    debugger
     var stationByInterCond = {
       "extcall": "MOE_EXT_GETSTATION_BY_TEACHER_INTER",
       "conditionvalue": [this.responseData.teacherId, event.target.value, event.target.value, this.responseData.teacherId]
@@ -2273,9 +1555,18 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   selectSchoolByUdise() {
+    debugger
     var str = this.selectedUdiseCode
+   // alert(this.selectedUdiseCode)
     var splitted = str.split("-", 2);
     if (this.position == '1') {
+      if(splitted[1] != this.spouseStationName){
+        Swal.fire(
+          'You have not selected spouse station in first choice so you are not eligible to get spouse point in transfer and spouse station is available in only first choice',
+          '',
+          'error'
+        )
+          }
       if (this.transferForm.value.stationChoice.choiceKv2StationCode == splitted[0] ||
         this.transferForm.value.stationChoice.choiceKv3StationCode == splitted[0] ||
         this.transferForm.value.stationChoice.choiceKv4StationCode == splitted[0] ||

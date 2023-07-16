@@ -112,7 +112,10 @@ button#btnNavbarSearch:hover{background: rgba(36, 105, 92, 0.1) !important;  col
   transition: opacity 0.3s ease-in-out;
 }
 
-
+.mat-form-field-infix {
+  padding: .5em 0 !important;
+   border-top: none !important; 
+}
 .mat-form-field-appearance-fill .mat-form-field-infix {
   padding: 0px ! important;
   
@@ -1285,4 +1288,8 @@ button.owl-next {
    .pe-3 {
      padding-right:0rem!important; 
   }
+    }
+
+    .mat-form-field-infix {
+      border-top: none !important; 
     }

@@ -51,15 +51,8 @@ function getCredential() {
 
     $.ajax({
         //For Local
-      //  url: "http://10.25.26.251:8090/meuser/api/userCradential/get-usercradential",
-       url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
-      //  url: "https://demopgi.udiseplus.gov.in/meuser/api/userCradential/get-usercradential",
-        //For Production
-        // url: "https://pgi.udiseplus.gov.in/UserService/api/userCradential/get-usercradential",
-        
-
-        // url: "https://pgi.udiseplus.gov.in/UserService/api/userCradential/get-usercradential", --Not in use
-        // url: "http://kvsonlinetransfer.kvs.gov.in/UserService/api/userCradential/get-usercradential", --Not in use
+     //  url: "http://10.25.26.251:8090/meuser/api/userCradential/get-usercradential",
+         url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
         type: 'post',
         async: false,
         contentType: "text/plain",
@@ -77,15 +70,9 @@ var publcKey;
 function getKey() {
 
     $.ajax({
-        //   url: "https://pgi.udiseplus.gov.in/UserService/api/user/getKey", --Not in use
-         //  url: "http://kvsonlinetransfer.kvs.gov.in/UserService/api/user/getKey", --Not in use
-        
-        //For Production
-        // url: "https://pgi.udiseplus.gov.in/UserService/api/user/getKey",
-        //For Local
-      url: "https://kvsonlinetransfer.kvs.gov.in/UserService/api/user/getKey",
-    //    url: "http://10.25.26.251:8090/meuser/api/user/getKey",
-      //  url: "https://demopgi.udiseplus.gov.in/meuser/api/user/getKey",
+       
+          url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/getKey",
+         // url: "http://10.25.26.251:8014/api/login/getKey",
         type: "POST",
         cache: false,
         async: false,
@@ -115,15 +102,10 @@ function changePassword(userId, password, newPassword, confirmPassword) {
 
     $.ajax({
           
-        //   url: "https://pgi.udiseplus.gov.in/UserService/api/user/renamePassword", --Not in use
-        //   url: "http://kvsonlinetransfer.kvs.gov.in/UserService/api/user/renamePassword", --Not in use
-
-        //For Production
-        // url: "https://pgi.udiseplus.gov.in/UserService/api/user/renamePassword",
-        //For Local
-         url: "https://kvsonlinetransfer.kvs.gov.in/UserService/api/user/renamePassword",
-        // url: "http://10.25.26.251:8090/meuser/api/user/renamePassword",
-       // url: "https://demopgi.udiseplus.gov.in/meuser/api/user/renamePassword",
+       
+         url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/renamePassword",
+      // url: "http://10.25.26.251:8014/api/login/renamePassword",
+      
         type: "POST",
         async: false,
         contentType: "text/plain; charset=utf-8",
@@ -131,7 +113,7 @@ function changePassword(userId, password, newPassword, confirmPassword) {
         data: JSON.stringify(data),
         success: function (data) {
 
-            returnData = JSON.stringify(data.message);
+            returnData = data.message;
 
 
 
@@ -142,11 +124,22 @@ function changePassword(userId, password, newPassword, confirmPassword) {
     // })  
 }
 
+
+function encriptedText(userId, password) {
+    var pk = getKey();
+    var encrypt = new JSEncrypt();
+    encrypt.setPublicKey(pk);
+    // alert(encrypt.encrypt("data"));
+    // alert(encrypt.encrypt("data"));
+    // var a = encrypt.encrypt($("#captchaInput").val());
+    return { "username": encrypt.encrypt(userId), "password": encrypt.encrypt(password) }
+
+}
+
 function getUdiseCode() {
     $.ajax({
        // url: "http://10.25.26.10:8090/meuser/api/userCradential/get-usercradential",
-       // url: "https://demopgi.udiseplus.gov.in/meuser/api/userCradential/get-usercradential",
-       url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
+          url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
         type: 'post',
         async: false,
         contentType: "text/plain",

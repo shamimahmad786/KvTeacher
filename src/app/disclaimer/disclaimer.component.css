@@ -1,0 +1,47 @@
+.cardSet20 {
+    width: 1000px;
+    margin: 0px auto;
+}
+
+.form-check-input {
+    width: 2em;
+    height: 2em;
+    border: 2px solid rgba(0, 0, 0, .25);
+}
+.form-check-label {
+    margin-left: 15px;
+    display: block;
+    font-family: 'Montserrat',ui-sans-serif;
+    color: #000000;
+    letter-spacing: 0.9px;
+    font-size: 14px;
+}
+select.customSelect, input.customSelect {
+    height: 24px; width:100px; border-radius: 5px; border:1px solid silver;
+}
+.vertical-center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+  }
+  .text-center {
+    text-align: center;
+  }
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+.paraSet{ line-height: 35px; }

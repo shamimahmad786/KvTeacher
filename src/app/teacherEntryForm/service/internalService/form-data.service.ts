@@ -113,11 +113,11 @@ export class FormDataService {
       { "disabilityType": "Physically Disabled", "disabilityId": 3 }],
 
       "transferGround": [
-        { "transferGroundType": "Request Transfer General", "transferGroundId": 1 },
+        { "transferGroundType": "Request Transfer", "transferGroundId": 1 },
         { "transferGroundType": "Request On LTR", "transferGroundId": 2 },      
         { "transferGroundType": "Request On MDG", "transferGroundId": 3 },
         { "transferGroundType": "Request On DFP", "transferGroundId": 4 },
-        { "transferGroundType": "Request On PH", "transferGroundId": 5 },
+        { "transferGroundType": "Request On PwD", "transferGroundId": 5 },
         { "transferGroundType": "Request On Spouse Ground", "transferGroundId": 6 },
         { "transferGroundType": "Surplus", "transferGroundId": 7 },
         { "transferGroundType": "Displacement", "transferGroundId": 8 },
@@ -131,7 +131,7 @@ export class FormDataService {
         { "transferGroundType": "Request On Any Other Ground", "transferGroundId": 16 },
         { "transferGroundType": "No Taker Vacancy Availed", "transferGroundId": 17 },
         { "transferGroundType": "Any Other Administrative Ground", "transferGroundId": 18 },
-        { "transferGroundType": "Transfer Cancellation", "transferGroundId": 19 }],
+        { "transferGroundType": "Transfer Modification", "transferGroundId": 19 }],
         
       
       "yesNo": [{ "responseType": "Yes", "responseId": 1 },
