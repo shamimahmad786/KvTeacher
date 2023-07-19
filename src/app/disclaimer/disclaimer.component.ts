@@ -101,7 +101,7 @@ export class DisclaimerComponent implements OnInit {
         this.router.navigate(['/teacher/kvsteachertransfer']);
  
       Swal.fire(
-        'Your Data has been saved Successfully!',
+        'Your Undertaking has been saved Successfully!',
         '',
         'success'
       )
