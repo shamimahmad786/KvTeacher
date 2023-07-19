@@ -51,9 +51,10 @@ function getCredential() {
 
     $.ajax({
         //For Local
-      // url: "http://10.25.26.251:8090/meuser/api/userCradential/get-usercradential",
-         url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
-        type: 'post',
+           url: "http://10.25.26.251:8090/meuser/api/userCradential/get-usercradential",
+      //   url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
+      //   url: "https://demopgi.udiseplus.gov.in/meuser/api/userCradential/get-usercradential",
+         type: 'post',
         async: false,
         contentType: "text/plain",
         data: JSON.stringify(data),
@@ -71,8 +72,9 @@ function getKey() {
 
     $.ajax({
        
-          url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/getKey",
-       //  url: "http://10.25.26.251:8014/api/login/getKey",
+         // url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/getKey",
+           url: "http://10.25.26.251:8014/api/login/getKey",
+       //  url: "https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/login/getKey",
         type: "POST",
         cache: false,
         async: false,
@@ -103,9 +105,9 @@ function changePassword(userId, password, newPassword, confirmPassword) {
     $.ajax({
           
        
-        url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/renamePassword",
-    //   url: "http://10.25.26.251:8014/api/login/renamePassword",
-      
+      //  url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/renamePassword",
+         url: "http://10.25.26.251:8014/api/login/renamePassword",
+     // url: "https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/login/renamePassword",
         type: "POST",
         async: false,
         contentType: "text/plain; charset=utf-8",
@@ -138,8 +140,9 @@ function encriptedText(userId, password) {
 
 function getUdiseCode() {
     $.ajax({
-       // url: "http://10.25.26.10:8090/meuser/api/userCradential/get-usercradential",
-          url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
+          url: "http://10.25.26.10:8090/meuser/api/userCradential/get-usercradential",
+       // url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
+      //  url: "https://demopgi.udiseplus.gov.in/meuser/api/userCradential/get-usercradential",
         type: 'post',
         async: false,
         contentType: "text/plain",

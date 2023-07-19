@@ -147,7 +147,7 @@ export class KvsTeacherTransferComponent implements OnInit {
 
   memJCM: boolean = false;
   formStatusLocale: any;
-
+  showTcField: boolean = false;
   formDataList: any;
   transferGroundList: any
 
@@ -444,10 +444,10 @@ export class KvsTeacherTransferComponent implements OnInit {
     }
     this.outSideService.getTransferPreviewPermissions(data).subscribe((res: any)=>{
       if(res?.status){
-        this.schoolVerifyStatus = res?.response?.rowValue[0]?.final_status == 'SA';
+        this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
         this.fromStatus = res?.response?.rowValue[0]?.final_status;
         this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
-        if(res?.response?.rowValue[0]?.final_status == 'SA' && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1'){
+        if((res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD') && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1'){
           this.savedPreview = 1;
           this.checkDeclairationStatus();
         }
@@ -609,16 +609,17 @@ export class KvsTeacherTransferComponent implements OnInit {
     });
   }
   getTransferBasicProfileByTchId() {
-    this.outSideService.fetchTransferBasicProfileByTchId(this.tempTeacherId).subscribe((res) => {
-      this.spouseStationName = res.response.profileDetails.spouseStationName;
-      for (let i = 0; i < res.response.teacherExperience.length; i++) {
-        if (res.response.teacherExperience[i].workEndDate != null || res.response.teacherExperience[i].workEndDate != null) {
-          // res.response.teacherExperience[i].workEndDate = this.date.transform(new Date(res.response.teacherExperience[i].workEndDate * 1), 'yyyy-MM-dd')
-          res.response.teacherExperience[i].workEndDate =res.response.teacherExperience[i].workEndDate;
+    this.outSideService.fetchConfirmedTchDetails(this.tempTeacherId).subscribe((res) => {
+      this.spouseStationName = res.response.teacherProfile?.spouseStationName;
+    
+      for (let i = 0; i < res.response.experience.length; i++) {
+        if (res.response.experience[i].workEndDate != null || res.response.experience[i].workEndDate != null) {
+          // res.response.experience[i].workEndDate = this.date.transform(new Date(res.response.experience[i].workEndDate * 1), 'yyyy-MM-dd')
+          res.response.experience[i].workEndDate =res.response.experience[i].workEndDate;
         }
-        res.response.teacherExperience[i].workStartDate = res.response.teacherExperience[i].workStartDate;
+        res.response.experience[i].workStartDate = res.response.experience[i].workStartDate;
       }
-      this.verifyTchTeacherWorkExp = res.response.teacherExperience
+      this.verifyTchTeacherWorkExp = res.response.experience
     })
   }
 
@@ -629,6 +630,8 @@ export class KvsTeacherTransferComponent implements OnInit {
       "teacherId": this.tempTeacherId
     }
     this.outSideService.fetchTcDcData(data).subscribe((res) => {
+      console.log("tc dc res")
+      console.log(res)
       this.responseTcDcData = res;
       if (this.responseTcDcData.transferId != null && this.responseTcDcData.transferId != '') {
         this.transDisable = true;
@@ -705,11 +708,11 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   canculateTcPoint() {
-     
-    if (this.responseTcDcData.tcSinglePoint == '25') {
+  
+    if (this.responseTcDcData.tcSinglePoint == '20') {
       this.transferForm.patchValue({
         transferCount: {
-          tcSinglePoint: this.responseTcDcData.dcSinglePoint
+          tcSinglePoint: this.responseTcDcData.tcSinglePoint
         },
       })
     }
@@ -790,19 +793,37 @@ export class KvsTeacherTransferComponent implements OnInit {
        
       this.empTransferradioButton = res.response.applyTransferYn
       if (this.empTransferradioButton == null || this.empTransferradioButton == "") {
-
+        this.transferForm.patchValue({
+          stationChoice: {
+            applyTransferYn: '0',
+  
+          }
+        })
         this.empTransferradioButton = 0;
         this.disabled = true;
+        this.showTcField =true;
       }
       if (this.empTransferradioButton == 1 || this.empTransferradioButton == '1') {
-
+        this.transferForm.patchValue({
+          stationChoice: {
+            applyTransferYn: '1',
+  
+          }
+        })
         this.empTransferradioButton = 1;
         this.disabled = false;
+        this.showTcField =false;
       }
       if (this.empTransferradioButton == 0 || this.empTransferradioButton == '0') {
-
+        this.transferForm.patchValue({
+          stationChoice: {
+            applyTransferYn: '0',
+  
+          }
+        })
         this.empTransferradioButton = 0;
         this.disabled = true;
+        this.showTcField =true;
       }
     })
 
@@ -810,9 +831,11 @@ export class KvsTeacherTransferComponent implements OnInit {
   manageChoice(val) {
     //this.transferStatus=val;
     if (val == 1) {
+      this.showTcField=false;
       this.disabled = false;
     }
     else {
+      this.showTcField=true
       this.disabled = true;
     }
   }
@@ -872,7 +895,7 @@ export class KvsTeacherTransferComponent implements OnInit {
         }
       })
     } else if (activeButton == 'submit5') {
-
+debugger
       const data = {
         kvCode: this.transferForm.value.displacementCount.kvCode,
         teacherId: this.transferForm.value.displacementCount.teacherId,
@@ -1614,7 +1637,8 @@ export class KvsTeacherTransferComponent implements OnInit {
     // alert(this.selectedUdiseCode)
     var splitted = str.split("-", 2);
     if (this.position == '1') {
-      if (splitted[1] != this.spouseStationName) {
+      debugger
+      if (splitted[1] != this.spouseStationName && this.spouseStationName!=undefined) {
         Swal.fire(
           'You have not selected spouse station in first choice so you are not eligible to get spouse point in transfer and spouse station is available in only first choice',
           '',

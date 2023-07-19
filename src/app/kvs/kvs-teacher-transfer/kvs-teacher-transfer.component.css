@@ -63,9 +63,8 @@ td.align-middle {
     padding: 0px;
 }
 
-h2.mb-0.text-green {
-    font-size: 17px;
-}
+
+
 
 .shadow.px-3.pt-3 {
     min-height: 450px;
@@ -650,9 +649,7 @@ ul.MaxFiveValue {
     width: 10%;
 }
 
-.text-green {
-    color: black !important;
-}
+
 
 .btn-bdr-color {
     border-color: #ced4da !important;
@@ -932,7 +929,7 @@ ul.ulLeft li {
 }
 
 .chekboxPosition {
-    margin-left: 24px;
+    margin-left: 39px;
     position: relative;
     margin-top: -20px;
 }
@@ -976,8 +973,12 @@ tr {
     padding: 6px 3px ! important;
 }
 
-h2.px-2.mt-2.text-green {
+.text-green {
     text-align: left;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 7px ! important;
+    
 }
 
 tr:nth-child(even) {
@@ -986,4 +987,8 @@ tr:nth-child(even) {
 
 tr {
     border-bottom: 1px solid rgba(0, 0, 0, .12);
+}
+
+tr:last-child {
+    border-bottom: none;
 }

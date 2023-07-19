@@ -806,7 +806,7 @@ export class OutsideServicesService {
     return this._http.post<any>(environment.BASE_URL_DATA_TRANSFER + "getTransferDeclaration", data, { headers });
   }
 
-  getTransferPreviewPermissions(data:any){
+  getTransferPreviewPermissions(data: any) {
     var token = JSON.parse(sessionStorage.getItem('authTeacherDetails'))?.token
     var headers = new HttpHeaders({
       'Authorization': token,
@@ -817,7 +817,7 @@ export class OutsideServicesService {
     return this._http.post<any>(environment.BASE_URL_DATA_TEACHER_TRANSFER + "getEmployeeStatus", data, { headers });
   }
 
-  savePreviewConsent(data:any){
+  savePreviewConsent(data: any) {
     var token = JSON.parse(sessionStorage.getItem('authTeacherDetails'))?.token
     var headers = new HttpHeaders({
       'Authorization': token,
