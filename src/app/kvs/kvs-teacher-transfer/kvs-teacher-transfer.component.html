@@ -405,12 +405,13 @@
 
 
 
+                    <!-- <div class="d-flex justify-content-center align-items-center m-0 p-0 fw-bold font-size">Attention</div> -->
                     <div class="mt-3 bg-yellow p-3">
-                        <span class="fw-bold blink">
+                        <span class="fw-bold text-danger" (mouseenter) ="mouseEnter()"  (mouseleave) ="mouseLeave()" [ngClass]="blinkClass ? 'blink_text' : ''">
                             "Kindly check your data, if there is any descrepancy then School may correct the data on the
                             request of
                             employee by using the unfreezing option provided to the school to correct and verify the
-                            data."After filling the Station Choices data could not be changed/modified.
+                            data."After filling the Station Choices data will not be changed/modified.
                         </span>
                     </div>
 
@@ -423,6 +424,11 @@
                             the best of my knowledge and avaliable information. Now I would like to exercise my STATION
                             CHOICE.
                         </label>
+
+                        <span class="text-danger fw-bold" *ngIf="!consentCheckBoxValue && conscentProccedClick == 1">Required</span>
+                    </div>
+
+                    <div class="fw-bold text-danger" (mouseenter) ="mouseEnter()"  (mouseleave) ="mouseLeave()" [ngClass]="blinkClass ? 'blink_text' : ''">*Verification should be done on or before 20th of july 2023. Only after verification, you will be able to fill preferred choices.
                     </div>
 
                 </div>
@@ -450,7 +456,7 @@
     <div class="cardsett shadow rounded justify-content-center align-items-center">
     <div class="setImg">
         <span class="fw-bold">"Your Data is still not verified by School. Please get it verified from the school to exercise your station
-        choices." </span><br/> <span class="textBlack"> After filling the Station Choices data could not be changed/modified.</span>
+        prefrences." </span><br/> <span class="textBlack"> After filling the Preferred Station, data will not be changed/modified.</span>
     </div>
 </div>
 </div>

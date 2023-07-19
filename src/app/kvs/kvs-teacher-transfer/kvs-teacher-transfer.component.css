@@ -1068,7 +1068,7 @@ a:hover {
 }
 
 ::ng-deep .mat-typography h2 {
-    margin: 0 0 0px !important;
+    /* margin: 0 0 0px !important; */
 }
 
 ::ng-deep .swal2-html-container {
@@ -1095,4 +1095,37 @@ a:hover {
         width: 1000px;
         margin: 0px auto;
     }
+}
+
+.font-size {
+    font-size: 15px;
+}
+
+.blink_text {
+    animation-name: blinker;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes blinker {
+    0% {
+        opacity: 1.0;
+        /* color: #000; */
+    }
+
+    50% {
+        opacity: 0.0;
+        /* color: red !important; */
+    }
+
+    100% {
+        /* color: #000; */
+        opacity: 1.0;
+    }
+}
+
+.blink_text:hover {
+    opacity: 1.0;
+    /* color: #000; */
 }

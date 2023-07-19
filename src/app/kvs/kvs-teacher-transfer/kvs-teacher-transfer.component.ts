@@ -190,6 +190,10 @@ export class KvsTeacherTransferComponent implements OnInit {
   savedPreview: number = 0;
   spouseStationFlag: boolean = false;
 
+  conscentProccedClick: number = 0;
+
+  blinkClass: boolean = true;
+
 
   constructor(private date: DatePipe, private formData: FormDataService, private router: Router, private dataService: DataService, private outSideService: OutsideServicesService, private fb: FormBuilder, private modalService: NgbModal,
     private transferPdfService: TeacherTransferPdfService) {
@@ -405,12 +409,21 @@ export class KvsTeacherTransferComponent implements OnInit {
     this.consentCheckBoxValue = event?.target?.checked;
   }
 
-  proceedToStationChoice() {
-    if (this.consentCheckBoxValue) {
 
+  mouseEnter(){
+    this.blinkClass= false;
+  }
+
+  mouseLeave(){
+    this.blinkClass = true;
+  }
+  
+  proceedToStationChoice() {
+    this.conscentProccedClick = 1;
+    if (this.consentCheckBoxValue) {
       Swal.fire({
         title: 'Are you confirm your data is correct!',
-        text: 'Once you confirmed ',
+        text: 'Once you confirmed here, then you will not modify your data.',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: 'Cancel',
@@ -475,6 +488,16 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    Swal.fire({
+      title: 'Are you confirm your data is correct!',
+      text: 'Once you confirmed here, then you will not modify your data.',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Cancel',
+      cancelButtonText: 'Confirm',
+      confirmButtonColor: '#ea6c75',
+      cancelButtonColor: '#2064cc',
+    })
     this.isZiet = sessionStorage.getItem('isZiet');
     this.kvCode = JSON.parse(sessionStorage.authTeacherDetails).applicationDetails[0].business_unit_type_code;
     this.formDataList = this.formData.formData();
