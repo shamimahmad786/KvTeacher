@@ -187,7 +187,8 @@ export class KvsTeacherTransferComponent implements OnInit {
   consentCheckBoxValue: boolean = false;
   schoolVerifyStatus: boolean = false;
 
-  savedPreview:number = 0;
+  savedPreview: number = 0;
+  spouseStationFlag: boolean = false;
 
 
   constructor(private date: DatePipe, private formData: FormDataService, private router: Router, private dataService: DataService, private outSideService: OutsideServicesService, private fb: FormBuilder, private modalService: NgbModal,
@@ -390,41 +391,41 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   getTeacherDetailsForPreview() {
-    this.outSideService.fetchConfirmedTchDetails(this.tempTeacherId).subscribe((res: any)=> {
+    this.outSideService.fetchConfirmedTchDetails(this.tempTeacherId).subscribe((res: any) => {
       this.verifyTchTeacherProfileData = res.response.teacherProfile;
       this.teacherStationChioce = res.response.teacherTrainingProfile;
     })
   }
 
-  changeDateFormat(date: any){
+  changeDateFormat(date: any) {
     return moment(date).format('DD-MM-YYYY')
   }
 
-  consentCheckBoxChange(event: any){
+  consentCheckBoxChange(event: any) {
     this.consentCheckBoxValue = event?.target?.checked;
   }
 
-  proceedToStationChoice(){
-    if(this.consentCheckBoxValue){
+  proceedToStationChoice() {
+    if (this.consentCheckBoxValue) {
 
       Swal.fire({
         title: 'Are you confirm your data is correct!',
-        text: '',
+        text: 'Once you confirmed ',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: 'Cancel',
         cancelButtonText: 'Confirm',
         confirmButtonColor: '#ea6c75',
-        cancelButtonColor:'#2064cc',
+        cancelButtonColor: '#2064cc',
       }).then((result: any) => {
-        if(result?.dismiss == "cancel"){
+        if (result?.dismiss == "cancel") {
           let data = {
             transEmpIsDeclaration: 1,
             teacherId: this.tempTeacherId
           }
           this.outSideService.savePreviewConsent(data).subscribe((res: any) => {
-            if(res?.status){
-              if(res?.response?.status== 1){
+            if (res?.status) {
+              if (res?.response?.status == 1) {
                 this.savedPreview = 1;
                 this.checkDeclairationStatus();
               }
@@ -433,26 +434,41 @@ export class KvsTeacherTransferComponent implements OnInit {
         }
       })
     }
-    else{
+    else {
       Swal.fire('Please check the consent', '', 'error')
     }
   }
 
-  getPreviewAndChcekPermissions(teacherId: any){
+  getPreviewAndChcekPermissions(teacherId: any) {
     let data = {
       teacher_id: teacherId
     }
-    this.outSideService.getTransferPreviewPermissions(data).subscribe((res: any)=>{
-      if(res?.status){
-        this.schoolVerifyStatus = res?.response?.rowValue[0]?.final_status == 'SA';
-        this.fromStatus = res?.response?.rowValue[0]?.final_status;
-        this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
-        if(res?.response?.rowValue[0]?.final_status == 'SA' && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1'){
+    this.outSideService.getTransferPreviewPermissions(data).subscribe((res: any) => {
+      if (res?.status) {
+        let spouseStatus = res?.response?.rowValue[0]?.spouse_status;
+        let spouseStationCode = res?.response?.rowValue[0]?.spouse_station_code;
+        if (spouseStatus == 1 || spouseStatus == 2 || spouseStatus == 3) {
+          if (spouseStationCode) {
+            this.schoolVerifyStatus = res?.response?.rowValue[0]?.final_status == 'SA';
+            this.fromStatus = res?.response?.rowValue[0]?.final_status;
+            this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
+          }
+          else {
+            this.spouseStationFlag = true;
+          }
+        }
+        else {
+          this.schoolVerifyStatus = res?.response?.rowValue[0]?.final_status == 'SA';
+          this.fromStatus = res?.response?.rowValue[0]?.final_status;
+          this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
+        }
+
+        if (res?.response?.rowValue[0]?.final_status == 'SA' && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1') {
           this.savedPreview = 1;
           this.checkDeclairationStatus();
         }
       }
-      else{
+      else {
         Swal.fire(res?.message, '', 'error')
       }
     })
@@ -614,7 +630,7 @@ export class KvsTeacherTransferComponent implements OnInit {
       for (let i = 0; i < res.response.teacherExperience.length; i++) {
         if (res.response.teacherExperience[i].workEndDate != null || res.response.teacherExperience[i].workEndDate != null) {
           // res.response.teacherExperience[i].workEndDate = this.date.transform(new Date(res.response.teacherExperience[i].workEndDate * 1), 'yyyy-MM-dd')
-          res.response.teacherExperience[i].workEndDate =res.response.teacherExperience[i].workEndDate;
+          res.response.teacherExperience[i].workEndDate = res.response.teacherExperience[i].workEndDate;
         }
         res.response.teacherExperience[i].workStartDate = res.response.teacherExperience[i].workStartDate;
       }
@@ -705,7 +721,7 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   canculateTcPoint() {
-     
+
     if (this.responseTcDcData.tcSinglePoint == '25') {
       this.transferForm.patchValue({
         transferCount: {
@@ -745,7 +761,7 @@ export class KvsTeacherTransferComponent implements OnInit {
 
 
   getTransferProfile() {
-     
+
     if (this.tempTeacherId == null) {
       this.transferForm.patchValue({
         stationChoice: {
@@ -755,7 +771,7 @@ export class KvsTeacherTransferComponent implements OnInit {
       })
     }
     const data = { "teacherId": this.tempTeacherId }
-     
+
     this.outSideService.getTransferData(data).subscribe((res) => {
       if (res.response != null || res.response == '') {
         this.transferForm.patchValue({
@@ -787,7 +803,7 @@ export class KvsTeacherTransferComponent implements OnInit {
 
         })
       }
-       
+
       this.empTransferradioButton = res.response.applyTransferYn
       if (this.empTransferradioButton == null || this.empTransferradioButton == "") {
 
@@ -819,7 +835,7 @@ export class KvsTeacherTransferComponent implements OnInit {
 
 
   onSubmit(event: Event) {
-     
+
     // this.displacementTotalPoint();
     //this.transferTotalPoint();
     // if (this.transferStatusOperation == 'TRA' || this.transferStatusOperation == 'TRE' || this.transferStatusOperation == 'TRS' || this.transferStatusOperation == 'TRR') {
@@ -904,7 +920,6 @@ export class KvsTeacherTransferComponent implements OnInit {
 
 
       this.outSideService.saveTransferDCTCPoints(data).subscribe((res) => {
-        // alert(JSON.stringify(res))
         if (res.transferId != null && res.transferId != '') {
           Swal.fire(
             'Your Transfer has been Initiated and Your transfer Id: ' + res.transferId,
@@ -1521,7 +1536,7 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   selectSchool(val) {
-     
+
     this.position = val;
 
 
@@ -1529,11 +1544,9 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   getKvRegion() {
-     
+
     this.outSideService.fetchKvRegion(1).subscribe((res) => {
       this.regionList = res.response.rowValue;
-
-      // alert(JSON.stringify(this.regionList));
       this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
     })
   }
@@ -1587,17 +1600,14 @@ export class KvsTeacherTransferComponent implements OnInit {
       "regionCode": event.target.value,
       "teacherId": this.tempTeacherId
     };
-    // alert("called--->"+JSON.stringify(data));
     this.outSideService.fetchTransferStation(data).subscribe((res) => {
-       
       this.stationList = res.response
-      //alert(JSON.stringify(this.stationList));
     })
   }
 
 
   getStationByRegionIdWithCond(event) {
-     
+
     var stationByInterCond = {
       "extcall": "MOE_EXT_GETSTATION_BY_TEACHER_INTER",
       "conditionvalue": [this.responseData.teacherId, event.target.value, event.target.value, this.responseData.teacherId]
@@ -1609,9 +1619,8 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   selectSchoolByUdise() {
-     
+
     var str = this.selectedUdiseCode
-    // alert(this.selectedUdiseCode)
     var splitted = str.split("-", 2);
     if (this.position == '1') {
       if (splitted[1] != this.spouseStationName) {

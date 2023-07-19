@@ -63,9 +63,8 @@ td.align-middle {
     padding: 0px;
 }
 
-h2.mb-0.text-green {
-    font-size: 17px;
-}
+
+
 
 .shadow.px-3.pt-3 {
     min-height: 450px;
@@ -650,9 +649,7 @@ ul.MaxFiveValue {
     width: 10%;
 }
 
-.text-green {
-    color: black !important;
-}
+
 
 .btn-bdr-color {
     border-color: #ced4da !important;
@@ -932,31 +929,63 @@ ul.ulLeft li {
 }
 
 .chekboxPosition {
-    margin-left: 24px;
+    margin-left: 39px;
     position: relative;
-    margin-top: -20px;
+    margin-top: -29px;
 }
 
-.blink{text-align: center;
-  
-    background: linear-gradient(to right, #2b2929 20%, rgb(235, 12, 12) 40%, rgb(4, 31, 150) 60%, #d3220b 80%);
+.blink {
+    text-align: center;
+
+    /* background: linear-gradient(to right, #2b2929 20%, rgb(235, 12, 12) 40%, rgb(4, 31, 150) 60%, #d3220b 80%); */
+    background: linear-gradient(to right, #2b2929 20%, #d3220b 80%);
     background-size: 200% auto;
-    
+
     color: #000;
     background-clip: text;
     text-fill-color: transparent;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    
+
     animation: shine 5s linear infinite;
 }
-   
+
+.bg-yellow {
+    background-color: #fefff2 !important;
+    border: 1px solid #e8ebc3;
+}
+
+.cardsett {
+    background: #fdfdfd;
+    padding: 67px;
+    width: 925px;
+    min-height: 286px;
+}
+
+.select.customSelec {
+    border: 1px solid #0a0a0a !important;
+}
+
+.setImg {
+    background: white;
+    padding: 22px;
+    border: 2px solid #e9e9e9;
+    font-size: 18px;
+    text-align: center;
+    line-height: 26px;
+    color: #c92f2f;
+}
+
+.textBlack {
+    color: #000;
+}
+
 @keyframes shine {
     to {
-      background-position: 200% center;
+        background-position: 200% center;
     }
-  }
-      
+}
+
 /* Preview form css */
 
 .table>thead {
@@ -965,6 +994,33 @@ ul.ulLeft li {
     border-bottom: none;
 }
 
+.btnGreen {
+    background-color: #17443c;
+    color: white;
+}
+
+.achorLink a {
+    list-style: none;
+    text-decoration: none;
+}
+
+.youWant {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.titleSet {
+    font-size: 14px ! important;
+}
+
+.form-check-input[type=radio] {
+    border-radius: 50%;
+    width: 19px;
+    height: 18px;
+    padding: 0px 5px;
+    margin-right: 7px;
+    font-weight: 700;
+}
 
 tbody,
 td,
@@ -976,8 +1032,12 @@ tr {
     padding: 6px 3px ! important;
 }
 
-h2.px-2.mt-2.text-green {
+.text-green {
     text-align: left;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 7px ! important;
+
 }
 
 tr:nth-child(even) {
@@ -986,4 +1046,53 @@ tr:nth-child(even) {
 
 tr {
     border-bottom: 1px solid rgba(0, 0, 0, .12);
+}
+
+tr:last-child {
+    border-bottom: none;
+}
+
+.text-green {
+    color: #202020 ! important;
+}
+
+a {
+    color: #0a997e;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer !important;
+}
+
+a:hover {
+    color: #494949;
+}
+
+::ng-deep .mat-typography h2 {
+    margin: 0 0 0px !important;
+}
+
+::ng-deep .swal2-html-container {
+    margin: 0.5em 1.6em 0.3em !important;
+    color: rgb(184, 30, 30) !important;
+}
+
+@media only screen and (max-width: 600px) {
+
+    .cardsett {
+        background: #fdfdfd;
+        padding: 23px;
+        width: 100%;
+        min-height: 286px;
+    }
+
+    .w-50 {
+        width: 100% !important;
+    }
+}
+
+@media only screen and (min-width: 1024px) {
+    .cardsetNew {
+        width: 1000px;
+        margin: 0px auto;
+    }
 }
