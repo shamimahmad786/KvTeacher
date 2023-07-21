@@ -565,9 +565,9 @@
                                 !teacherForm.get('profileForm.presentPostName').valid ||
                                 !teacherForm.get('profileForm.presentSubjectName').valid" type="button" name="next"
                                     (click)=" nextClick(2)" class="next action-button mt-2" value="Next" /> -->
-                                    
+                                   
                                 <input
-                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(2)" class="next action-button mt-2"
                                     value="Next" />
                                 <input [disabled]="!teacherForm.get('profileForm.email').valid || !teacherForm.get('profileForm.dob').valid ||
@@ -583,7 +583,7 @@
                                 !teacherForm.get('profileForm.presentPostName').valid ||
                                 !teacherForm.get('profileForm.presentSubjectName').valid ||
                                 formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+                                formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                   type="submit" id="submit1" value="Save & Next" class="next action-save mt-2 me-2" />
                                 <span class="help-block text-danger"
                                     *ngIf="!teacherForm.get('profileForm.email').valid || !teacherForm.get('profileForm.dob').valid && teacherForm.get('profileForm.dob').touched||
@@ -1071,7 +1071,7 @@
                                                             <a href="{{documentUploadArray[4]?.url}}"><i
                                                                     class='bx bx-show'></i></a>
 
-                                                            <i (click)="deleteDocumentUploaded('Physically_Handicap_Certificate.pdf')"
+                                                            <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('Physically_Handicap_Certificate.pdf')"
                                                                 class='bx bx-minus-circle'></i>
                                                         </div>
                                                     </div>
@@ -1220,6 +1220,7 @@
                                                             <h4 class="titleSet"> School Name </h4>
                                                             <input type="text" class="form-control " >
                                                         </div> -->
+                                                       
                                                     <div *ngIf="spouseNone" class="col-md-6 mb-3">
                                                         <h4 class="titleSet"> Station Name<span
                                                                 class="required-asterisk">*</span> </h4>
@@ -1363,7 +1364,7 @@
                                 (teacherForm.get('personalInfoForm.prmntPinCode').status != 'VALID' && teacherForm.get('personalInfoForm.prmntPinCode').status != 'DISABLED')))" type="button"
                                 (click)=" nextClick(3)" name="next" class="next action-button" value="Next" /> -->
                                 <input
-                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(3)" class="next action-button mt-2"
                                     value="Next" />
                                 <input [disabled]="(!teacherForm.get('personalInfoForm.disabilityYN').valid || (!teacherForm.get('personalInfoForm.disabilityType').valid &&
@@ -1383,7 +1384,7 @@
                                     !teacherForm.get('personalInfoForm.crspndncPinCode').valid ||
                                     (teacherForm.get('personalInfoForm.prmntPinCode').status != 'VALID' && teacherForm.get('personalInfoForm.prmntPinCode').status != 'DISABLED'))) ||
                                     formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                    formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' ||
+                                    formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD' ||
                                     (documentUploadArray[4]?.docName != 'Physically_Handicap_Certificate.pdf' &&  teacherForm.get('personalInfoForm.disabilityYN').value == '1')"
                                     type="submit" id="submit3" value="Save & Next" class="next action-save  me-2" />
                                 <input type="button" name="previous" class="previous action-button-previous"
@@ -1957,11 +1958,11 @@
     <!-- <input type="button" name="next" class="next action-button"
         (click)=" nextClick(6); onVerifyClick()" value="Next" /> -->
     <input
-        *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+        *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
         type="button" name="next" (click)=" nextClick(4); onVerifyClick()" class="next action-button mt-2"
         value="Next" />
     <input [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-        formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+        formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
          type="submit" id="submit6" value="Save & Next" class="next action-save  me-2" />
     <input type="button" name="previous" class="previous action-button-previous"
         (click)=" onPreviousClick(2)" value="Previous" />
@@ -2472,7 +2473,7 @@
                                                                     href="{{documentUploadArray[5]?.url}}"> <i
                                                                         class='bx bx-file'>{{documentUploadArray[5]?.docName}}</i>
                                                                 </a>
-                                                                <i (click)="deleteDocumentUploaded('Spouse_Declaration.pdf')"
+                                                                <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('Spouse_Declaration.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -2630,7 +2631,7 @@
                                                                         class='bx bx-file'>{{documentUploadArray[0]?.docName}}</i>
                                                                 </a>
             
-                                                                <i (click)="deleteDocumentUploaded('Medical_Certificate.pdf')"
+                                                                <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('Medical_Certificate.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -2726,7 +2727,7 @@
                                                                         class='bx bx-file'>{{documentUploadArray[6]?.docName}}</i>
                                                                 </a>
             
-                                                                <i (click)="deleteDocumentUploaded('Single_Parent_Declaration.pdf')"
+                                                                <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('Single_Parent_Declaration.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -2829,7 +2830,7 @@
                                                                         class='bx bx-file'>{{documentUploadArray[7]?.docName}}</i>
                                                                 </a>
             
-                                                                <i (click)="deleteDocumentUploaded('DFP_Declaration.pdf')"
+                                                                <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('DFP_Declaration.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -2935,7 +2936,7 @@
                                                                         class='bx bx-file'>{{documentUploadArray[2]?.docName}}</i>
                                                                 </a>
             
-                                                                <i (click)="deleteDocumentUploaded('Disability_Certificate.pdf')"
+                                                                <i  *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('Disability_Certificate.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -3045,7 +3046,7 @@
                                                                         class='bx bx-file'>{{documentUploadArray[3]?.docName}}</i>
                                                                 </a>
             
-                                                                <i (click)="deleteDocumentUploaded('Differentially_Abled_Certificate.pdf')"
+                                                                <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('Differentially_Abled_Certificate.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -3128,7 +3129,7 @@
                                                                         class='bx bx-file'>{{documentUploadArray[8]?.docName}}</i>
                                                                 </a>
             
-                                                                <i (click)="deleteDocumentUploaded('NJCM_RJCM_Declaration.pdf')"
+                                                                <i *ngIf="!(formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES')" (click)="deleteDocumentUploaded('NJCM_RJCM_Declaration.pdf')"
                                                                     class='bx bx-minus-circle'></i>
                                                             </div>
                                                         </div>
@@ -3221,11 +3222,11 @@
                                     value="Next" /> -->
                                  
                                 <input
-                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(5)" class="next action-button mt-2"
                                     value="Next" />
                                 <input [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                    formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'  || ((!teacherForm.get('transferRelatedForm.patientName').valid ||
+                                    formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'  || ((!teacherForm.get('transferRelatedForm.patientName').valid ||
                                     !teacherForm.get('transferRelatedForm.patientAilment').valid || 
                                     !teacherForm.get('transferRelatedForm.patientHospital').valid ||
                                     !teacherForm.get('transferRelatedForm.patientMedicalOfficerName').valid ||
@@ -3754,7 +3755,7 @@
                                     
                                   </button> -->
                                 <input [disabled]="!confirmEnable || formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'"
+                                formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                   type="submit" id="submit33" value="Confirm" class="action-save  me-2" />
                                 <input type="button" name="previous" class="previous action-button-previous"
                                     (click)=" onPreviousClick(4)" value="Previous" />
@@ -3953,7 +3954,7 @@
                             [(ngModel)]="selectedSpouseStation">
                             <option selected disabled> Select Station</option>
                             <option *ngFor="let data of stationList; let i=index;"
-                                value="{{data.statin_code}}-{{data.station_name}}">
+                                value="{{data.station_code}}-{{data.station_name}}">
                                 {{data.station_name}}
                             </option>
 

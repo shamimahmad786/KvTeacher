@@ -83,6 +83,7 @@ export class KvsTeacherTransferComponent implements OnInit {
   showStationChoice18: boolean = false;
   show18BOption: boolean = false;
   show18COption: boolean = false;
+  onlyDcFill: boolean = false;
   profileData: any;
   districListByStateIdP: any;
   teacherExperienceData: any;
@@ -161,6 +162,10 @@ export class KvsTeacherTransferComponent implements OnInit {
 
   isZiet: any;
   spouseStationName: any;
+
+  spouseStationCode: any;
+
+  spouseStatus: any;
   responseTcDcData: any;
   totaldaysPresent: any;
   totaldaysPresentTc: any;
@@ -178,7 +183,7 @@ export class KvsTeacherTransferComponent implements OnInit {
   tcSpouseAtCentralGovt: boolean;
   tcSpouseAtStateGovt: boolean;
   tcWooomanEmp: boolean;
-  transDisable: boolean;
+  transDisable: boolean = false;
 
   verifyTchTeacherProfileData: any;
   teacherStationChioce: any;
@@ -186,6 +191,7 @@ export class KvsTeacherTransferComponent implements OnInit {
 
   consentCheckBoxValue: boolean = false;
   schoolVerifyStatus: boolean = false;
+  tcButtondisable: boolean = false;
 
   savedPreview: number = 0;
   spouseStationFlag: boolean = false;
@@ -193,6 +199,12 @@ export class KvsTeacherTransferComponent implements OnInit {
   conscentProccedClick: number = 0;
 
   blinkClass: boolean = true;
+  temppTeacherId: any;
+  AllregionList: any;
+
+  dynamicFlagBasedMessages: string;
+  flagsBasedMessages: boolean = false;
+  transferCountSaveYn: any;
 
 
   constructor(private date: DatePipe, private formData: FormDataService, private router: Router, private dataService: DataService, private outSideService: OutsideServicesService, private fb: FormBuilder, private modalService: NgbModal,
@@ -440,7 +452,7 @@ export class KvsTeacherTransferComponent implements OnInit {
             if (res?.status) {
               if (res?.response?.status == 1) {
                 this.savedPreview = 1;
-                this.checkDeclairationStatus();
+                // this.checkDeclairationStatus();
               }
             }
           })
@@ -457,6 +469,7 @@ export class KvsTeacherTransferComponent implements OnInit {
       teacher_id: teacherId
     }
     this.outSideService.getTransferPreviewPermissions(data).subscribe((res: any) => {
+      debugger
       if (res?.status) {
         let spouseStatus = res?.response?.rowValue[0]?.spouse_status;
         let spouseStationCode = res?.response?.rowValue[0]?.spouse_station_code;
@@ -465,6 +478,26 @@ export class KvsTeacherTransferComponent implements OnInit {
             this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
             this.fromStatus = res?.response?.rowValue[0]?.final_status;
             this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
+            if(res?.response?.rowValue[0]?.valid_post_for_transfer != 1){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer or KV HQ.`;
+            }
+            if(res?.response?.rowValue[0]?.valid_location_for_transfer == 3){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = 'Ziet or RO Teaching employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ. ';
+            }
+            if(res?.response?.rowValue[0]?.valid_location_for_transfer == 4){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = 'HQ employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ.';
+            }
+            if(res?.response?.rowValue[0]?.court_case_flag != 1){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = `You are not eligible to procced further with Transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+            }
+            if(res?.response?.rowValue[0]?.disciplinary_yn != 1){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+            }
           }
           else {
             this.spouseStationFlag = true;
@@ -474,11 +507,51 @@ export class KvsTeacherTransferComponent implements OnInit {
           this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
           this.fromStatus = res?.response?.rowValue[0]?.final_status;
           this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
+          if(res?.response?.rowValue[0]?.valid_post_for_transfer != 1){
+            this.flagsBasedMessages = true;
+            this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer or KV HQ.`;
+          }
+          if(res?.response?.rowValue[0]?.valid_location_for_transfer == 3){
+            this.flagsBasedMessages = true;
+            this.dynamicFlagBasedMessages = 'Ziet or RO Teaching employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ. ';
+          }
+          if(res?.response?.rowValue[0]?.valid_location_for_transfer == 4){
+            this.flagsBasedMessages = true;
+            this.dynamicFlagBasedMessages = 'HQ employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ.';
+          }
+          if(res?.response?.rowValue[0]?.court_case_flag != 1){
+            this.flagsBasedMessages = true;
+            this.dynamicFlagBasedMessages = `You are not eligible to procced further with transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+          }
+          if(res?.response?.rowValue[0]?.disciplinary_yn != 1){
+            this.flagsBasedMessages = true;
+            this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+          }
+          if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
+            if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 5 ){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = `You  are not eligible to procced further with Transfer application due to tenure and  active stay less than five years. In case any clarifications, please contact your controlling officer or KV HQ. .`;
+            }
+            else if(res?.response?.rowValue[0]?.dctenure_year >= 5 && res?.response?.rowValue[0]?.activestay < 5 ){
+                 this.onlyDcFill = true;
+            }
+          }
+          else if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 3 || res?.response?.rowValue[0]?.nature_of_stn_at_join == 4){
+            if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 3 ){
+              this.flagsBasedMessages = true;
+              this.dynamicFlagBasedMessages = `You  are not eligible to procced further with Transfer application due to tenure and  active stay less than three years. In case any clarifications, please contact your controlling officer or KV HQ. .`;
+            }else if(res?.response?.rowValue[0]?.dctenure_year >= 5 && res?.response?.rowValue[0]?.activestay < 3 ){
+              this.onlyDcFill = true;
+         }           
+          }
+         
+
+
         }
 
         if ((res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD') && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1') {
           this.savedPreview = 1;
-          this.checkDeclairationStatus();
+          // this.checkDeclairationStatus();
         }
       }
       else {
@@ -505,9 +578,9 @@ export class KvsTeacherTransferComponent implements OnInit {
     }
     this.getPreviewAndChcekPermissions(this.tempTeacherId)
 
-    setTimeout(function () {
-      onNextClick(1);
-    }, 1000);
+    // setTimeout(function () {
+    //   onNextClick(1);
+    // }, 1000);
 
     this.transferForm = new FormGroup({
 
@@ -541,6 +614,8 @@ export class KvsTeacherTransferComponent implements OnInit {
 
       displacementCount: new FormGroup({
         'kvCode': new FormControl(),
+        'id': new FormControl(),
+        'tcSaveYn': new FormControl(),
         'teacherId': new FormControl(),
         'transferId': new FormControl(),
         'teacherEmployeeCode': new FormControl(),
@@ -561,6 +636,7 @@ export class KvsTeacherTransferComponent implements OnInit {
         'dcTotalPoint': new FormControl(),
       }),
       transferCount: new FormGroup({
+        'id': new FormControl(),
         'kvCode': new FormControl(),
         'teacherId': new FormControl(),
         'transferId': new FormControl(),
@@ -621,6 +697,7 @@ export class KvsTeacherTransferComponent implements OnInit {
 
     this.setTcDcReceivedData();
     this.getTransferBasicProfileByTchId();
+    
   }
 
   //Add Posting Form --Start
@@ -639,7 +716,11 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
   getTransferBasicProfileByTchId() {
     this.outSideService.fetchConfirmedTchDetails(this.tempTeacherId).subscribe((res) => {
+      console.log(res)
       this.spouseStationName = res.response.teacherProfile?.spouseStationName;
+      this.spouseStationCode = res.response.teacherProfile?.spouseStationCode;
+      this.spouseStatus = res.response.teacherProfile?.spouseStatus;
+      this.temppTeacherId = res.response.teacherProfile?.teacherId;
     
       for (let i = 0; i < res.response.experience.length; i++) {
         if (res.response.experience[i].workEndDate != null || res.response.experience[i].workEndDate != null) {
@@ -650,6 +731,7 @@ export class KvsTeacherTransferComponent implements OnInit {
       }
       this.verifyTchTeacherWorkExp = res.response.experience
     })
+    //this.getTransferRegionsByEmployee();
   }
 
 
@@ -665,6 +747,16 @@ export class KvsTeacherTransferComponent implements OnInit {
       if (this.responseTcDcData.transferId != null && this.responseTcDcData.transferId != '') {
         this.transDisable = true;
       }
+      this.transferForm.patchValue({
+        displacementCount: {
+          id: this.responseTcDcData.id
+        },
+      })
+      this.transferForm.patchValue({
+        transferCount: {
+          id: this.responseTcDcData.id
+        },
+      })
       this.totaldaysPresent = this.responseTcDcData.dcStayAtStation + this.responseTcDcData.dcReturnStation - this.responseTcDcData.dcPeriodAbsence
       this.totaldaysPresentTc = this.responseTcDcData.tcStayAtStation - this.responseTcDcData.tcPeriodAbsence
       this.dcStayAtStation = this.responseTcDcData.dcStayAtStation,
@@ -795,11 +887,11 @@ export class KvsTeacherTransferComponent implements OnInit {
             id: res.response.id,
             teacherId: res.response.teacherId,
             applyTransferYn: res.response.applyTransferYn,
-            choiceKv1StationCode: res.response.choiceKv1StationCode,
-            choiceKv2StationCode: res.response.choiceKv2StationCode,
-            choiceKv3StationCode: res.response.choiceKv3StationCode,
-            choiceKv4StationCode: res.response.choiceKv4StationCode,
-            choiceKv5StationCode: res.response.choiceKv5StationCode,
+            choiceKv1StationCode: res.response.choiceKv1StationCode != 'null' ? res.response.choiceKv1StationCode : '',
+            choiceKv2StationCode: res.response.choiceKv2StationCode != 'null' ? res.response.choiceKv2StationCode : '',
+            choiceKv3StationCode: res.response.choiceKv3StationCode != 'null' ? res.response.choiceKv3StationCode : '',
+            choiceKv4StationCode: res.response.choiceKv4StationCode != 'null' ? res.response.choiceKv4StationCode : '',
+            choiceKv5StationCode: res.response.choiceKv5StationCode != 'null' ? res.response.choiceKv5StationCode : '',
             choiceKv1StationName: res.response.choiceKv1StationName,
             choiceKv2StationName: res.response.choiceKv2StationName,
             choiceKv3StationName: res.response.choiceKv3StationName,
@@ -859,6 +951,20 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
   manageChoice(val) {
     //this.transferStatus=val;
+    this.transferForm.patchValue({
+      stationChoice: {
+        choiceKv1StationCode: '',
+        choiceKv1StationName: '',
+        choiceKv2StationCode: '',
+        choiceKv2StationName: '',
+        choiceKv3StationCode: '',
+        choiceKv3StationName: '',
+        choiceKv4StationCode: '',
+        choiceKv4StationName: '',
+        choiceKv5StationCode: '',
+        choiceKv5StationName: ''
+      }
+    })
     if (val == 1) {
       this.showTcField=false;
       this.disabled = false;
@@ -879,52 +985,8 @@ export class KvsTeacherTransferComponent implements OnInit {
     // }
     var activeButton = document.activeElement.id;
 
-    if (activeButton == 'submit3') {
+    if (activeButton == 'submit2') {
 
-      this.responseData.transferStatus = 'TRI'
-
-      this.outSideService.saveInitiatedTeacherTransfer(this.responseData).subscribe((res) => {
-        if (res.status == 1 || res.status == '1') {
-          this.responseData = res.response;
-          this.transferStatusOperation = res.response.transferStatus;
-          //this.setReceivedData(this.responseData)
-          // nextTempClick();
-          this.formStatusLocale = 'TRI'
-          Swal.fire(
-            'Your data has been saved successfully!',
-            '',
-            'success'
-          )
-          this.onNextClick(3)
-        } else {
-          Swal.fire(
-            'Data not saved',
-            'Please go to previous page and retry',
-            'error'
-          )
-        }
-      })
-    } else if (activeButton == 'submit1') {
-      this.transferForm.patchValue({
-        stationChoice: {
-          teacherId: this.tempTeacherId,
-        }
-      });
-      //this.responseData.transferStatus = 'TRI'
-
-      this.outSideService.saveStationChoice(this.transferForm.value.stationChoice).subscribe((res) => {
-        if (res.status == 1) {
-          Swal.fire(
-            'Your Data has been saved Successfully!',
-            '',
-            'success'
-          )
-
-          this.onNextClick(2)
-        }
-      })
-    } else if (activeButton == 'submit5') {
-debugger
       const data = {
         kvCode: this.transferForm.value.displacementCount.kvCode,
         teacherId: this.transferForm.value.displacementCount.teacherId,
@@ -951,14 +1013,115 @@ debugger
         dcReturnStation: this.dcReturnStation,
         tcStayAtStation: this.tcStayAtStation,
         tcPeriodAbsence: this.tcPeriodAbsence,
+        dcSaveYn:1,
+        tcSaveYn:this.transferForm.value.displacementCount.tcSaveYn,
+        id:this.transferForm.value.displacementCount.id,
+        tcReturnStation: this.tcReturnStation
+      };
+
+
+      this.outSideService.saveTransferDCTCPoints(data).subscribe((res) => {
+        debugger
+        if (res) {
+          this.transferForm.patchValue({
+            displacementCount: {
+              id: res.id,
+            }
+          });
+          this.transferForm.patchValue({
+            transferCount: {
+              id: res.id,
+            }
+          });
+          Swal.fire(
+            'Your Data has been Saved ',
+            '',
+            'success'
+          );
+         // this.transDisable = true;
+         // this.setTcDcReceivedData();
+        }
+      })
+    } else if (activeButton == 'submit1') {
+      debugger
+      this.transferForm.patchValue({
+        stationChoice: {
+          teacherId: this.tempTeacherId,
+        }
+      });
+      //this.responseData.transferStatus = 'TRI'
+      if(this.transferForm.value.stationChoice?.applyTransferYn ==0)
+      {
+        this.tcButtondisable=true;
+      }
+      else{
+        this.tcButtondisable=false;
+      }
+      this.outSideService.saveStationChoice(this.transferForm.value.stationChoice).subscribe((res) => {
+        if (res.status == 1) {
+          Swal.fire(
+            'Your Data has been saved Successfully!',
+            '',
+            'success'
+          )
+
+          this.onNextClick(2)
+        }
+      })
+    } else if (activeButton == 'submit5') {
+      if(this.transferForm.value.stationChoice?.applyTransferYn==0){
+        this.transferCountSaveYn=0
+      }
+      else{
+        this.transferCountSaveYn=1
+      }
+      const data = {
+        kvCode: this.transferForm.value.displacementCount.kvCode,
+        teacherId: this.transferForm.value.displacementCount.teacherId,
+        dcStayStationPoint: this.transferForm.value.displacementCount.dcStayStationPoint,
+        dcTenureHardPoint: this.transferForm.value.displacementCount.dcTenureHardPoint,
+        dcPhysicalChallengedPoint: this.transferForm.value.displacementCount.dcPhysicalChallengedPoint,
+        dcMdDfGroungPoint: this.transferForm.value.displacementCount.dcMdDfGroungPoint,
+        dcLtrPoint: this.transferForm.value.displacementCount.dcLtrPoint,
+        dcRjcmNjcmPoint: this.transferForm.value.displacementCount.dcRjcmNjcmPoint,
+        dcTotalPoint: this.transferForm.value.displacementCount.dcTotalPoint,
+        tcStayStationPoint: this.transferForm.value.transferCount.tcStayStationPoint,
+        tcTenureHardPoint: this.transferForm.value.transferCount.tcTenureHardPoint,
+        tcPhysicalChallengedPoint: this.transferForm.value.transferCount.tcPhysicalChallengedPoint,
+        tcMdDfGroungPoint: this.transferForm.value.transferCount.tcMdDfGroungPoint,
+        tcLtrPoint: this.transferForm.value.transferCount.tcLtrPoint,
+        tcRjcmNjcmPoint: this.transferForm.value.transferCount.tcRjcmNjcmPoint,
+        tcTotalPoint: this.transferForm.value.transferCount.tcTotalPoint,
+        dcSpousePoint: this.transferForm.value.displacementCount.dcSpousePoint,
+        tcSpousePoint: this.transferForm.value.displacementCount.tcSpousePoint,
+        tcSinglePoint: this.transferForm.value.displacementCount.tcSinglePoint,
+        dcSinglePoint: this.transferForm.value.displacementCount.dcSinglePoint,
+        dcStayAtStation: this.dcStayAtStation,
+        dcPeriodAbsence: this.dcPeriodAbsence,
+        dcReturnStation: this.dcReturnStation,
+        tcStayAtStation: this.tcStayAtStation,
+        tcPeriodAbsence: this.tcPeriodAbsence,
+        tcSaveYn:this.transferCountSaveYn,
+        dcSaveYn:1,
+        id:this.transferForm.value.transferCount.id,
         tcReturnStation: this.tcReturnStation
       };
 
 
       this.outSideService.saveTransferDCTCPoints(data).subscribe((res) => {
         if (res.transferId != null && res.transferId != '') {
+          this.transferForm.patchValue({
+            transferCount: {
+              id: res.id,
+            }
+          });
+          this.transferForm.patchValue({
+            displacementCount: {
+              tcSaveYn: res.tcSaveYn,
+            }
+          });
           Swal.fire(
-            'Your Transfer has been Initiated and Your transfer Id: ' + res.transferId,
+            'Your Transfer has been Initiated ',
             '',
             'success'
           );
@@ -1380,6 +1543,7 @@ debugger
 
   getKvSchoolByStationIdPreference(event) {
     var str = event.target.value
+    this.selectedUdiseCode = str
     var splitted = str.split("-", 2);
     this.outSideService.fetchKvSchoolByStationCode(splitted[0]).subscribe((res) => {
 
@@ -1577,6 +1741,7 @@ debugger
 
 
     this.getKvRegion();
+    this.getTransferRegionsByEmployee()
   }
 
   getKvRegion() {
@@ -1586,7 +1751,19 @@ debugger
       this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
     })
   }
-
+  getTransferRegionsByEmployee(){
+    debugger
+    const data={
+      teacherId:this.tempTeacherId
+    }
+    this.AllregionList=[];
+    this.outSideService.getTransferRegionByEmployee(data).subscribe((res) => {
+      this.AllregionList = res.rowValue;
+      console.log("kv region--------")
+      console.log(this.AllregionList)
+     // this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
+    })
+  }
   resetStationChoices() {
     this.transferForm.patchValue({
       stationChoice: {
@@ -1629,7 +1806,7 @@ debugger
   //     this.stationList = res.response;
   //   })
   // }
-
+// api/transfer/getTransferRegionByEmployee
   getStationByRegionId(event) {
 
     const data = {
@@ -1638,6 +1815,16 @@ debugger
     };
     this.outSideService.fetchTransferStation(data).subscribe((res) => {
       this.stationList = res.response
+    })
+  }
+  getTransfersStationByEmployee(event) {
+debugger
+    const data = {
+      "regionCode": event.target.value,
+      "teacherId": this.tempTeacherId
+    };
+    this.outSideService.getTransferStationByEmployee(data).subscribe((res) => {
+      this.stationList = res.rowValue 
     })
   }
 
@@ -1655,12 +1842,11 @@ debugger
   }
 
   selectSchoolByUdise() {
-
+    debugger
     var str = this.selectedUdiseCode
     var splitted = str.split("-", 2);
     if (this.position == '1') {
-      debugger
-      if (splitted[1] != this.spouseStationName && this.spouseStationName!=undefined) {
+      if ((splitted[0] != this.spouseStationCode) && (this.spouseStatus == 1 || this.spouseStatus == 2 || this.spouseStatus == 3) && this.transferForm.value.stationChoice?.applyTransferYn == 1) {
         Swal.fire(
           'You have not selected spouse station in first choice so you are not eligible to get spouse point in transfer and spouse station is available in only first choice',
           '',

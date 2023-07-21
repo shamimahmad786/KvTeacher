@@ -30,7 +30,7 @@ export class DisclaimerComponent implements OnInit {
     console.log( this.kvCode)
     this.disclaimerForm = new FormGroup({
       policyCheckBox: new FormControl('', Validators.required),
-      ldceSelectBox: new FormControl('', Validators.required),
+   //   ldceSelectBox: new FormControl('', Validators.required),
       policyRaioButtonOne: new FormControl('', Validators.required),
       customSelectOne: new FormControl('', Validators.required),
       customSelectTwo: new FormControl('', Validators.required),
@@ -55,7 +55,7 @@ export class DisclaimerComponent implements OnInit {
         this.declarationStrShow=true
       this.disclaimerForm.patchValue({
         declarationStr: this.responseData.declarationStr,
-        ldceSelectBox:this.responseData.ldceYn,
+       // ldceSelectBox:this.responseData.ldceYn,
         policyCheckBox:this.responseData.transferGoneThrough,
         policyRaioButtonOne:this.responseData.filledCase,
       })
@@ -85,11 +85,13 @@ export class DisclaimerComponent implements OnInit {
   console.log(this.disclaimerForm.value)
   this.declarationStr='I'+' '+ this.disclaimerForm.value.customSelectOne+' '+'filed and I'+' ' + this.disclaimerForm.value.customSelectTwo + ' '+ 'a party to case number'+ ' ' + this.disclaimerForm.value.testFieldOne +' '+ 'which is'+ ' ' + this.disclaimerForm.value.customSelectThree + 
   ' '+'before(specify the name of the' +' ' +  this.disclaimerForm.value.customSelectFour + ' ' + 'court/tribunal )'+' ' + this.disclaimerForm.value.testFieldTwo;
-   const data ={
+ 
+ // this.disclaimerForm.value.customSelectThree  // send in service
+  const data ={
     teacherId:this.tempTeacherId,
     transferGoneThrough:this.disclaimerForm.value.policyCheckBox,
     filledCase:this.disclaimerForm.value.policyRaioButtonOne,
-    ldceYn:this.disclaimerForm.value.ldceSelectBox,
+  //  ldceYn:this.disclaimerForm.value.ldceSelectBox,
     declarationStr:this.declarationStr
   }
   console.log(data)

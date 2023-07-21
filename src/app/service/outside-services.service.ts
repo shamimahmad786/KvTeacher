@@ -517,6 +517,25 @@ export class OutsideServicesService {
     return this._http.post<any>(environment.BASE_URL_DATA_MASTER + "getKVRegion", data, { headers })
   }
 
+  getTransferRegionByEmployee(data) {
+    var token = JSON.parse(sessionStorage.getItem('authTeacherDetails'))?.token
+    var headers = new HttpHeaders({
+      'Authorization': token,
+      'Content-Type': 'text/plain; charset=utf-8',
+    });
+
+    return this._http.post<any>(environment.BASE_URL_DATA_TRANSFER + "getTransferRegionByEmployee", data, { headers })
+  }
+  getTransferStationByEmployee(data)
+  {
+    var token = JSON.parse(sessionStorage.getItem('authTeacherDetails'))?.token
+    var headers = new HttpHeaders({
+      'Authorization': token,
+      'Content-Type': 'text/plain; charset=utf-8',
+    });
+
+    return this._http.post<any>(environment.BASE_URL_DATA_TRANSFER + "getTransferStationByEmployee", data, { headers })
+  }
 
   fetchStationByRegionId(data) {
     debugger;

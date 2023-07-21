@@ -1296,6 +1296,7 @@ export class TeacherProfileComponent implements OnInit {
         this.nextClick(2)
       })
     } else if (activeButton == "submit3") {
+      debugger
       this.teacherForm.patchValue({
         profileForm: {
           dob: moment(JSON.parse(JSON.stringify((this.teacherForm.value.profileForm.dob).toString()))).format('YYYY-MM-DD'),
@@ -1312,6 +1313,14 @@ export class TeacherProfileComponent implements OnInit {
         }
       });
        
+      if (!this.teacherForm.value.personalInfoForm.spouseStationCode) {
+        this.teacherForm.patchValue({
+          personalInfoForm: {
+            spouseStationCode: this.responseData.spouseStationCode,
+
+          }
+        })
+      }
       if (this.teacherForm.value.personalInfoForm.disabilityYN == '1') {
         if (this.documentUploadArray[4].docName == 'Physically_Handicap_Certificate.pdf') {
           this.responseData.teacherDisabilityYn = this.teacherForm.value.personalInfoForm.disabilityYN;
@@ -3547,6 +3556,7 @@ export class TeacherProfileComponent implements OnInit {
     this.outSideService.fetchStationByRegionIds(data).subscribe((res) => {
       this.stationList = res.rowValue
     })
+    console.log("hello  stationnnn")
     console.log(this.stationList)
   }
 
@@ -3974,6 +3984,7 @@ debugger;
   }
 
   selectSpouseStationFn() {
+    debugger
     var str = this.selectedSpouseStation
     var splitted = str.split("-", 2);
     this.teacherForm.patchValue({
