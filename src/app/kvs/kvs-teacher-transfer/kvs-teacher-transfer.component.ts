@@ -434,8 +434,8 @@ export class KvsTeacherTransferComponent implements OnInit {
     this.conscentProccedClick = 1;
     if (this.consentCheckBoxValue) {
       Swal.fire({
-        title: 'Are you confirm your data is correct!',
-        text: 'Once you confirmed here, then you will not modify your data.',
+        title: 'Are you sure your data is correct!',
+        text: 'Once you confirmed here, then you will not be able to modify your data.',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: 'Cancel',
@@ -480,23 +480,23 @@ export class KvsTeacherTransferComponent implements OnInit {
             this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
             if(res?.response?.rowValue[0]?.valid_post_for_transfer != 1){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer or KV HQ.`;
+              this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer.`;
             }
             if(res?.response?.rowValue[0]?.valid_location_for_transfer == 3){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = 'Ziet or RO Teaching employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ. ';
+              this.dynamicFlagBasedMessages = 'Ziet or RO Teaching employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer. ';
             }
             if(res?.response?.rowValue[0]?.valid_location_for_transfer == 4){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = 'HQ employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ.';
+              this.dynamicFlagBasedMessages = 'HQ employees are not eligible to procced further with Transfer applications due to Administrative reasons. In case of any clarifications, please contact your controlling officer.';
             }
             if(res?.response?.rowValue[0]?.court_case_flag != 1){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = `You are not eligible to procced further with Transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+              this.dynamicFlagBasedMessages = `You are not eligible to procced further with Transfer application due to Administrative reasons. In case any clarifications, please contact your controlling officer.`;
             }
             if(res?.response?.rowValue[0]?.disciplinary_yn != 1){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+              this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
             }
           }
           else {
@@ -509,28 +509,28 @@ export class KvsTeacherTransferComponent implements OnInit {
           this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
           if(res?.response?.rowValue[0]?.valid_post_for_transfer != 1){
             this.flagsBasedMessages = true;
-            this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer or KV HQ.`;
+            this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer.`;
           }
           if(res?.response?.rowValue[0]?.valid_location_for_transfer == 3){
             this.flagsBasedMessages = true;
-            this.dynamicFlagBasedMessages = 'Ziet or RO Teaching employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ. ';
+            this.dynamicFlagBasedMessages = 'Ziet or RO Teaching employees are not eligible to procced further with Transfer applications due to Administrative reasons. In case of any clarifications, please contact your controlling officer. ';
           }
           if(res?.response?.rowValue[0]?.valid_location_for_transfer == 4){
             this.flagsBasedMessages = true;
-            this.dynamicFlagBasedMessages = 'HQ employees are not eligible to procced further with Transfer applications. In case of any clarifications, please contact your controlling officer or KV HQ.';
+            this.dynamicFlagBasedMessages = 'HQ employees are not eligible to procced further with Transfer applications due to Administrative reasons. In case of any clarifications, please contact your controlling officer.';
           }
           if(res?.response?.rowValue[0]?.court_case_flag != 1){
             this.flagsBasedMessages = true;
-            this.dynamicFlagBasedMessages = `You are not eligible to procced further with transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+            this.dynamicFlagBasedMessages = `You are not eligible to procced further with transfer application due to Administrative reasons. In case any clarifications, please contact your controlling officer.`;
           }
           if(res?.response?.rowValue[0]?.disciplinary_yn != 1){
             this.flagsBasedMessages = true;
-            this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application due to ongoing court case. In case any clarifications, please contact your controlling officer or KV HQ.`;
+            this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
           }
           if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
             if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 5 ){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = `You  are not eligible to procced further with Transfer application due to tenure and  active stay less than five years. In case any clarifications, please contact your controlling officer or KV HQ. .`;
+              this.dynamicFlagBasedMessages = `You are not eligible as minimum active stay at Normal Station is not complete as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
             }
             else if(res?.response?.rowValue[0]?.dctenure_year >= 5 && res?.response?.rowValue[0]?.activestay < 5 ){
                  this.onlyDcFill = true;
@@ -539,7 +539,7 @@ export class KvsTeacherTransferComponent implements OnInit {
           else if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 3 || res?.response?.rowValue[0]?.nature_of_stn_at_join == 4){
             if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 3 ){
               this.flagsBasedMessages = true;
-              this.dynamicFlagBasedMessages = `You  are not eligible to procced further with Transfer application due to tenure and  active stay less than three years. In case any clarifications, please contact your controlling officer or KV HQ. .`;
+              this.dynamicFlagBasedMessages = `You are not eligible as minimum active stay at Hard Station is not complete as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
             }else if(res?.response?.rowValue[0]?.dctenure_year >= 5 && res?.response?.rowValue[0]?.activestay < 3 ){
               this.onlyDcFill = true;
          }           
@@ -1740,7 +1740,7 @@ export class KvsTeacherTransferComponent implements OnInit {
     this.position = val;
 
 
-    this.getKvRegion();
+    // this.getKvRegion();
     this.getTransferRegionsByEmployee()
   }
 
@@ -1759,9 +1759,9 @@ export class KvsTeacherTransferComponent implements OnInit {
     this.AllregionList=[];
     this.outSideService.getTransferRegionByEmployee(data).subscribe((res) => {
       this.AllregionList = res.rowValue;
-      console.log("kv region--------")
-      console.log(this.AllregionList)
-     // this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
+      // console.log("kv region--------")
+      // console.log(this.AllregionList)
+     this.modalService.open(this.selectSchoolModalInterStation, { size: 'lg', backdrop: 'static', keyboard: false })
     })
   }
   resetStationChoices() {
