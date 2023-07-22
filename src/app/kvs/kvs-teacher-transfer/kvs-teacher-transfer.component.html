@@ -540,8 +540,11 @@
 
                
             <div class="d-flex justify-content-between  mx-0 py-1">
-                <div >
+                <div class="col-sm-8">
                     <h2 class="px-2 mt-4 mb-0 text-green">Preferred Station For Transfer/Displacement</h2>
+                </div>
+                <div class="col-sm-4" style="text-align:right;padding:1%;color:green;font-size:18px">
+               Status:    <span style="font-weight: 700;"> {{statUsMessage}}</span>
                 </div>
                 <div >
                     <!-- <h2 class="mt-3 achorLink mb-0"><a class="btn btnGreen" routerLink="/teacher/disclaimer">View Undertaking </a>
@@ -1340,7 +1343,7 @@
 
 
                             <input type="submit"
-                              name="next" id="submit2" class="action-button me-3" [disabled]='transDisable' value="Save" />
+                              name="next" id="submit2" class="action-button me-3" [disabled]='transDisable' value="Submit" />
 
                             <input type="button" name="previous" class="previous action-button-previous"
                                 (click)=" onPreviousClick(1)" value="Previous" />
@@ -1757,7 +1760,7 @@
                                 (click)="nextClick(5)" /> -->
 
                             <input type="submit" name="next" style="width:125px" id="submit5" [disabled]='transDisable || tcButtondisable || onlyDcFill'
-                                class="action-button me-3" value="Transfer Initiate" />
+                                class="action-button me-3" value="Submit" />
                             <input type="button" name="previous" class="previous action-button-previous"
                                 (click)=" onPreviousClick(2)" value="Previous" />
 

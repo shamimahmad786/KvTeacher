@@ -204,6 +204,8 @@ export class KvsTeacherTransferComponent implements OnInit {
 
   dynamicFlagBasedMessages: string;
   flagsBasedMessages: boolean = false;
+  showMessageForTcEligible :boolean = false;
+  tcMessage:any;
   transferCountSaveYn: any;
 
 
@@ -734,7 +736,7 @@ export class KvsTeacherTransferComponent implements OnInit {
     //this.getTransferRegionsByEmployee();
   }
 
-
+statUsMessage:any
   setTcDcReceivedData() {
     const data = {
       "kvCode": this.kvCode,
@@ -757,6 +759,13 @@ export class KvsTeacherTransferComponent implements OnInit {
           id: this.responseTcDcData.id
         },
       })
+
+      if(this.responseTcDcData.tcSaveYn=="1"){
+        this.statUsMessage="Application Submitted";
+      }else if(this.responseTcDcData.dcSaveYn=="1"){
+        this.statUsMessage="DC Submitted";
+      }
+
       this.totaldaysPresent = this.responseTcDcData.dcStayAtStation + this.responseTcDcData.dcReturnStation - this.responseTcDcData.dcPeriodAbsence
       this.totaldaysPresentTc = this.responseTcDcData.tcStayAtStation - this.responseTcDcData.tcPeriodAbsence
       this.dcStayAtStation = this.responseTcDcData.dcStayAtStation,
@@ -882,6 +891,11 @@ export class KvsTeacherTransferComponent implements OnInit {
 
     this.outSideService.getTransferData(data).subscribe((res) => {
       if (res.response != null || res.response == '') {
+        if(res.response.choiceKv1StationCode !='' && res.response.choiceKv1StationCode !=null){
+          
+        // this.statUsMessage="Station Choice Saved";
+
+        }
         this.transferForm.patchValue({
           stationChoice: {
             id: res.response.id,
@@ -1034,12 +1048,12 @@ export class KvsTeacherTransferComponent implements OnInit {
             }
           });
           Swal.fire(
-            'Your Data has been Saved ',
+            'Your DC Point has been submitted.',
             '',
             'success'
           );
          // this.transDisable = true;
-         // this.setTcDcReceivedData();
+         this.setTcDcReceivedData();
         }
       })
     } else if (activeButton == 'submit1') {
@@ -1049,6 +1063,7 @@ export class KvsTeacherTransferComponent implements OnInit {
           teacherId: this.tempTeacherId,
         }
       });
+   
       //this.responseData.transferStatus = 'TRI'
       if(this.transferForm.value.stationChoice?.applyTransferYn ==0)
       {
@@ -1057,11 +1072,23 @@ export class KvsTeacherTransferComponent implements OnInit {
       else{
         this.tcButtondisable=false;
       }
+
+      if(this.transferForm.value.stationChoice?.applyTransferYn ==0 && this.onlyDcFill==false )
+      {
+        this.showMessageForTcEligible=true;
+       
+		    this.tcMessage ='You are not opting for Request Transfer. Either you have not selected "Yes" for Request Transfer at the time of filling Station Choice, or your active stay does not met the requirements as per Transfer Policy 2023. If you are eligible for a Request Trasnfer and willing to opt for it, please go back and select the Request Transfer option.'
+  
+      }else{
+        this.tcMessage="";
+      }
       this.outSideService.saveStationChoice(this.transferForm.value.stationChoice).subscribe((res) => {
+        
         if (res.status == 1) {
           Swal.fire(
-            'Your Data has been saved Successfully!',
-            '',
+            
+            'Your Station choice has been saved Successfully! ' ,
+             this.tcMessage,
             'success'
           )
 
