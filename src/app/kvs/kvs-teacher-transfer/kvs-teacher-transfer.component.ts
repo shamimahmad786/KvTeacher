@@ -216,7 +216,6 @@ export class KvsTeacherTransferComponent implements OnInit {
   }
 
   nextClick(index) {
-
     nextClickCalled(index);
   }
 
@@ -472,6 +471,12 @@ export class KvsTeacherTransferComponent implements OnInit {
     }
     this.outSideService.getTransferPreviewPermissions(data).subscribe((res: any) => {
       debugger
+console.log(res?.response?.rowValue[0]?.unfrez_flag);
+      if(res?.response?.rowValue[0]?.unfrez_flag=='Y'){
+        this.flagsBasedMessages = true;
+        this.dynamicFlagBasedMessages = `You recently updated your basic profile, so please check after sometime.`;
+      }
+
       if (res?.status) {
         let spouseStatus = res?.response?.rowValue[0]?.spouse_status;
         let spouseStationCode = res?.response?.rowValue[0]?.spouse_station_code;
@@ -480,6 +485,9 @@ export class KvsTeacherTransferComponent implements OnInit {
             this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
             this.fromStatus = res?.response?.rowValue[0]?.final_status;
             this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
+
+          
+
             if(res?.response?.rowValue[0]?.valid_post_for_transfer != 1){
               this.flagsBasedMessages = true;
               this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer.`;
@@ -500,6 +508,24 @@ export class KvsTeacherTransferComponent implements OnInit {
               this.flagsBasedMessages = true;
               this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
             }
+
+            if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
+              if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 5 ){
+                this.flagsBasedMessages = true;
+                this.dynamicFlagBasedMessages = `You are not eligible as minimum active stay at Normal Station is not complete as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
+              }
+              else if(res?.response?.rowValue[0]?.dctenure_year >= 5 && res?.response?.rowValue[0]?.activestay < 5 ){
+                   this.onlyDcFill = true;
+              }
+            }
+            else if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 3 || res?.response?.rowValue[0]?.nature_of_stn_at_join == 4){
+              if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 3 ){
+                this.flagsBasedMessages = true;
+                this.dynamicFlagBasedMessages = `You are not eligible as minimum active stay at Hard Station is not complete as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
+              }else if(res?.response?.rowValue[0]?.dctenure_year >= 5 && res?.response?.rowValue[0]?.activestay < 3 ){
+                this.onlyDcFill = true;
+           }           
+            }
           }
           else {
             this.spouseStationFlag = true;
@@ -509,6 +535,9 @@ export class KvsTeacherTransferComponent implements OnInit {
           this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
           this.fromStatus = res?.response?.rowValue[0]?.final_status;
           this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
+
+        
+
           if(res?.response?.rowValue[0]?.valid_post_for_transfer != 1){
             this.flagsBasedMessages = true;
             this.dynamicFlagBasedMessages = `Your post is not eligible to proceed further with transfer Application. In case of any clarifications, please contact your controlling officer.`;
@@ -1154,6 +1183,7 @@ statUsMessage:any
           );
           this.transDisable = true;
           this.setTcDcReceivedData();
+          this.onNextClick(3)
         }
       })
 
