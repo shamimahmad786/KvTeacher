@@ -476,7 +476,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
         this.flagsBasedMessages = true;
         this.dynamicFlagBasedMessages = `You recently updated your basic profile, so please check after sometime.`;
       }
-
+      var specialCheck=(+res?.response?.rowValue[0]?.teacher_disability_yn)+(+res?.response?.rowValue[0]?.personal_status_dfpd)+(+res?.response?.rowValue[0]?.personal_status_mdgd);
       if (res?.status) {
         let spouseStatus = res?.response?.rowValue[0]?.spouse_status;
         let spouseStationCode = res?.response?.rowValue[0]?.spouse_station_code;
@@ -508,8 +508,11 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
               this.flagsBasedMessages = true;
               this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
             }
-
+     
+            if( specialCheck < 1 &&  res?.response?.rowValue[0]?.teacher_age <= 57 )
+            {
             if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
+            
               if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 5 ){
                 this.flagsBasedMessages = true;
                 this.dynamicFlagBasedMessages = `You are not eligible as minimum active stay at Normal Station is not complete as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
@@ -526,6 +529,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
                 this.onlyDcFill = true;
            }           
             }
+          }
           }
           else {
             this.spouseStationFlag = true;
@@ -558,6 +562,9 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
             this.flagsBasedMessages = true;
             this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
           }
+
+          if( specialCheck < 1 &&  res?.response?.rowValue[0]?.teacher_age <= 57 )
+           {
           if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
             if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 5 ){
               this.flagsBasedMessages = true;
@@ -576,7 +583,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
          }           
           }
          
-
+        }
 
         }
 
@@ -792,7 +799,7 @@ statUsMessage:any
       if(this.responseTcDcData.tcSaveYn=="1"){
         this.statUsMessage="Application Submitted";
       }else if(this.responseTcDcData.dcSaveYn=="1"){
-        this.statUsMessage="DC Submitted";
+        this.statUsMessage="Application Submitted";
       }
 
       this.totaldaysPresent = this.responseTcDcData.dcStayAtStation + this.responseTcDcData.dcReturnStation - this.responseTcDcData.dcPeriodAbsence
@@ -1031,26 +1038,26 @@ statUsMessage:any
     if (activeButton == 'submit2') {
 
       const data = {
-        kvCode: this.transferForm.value.displacementCount.kvCode,
-        teacherId: this.transferForm.value.displacementCount.teacherId,
-        dcStayStationPoint: this.transferForm.value.displacementCount.dcStayStationPoint,
-        dcTenureHardPoint: this.transferForm.value.displacementCount.dcTenureHardPoint,
-        dcPhysicalChallengedPoint: this.transferForm.value.displacementCount.dcPhysicalChallengedPoint,
-        dcMdDfGroungPoint: this.transferForm.value.displacementCount.dcMdDfGroungPoint,
-        dcLtrPoint: this.transferForm.value.displacementCount.dcLtrPoint,
-        dcRjcmNjcmPoint: this.transferForm.value.displacementCount.dcRjcmNjcmPoint,
-        dcTotalPoint: this.transferForm.value.displacementCount.dcTotalPoint,
-        tcStayStationPoint: this.transferForm.value.transferCount.tcStayStationPoint,
-        tcTenureHardPoint: this.transferForm.value.transferCount.tcTenureHardPoint,
-        tcPhysicalChallengedPoint: this.transferForm.value.transferCount.tcPhysicalChallengedPoint,
-        tcMdDfGroungPoint: this.transferForm.value.transferCount.tcMdDfGroungPoint,
-        tcLtrPoint: this.transferForm.value.transferCount.tcLtrPoint,
-        tcRjcmNjcmPoint: this.transferForm.value.transferCount.tcRjcmNjcmPoint,
-        tcTotalPoint: this.transferForm.value.transferCount.tcTotalPoint,
-        dcSpousePoint: this.transferForm.value.displacementCount.dcSpousePoint,
-        tcSpousePoint: this.transferForm.value.displacementCount.tcSpousePoint,
-        tcSinglePoint: this.transferForm.value.displacementCount.tcSinglePoint,
-        dcSinglePoint: this.transferForm.value.displacementCount.dcSinglePoint,
+        kvCode: this.responseTcDcData.kvCode,
+        teacherId: this.responseTcDcData.teacherId,
+        dcStayStationPoint: this.responseTcDcData.dcStayStationPoint,
+        dcTenureHardPoint: this.responseTcDcData.dcTenureHardPoint,
+        dcPhysicalChallengedPoint: this.responseTcDcData.dcPhysicalChallengedPoint,
+        dcMdDfGroungPoint: this.responseTcDcData.dcMdDfGroungPoint,
+        dcLtrPoint: this.responseTcDcData.dcLtrPoint,
+        dcRjcmNjcmPoint: this.responseTcDcData.dcRjcmNjcmPoint,
+        dcTotalPoint: this.responseTcDcData.dcTotalPoint,
+        tcStayStationPoint: this.responseTcDcData.tcStayStationPoint,
+        tcTenureHardPoint: this.responseTcDcData.tcTenureHardPoint,
+        tcPhysicalChallengedPoint: this.responseTcDcData.tcPhysicalChallengedPoint,
+        tcMdDfGroungPoint: this.responseTcDcData.tcMdDfGroungPoint,
+        tcLtrPoint: this.responseTcDcData.tcLtrPoint,
+        tcRjcmNjcmPoint: this.responseTcDcData.tcRjcmNjcmPoint,
+        tcTotalPoint: this.responseTcDcData.tcTotalPoint,
+        dcSpousePoint: this.responseTcDcData.dcSpousePoint,
+        tcSpousePoint: this.responseTcDcData.tcSpousePoint,
+        tcSinglePoint: this.responseTcDcData.tcSinglePoint,
+        dcSinglePoint: this.responseTcDcData.dcSinglePoint,
         dcStayAtStation: this.dcStayAtStation,
         dcPeriodAbsence: this.dcPeriodAbsence,
         dcReturnStation: this.dcReturnStation,
@@ -1061,8 +1068,6 @@ statUsMessage:any
         id:this.transferForm.value.displacementCount.id,
         tcReturnStation: this.tcReturnStation
       };
-
-
       this.outSideService.saveTransferDCTCPoints(data).subscribe((res) => {
         debugger
         if (res) {
@@ -1094,13 +1099,13 @@ statUsMessage:any
       });
    
       //this.responseData.transferStatus = 'TRI'
-      if(this.transferForm.value.stationChoice?.applyTransferYn ==0)
-      {
-        this.tcButtondisable=true;
-      }
-      else{
-        this.tcButtondisable=false;
-      }
+      // if(this.transferForm.value.stationChoice?.applyTransferYn ==0)
+      // {
+      //   this.tcButtondisable=true;
+      // }
+      // else{
+      //   this.tcButtondisable=false;
+      // }
 
       if(this.transferForm.value.stationChoice?.applyTransferYn ==0 && this.onlyDcFill==false )
       {
@@ -1128,30 +1133,34 @@ statUsMessage:any
       if(this.transferForm.value.stationChoice?.applyTransferYn==0){
         this.transferCountSaveYn=0
       }
-      else{
-        this.transferCountSaveYn=1
+      else if(this.onlyDcFill==true) {
+        this.transferCountSaveYn=0
       }
+    else{
+      this.transferCountSaveYn=1
+      }
+
       const data = {
-        kvCode: this.transferForm.value.displacementCount.kvCode,
-        teacherId: this.transferForm.value.displacementCount.teacherId,
-        dcStayStationPoint: this.transferForm.value.displacementCount.dcStayStationPoint,
-        dcTenureHardPoint: this.transferForm.value.displacementCount.dcTenureHardPoint,
-        dcPhysicalChallengedPoint: this.transferForm.value.displacementCount.dcPhysicalChallengedPoint,
-        dcMdDfGroungPoint: this.transferForm.value.displacementCount.dcMdDfGroungPoint,
-        dcLtrPoint: this.transferForm.value.displacementCount.dcLtrPoint,
-        dcRjcmNjcmPoint: this.transferForm.value.displacementCount.dcRjcmNjcmPoint,
-        dcTotalPoint: this.transferForm.value.displacementCount.dcTotalPoint,
-        tcStayStationPoint: this.transferForm.value.transferCount.tcStayStationPoint,
-        tcTenureHardPoint: this.transferForm.value.transferCount.tcTenureHardPoint,
-        tcPhysicalChallengedPoint: this.transferForm.value.transferCount.tcPhysicalChallengedPoint,
-        tcMdDfGroungPoint: this.transferForm.value.transferCount.tcMdDfGroungPoint,
-        tcLtrPoint: this.transferForm.value.transferCount.tcLtrPoint,
-        tcRjcmNjcmPoint: this.transferForm.value.transferCount.tcRjcmNjcmPoint,
-        tcTotalPoint: this.transferForm.value.transferCount.tcTotalPoint,
-        dcSpousePoint: this.transferForm.value.displacementCount.dcSpousePoint,
-        tcSpousePoint: this.transferForm.value.displacementCount.tcSpousePoint,
-        tcSinglePoint: this.transferForm.value.displacementCount.tcSinglePoint,
-        dcSinglePoint: this.transferForm.value.displacementCount.dcSinglePoint,
+        kvCode: this.responseTcDcData.kvCode,
+        teacherId: this.responseTcDcData.teacherId,
+        dcStayStationPoint: this.responseTcDcData.dcStayStationPoint,
+        dcTenureHardPoint: this.responseTcDcData.dcTenureHardPoint,
+        dcPhysicalChallengedPoint: this.responseTcDcData.dcPhysicalChallengedPoint,
+        dcMdDfGroungPoint: this.responseTcDcData.dcMdDfGroungPoint,
+        dcLtrPoint: this.responseTcDcData.dcLtrPoint,
+        dcRjcmNjcmPoint: this.responseTcDcData.dcRjcmNjcmPoint,
+        dcTotalPoint: this.responseTcDcData.dcTotalPoint,
+        tcStayStationPoint: this.responseTcDcData.tcStayStationPoint,
+        tcTenureHardPoint: this.responseTcDcData.tcTenureHardPoint,
+        tcPhysicalChallengedPoint: this.responseTcDcData.tcPhysicalChallengedPoint,
+        tcMdDfGroungPoint:this.responseTcDcData.tcMdDfGroungPoint,
+        tcLtrPoint: this.responseTcDcData.tcLtrPoint,
+        tcRjcmNjcmPoint: this.responseTcDcData.tcRjcmNjcmPoint,
+        tcTotalPoint: this.responseTcDcData.tcTotalPoint,
+        dcSpousePoint: this.responseTcDcData.dcSpousePoint,
+        tcSpousePoint: this.responseTcDcData.tcSpousePoint,
+        tcSinglePoint: this.responseTcDcData.tcSinglePoint,
+        dcSinglePoint: this.responseTcDcData.dcSinglePoint,
         dcStayAtStation: this.dcStayAtStation,
         dcPeriodAbsence: this.dcPeriodAbsence,
         dcReturnStation: this.dcReturnStation,
@@ -1159,34 +1168,49 @@ statUsMessage:any
         tcPeriodAbsence: this.tcPeriodAbsence,
         tcSaveYn:this.transferCountSaveYn,
         dcSaveYn:1,
+        finalStatus:1,
         id:this.transferForm.value.transferCount.id,
         tcReturnStation: this.tcReturnStation
       };
-
-
-      this.outSideService.saveTransferDCTCPoints(data).subscribe((res) => {
-        if (res.transferId != null && res.transferId != '') {
-          this.transferForm.patchValue({
-            transferCount: {
-              id: res.id,
-            }
-          });
-          this.transferForm.patchValue({
-            displacementCount: {
-              tcSaveYn: res.tcSaveYn,
-            }
-          });
-          Swal.fire(
-            'Your Transfer has been Initiated ',
-            '',
-            'success'
-          );
-          this.transDisable = true;
-          this.setTcDcReceivedData();
-          this.onNextClick(3)
-        }
-      })
-
+      if (data) {
+        Swal.fire({
+          title: 'Are you sure your TC/DC data is correct!',
+          text: 'Once you confirmed here, then your complete data will be freezed.',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Cancel',
+          cancelButtonText: 'Confirm',
+          confirmButtonColor: '#ea6c75',
+          cancelButtonColor: '#2064cc',
+        }).then((result: any) => {
+          if (result?.dismiss == "cancel") {
+            debugger
+            
+            this.outSideService.saveTransferDCTCPoints(data).subscribe((res: any) => {
+              if (res.transferId != null && res.transferId != '') {
+                this.transferForm.patchValue({
+                  transferCount: {
+                    id: res.id,
+                  }
+                });
+                this.transferForm.patchValue({
+                  displacementCount: {
+                    tcSaveYn: res.tcSaveYn,
+                  }
+                });
+                Swal.fire(
+                  'Your data has been saved ',
+                  '',
+                  'success'
+                );
+                this.transDisable = true;
+                this.setTcDcReceivedData();
+              //  this.onNextClick(3)
+              }
+            })
+          }
+        })
+      }
     }
   }
 

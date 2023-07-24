@@ -1338,12 +1338,12 @@
 
                                 </div>
                             </div>
-                            <input type="button" (click)=" onNextClick(3)" name="next" [disabled]='onlyDcFill' class="next action-button1 me-3"
+                            <input type="button" (click)=" onNextClick(3)" name="next"  class="next action-button1 me-3"
                                 value="Next" />
 
 
-                            <input type="submit"
-                              name="next" id="submit2" class="action-button me-3" [disabled]='transDisable' value="Submit" />
+                            <!-- <input type="submit"
+                              name="next" id="submit2" class="action-button me-3" [disabled]='transDisable' value="Submit" /> -->
 
                             <input type="button" name="previous" class="previous action-button-previous"
                                 (click)=" onPreviousClick(1)" value="Previous" />
@@ -1648,7 +1648,7 @@
                                                             body/Central
                                                             Govt. Public Sector Undertaking/ Defence Employee and
                                                             Central Armed
-                                                            Police Forces employee posted at the same station.</li>
+                                                            Police Forces employee posted at the choice station.</li>
 
                                                         <!-- <i *ngIf="tcSpouseAtCentralGovt  && !showTcField" class="fa fa-check fa-2x fa-fw"
                                                             aria-hidden="true" style="
@@ -1678,7 +1678,7 @@
                                                         </li>
                                                         <li class="w80 ml-2">Spouse if a State Covernment / State Govt.
                                                             Autonomous body / State Govt. Public Sectors Undertaking
-                                                            Employee & posted at the same station. </li>
+                                                            Employee & posted at the choice station. </li>
                                                         <!-- <i *ngIf="tcWooomanEmp  && !showTcField" class="fa fa-check fa-2x fa-fw"
                                                             aria-hidden="true" style="
                                                           color: green;"></i> -->
@@ -1759,7 +1759,7 @@
                             <!-- <input type="button" name="next" class="next action-button1 me-3" value="Next"
                                 (click)="nextClick(5)" /> -->
 
-                            <input type="submit" name="next" style="width:125px" id="submit5" [disabled]='transDisable || tcButtondisable || onlyDcFill'
+                            <input type="submit" name="next" style="width:125px" id="submit5" [disabled]='transDisable || tcButtondisable '
                                 class="action-button me-3" value="Submit" />
                             <input type="button" name="previous" class="previous action-button-previous"
                                 (click)=" onPreviousClick(2)" value="Previous" />
