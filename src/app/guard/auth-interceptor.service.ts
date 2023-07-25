@@ -71,7 +71,8 @@ export class AuthInterceptorService implements HttpInterceptor {
                     const modifiedReq = req.clone(
                         {
                             setHeaders: {
-                                'username': JSON.parse(sessionStorage.getItem('authTeacherDetails')).user_name
+                                'username': JSON.parse(sessionStorage.getItem('authTeacherDetails')).user_name,
+                                'loginType':'t',
                             }
                         });
                     return next.handle(modifiedReq).pipe(
@@ -98,6 +99,7 @@ export class AuthInterceptorService implements HttpInterceptor {
                         setHeaders: {
                             'Authorization': token,
                             'Content-Type': (req.url.indexOf('unee-api/v1') !==-1)?'application/json; charset=utf-8':'text/plain; charset=utf-8',
+                            'loginType':'t',
                             'username': JSON.parse(sessionStorage.getItem('authTeacherDetails')).user_name
                         }
                     });
@@ -136,6 +138,7 @@ export class AuthInterceptorService implements HttpInterceptor {
                         setHeaders: {
                             'Authorization': token,
                             'Content-Type': 'text/plain; charset=utf-8',
+                            'loginType':'t',
                             'username': JSON.parse(sessionStorage.getItem('authTeacherDetails')).user_name
                         }
                     });

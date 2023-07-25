@@ -482,7 +482,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
         let spouseStationCode = res?.response?.rowValue[0]?.spouse_station_code;
         if (spouseStatus == 1 || spouseStatus == 2 || spouseStatus == 3) {
           if (spouseStationCode) {
-            this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
+            this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD'  || res?.response?.rowValue[0]?.final_status == 'TTS');
             this.fromStatus = res?.response?.rowValue[0]?.final_status;
             this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
 
@@ -509,7 +509,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
               this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
             }
      
-            if( specialCheck < 1 &&  res?.response?.rowValue[0]?.teacher_age <= 57 )
+            if( specialCheck < 1 &&  res?.response?.rowValue[0]?.teacher_age < 57 )
             {
             if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
             
@@ -536,7 +536,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
           }
         }
         else {
-          this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD');
+          this.schoolVerifyStatus = (res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD' || res?.response?.rowValue[0]?.final_status == 'TTS');
           this.fromStatus = res?.response?.rowValue[0]?.final_status;
           this.consentCheckBoxValue = res?.response?.rowValue[0]?.trans_emp_is_declaration == '1';
 
@@ -563,7 +563,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
             this.dynamicFlagBasedMessages = `Employees with disciplinary proceedings are not eligible to procced further with Transfer application as per Transfer Policy 2023. In case any clarifications, please contact your controlling officer.`;
           }
 
-          if( specialCheck < 1 &&  res?.response?.rowValue[0]?.teacher_age <= 57 )
+          if( specialCheck < 1 &&  res?.response?.rowValue[0]?.teacher_age < 57 )
            {
           if(res?.response?.rowValue[0]?.nature_of_stn_at_join == 1 ){
             if(res?.response?.rowValue[0]?.dctenure_year < 5 && res?.response?.rowValue[0]?.activestay < 5 ){
@@ -587,7 +587,7 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
 
         }
 
-        if ((res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD') && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1') {
+        if ((res?.response?.rowValue[0]?.final_status == 'SA' || res?.response?.rowValue[0]?.final_status == 'TTD' || res?.response?.rowValue[0]?.final_status == 'TTS') && res?.response?.rowValue[0]?.trans_emp_is_declaration == '1') {
           this.savedPreview = 1;
           // this.checkDeclairationStatus();
         }
