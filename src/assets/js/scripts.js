@@ -52,7 +52,7 @@ function getCredential() {
     $.ajax({
         //For Local
          // url: "http://10.25.26.251:8090/meuser/api/userCradential/get-usercradential",
-        //    url: "http://10.25.26.35:8090/meuser/api/userCradential/get-usercradential",
+           //  url: "http://10.25.26.35:8090/meuser/api/userCradential/get-usercradential",
            url: "https://kvsonlinetransfer.kvs.gov.in/meuser/api/userCradential/get-usercradential",
             //  url: "https://demopgi.udiseplus.gov.in/meuser/api/userCradential/get-usercradential",
          type: 'post',
@@ -75,7 +75,7 @@ function getKey() {
        
              url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/getKey",
             // url: "http://10.25.26.251:8014/api/login/getKey",
-        //    url: "http://10.25.26.35:8014/api/login/getKey",
+        //   url: "http://10.25.26.35:8014/api/login/getKey",
             //   url: "https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/login/getKey",
         type: "POST",
         cache: false,
@@ -109,7 +109,7 @@ function changePassword(userId, password, newPassword, confirmPassword) {
        
          url: "https://kvsonlinetransfer.kvs.gov.in/MOE-RAD-TEACHER/api/login/renamePassword",
      //   url: "http://10.25.26.251:8014/api/login/renamePassword",
-        //  url: "http://10.25.26.35:8014/api/login/renamePassword",
+         // url: "http://10.25.26.35:8014/api/login/renamePassword",
         //    url: "https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/login/renamePassword",
         type: "POST",
         async: false,

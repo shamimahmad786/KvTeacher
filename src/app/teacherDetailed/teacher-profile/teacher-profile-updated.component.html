@@ -135,7 +135,7 @@
                         <form id="msform" class="msform" [formGroup]="teacherForm" (ngSubmit)="onSubmit($event)">
                             <div class="fieldSet bg-white" formGroupName="profileForm">
                                 <fieldset
-                                    [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'">
+                                    [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA' || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES'">
                                     <div class="form-card">
                                         <div class="row">
                                             <div class="col-4">
@@ -565,9 +565,9 @@
                                 !teacherForm.get('profileForm.presentPostName').valid ||
                                 !teacherForm.get('profileForm.presentSubjectName').valid" type="button" name="next"
                                     (click)=" nextClick(2)" class="next action-button mt-2" value="Next" /> -->
-                                   
+                                   {{formStatusLocale}}
                                 <input
-                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
+                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'TTS' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(2)" class="next action-button mt-2"
                                     value="Next" />
                                 <input [disabled]="!teacherForm.get('profileForm.email').valid || !teacherForm.get('profileForm.dob').valid ||
@@ -582,7 +582,7 @@
                                 !teacherForm.get('profileForm.empCode').valid ||
                                 !teacherForm.get('profileForm.presentPostName').valid ||
                                 !teacherForm.get('profileForm.presentSubjectName').valid ||
-                                formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
+                                formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'TTS' || 
                                 formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                   type="submit" id="submit1" value="Save & Next" class="next action-save mt-2 me-2" />
                                 <span class="help-block text-danger"
@@ -756,7 +756,7 @@
                             </div> -->
                             <div class="fieldSet" formGroupName="personalInfoForm">
                                 <fieldset
-                                    [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'">
+                                    [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'TTS' ||  formStatusLocale == 'SA' || formStatusLocale == 'SE' || formStatusLocale == 'SES'">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-card shadow p-3">
@@ -1364,7 +1364,7 @@
                                 (teacherForm.get('personalInfoForm.prmntPinCode').status != 'VALID' && teacherForm.get('personalInfoForm.prmntPinCode').status != 'DISABLED')))" type="button"
                                 (click)=" nextClick(3)" name="next" class="next action-button" value="Next" /> -->
                                 <input
-                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
+                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'TTS' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(3)" class="next action-button mt-2"
                                     value="Next" />
                                 <input [disabled]="(!teacherForm.get('personalInfoForm.disabilityYN').valid || (!teacherForm.get('personalInfoForm.disabilityType').valid &&
@@ -1384,7 +1384,7 @@
                                     !teacherForm.get('personalInfoForm.crspndncPinCode').valid ||
                                     (teacherForm.get('personalInfoForm.prmntPinCode').status != 'VALID' && teacherForm.get('personalInfoForm.prmntPinCode').status != 'DISABLED'))) ||
                                     formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                    formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD' ||
+                                    formStatusLocale == 'SA' || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD' ||
                                     (documentUploadArray[4]?.docName != 'Physically_Handicap_Certificate.pdf' &&  teacherForm.get('personalInfoForm.disabilityYN').value == '1')"
                                     type="submit" id="submit3" value="Save & Next" class="next action-save  me-2" />
                                 <input type="button" name="previous" class="previous action-button-previous"
@@ -1398,7 +1398,7 @@
 
 <div class="fieldSet">
     <fieldset
-        [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'">
+        [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA' || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES'">
         <div class="form-card">
             <div class="row">
                 <div class="col-7">
@@ -1958,11 +1958,11 @@
     <!-- <input type="button" name="next" class="next action-button"
         (click)=" nextClick(6); onVerifyClick()" value="Next" /> -->
     <input
-        *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
+        *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA' || formStatusLocale == 'TTS' ||  formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
         type="button" name="next" (click)=" nextClick(4); onVerifyClick()" class="next action-button mt-2"
         value="Next" />
     <input [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-        formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
+        formStatusLocale == 'SA' || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
          type="submit" id="submit6" value="Save & Next" class="next action-save  me-2" />
     <input type="button" name="previous" class="previous action-button-previous"
         (click)=" onPreviousClick(2)" value="Previous" />
@@ -2374,7 +2374,7 @@
 
                             <div class="fieldSet" formGroupName="transferRelatedForm">
                                 <fieldset
-                                    [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES'">
+                                    [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA' || formStatusLocale == 'TTS' ||  formStatusLocale == 'SE' || formStatusLocale == 'SES'">
                                     <div class="form-card">
                                         <div class="row">
                                             <div class="col-7">
@@ -3222,11 +3222,11 @@
                                     value="Next" /> -->
                                  
                                 <input
-                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
+                                    *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'  || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(5)" class="next action-button mt-2"
                                     value="Next" />
                                 <input [disabled]="formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                    formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'  || ((!teacherForm.get('transferRelatedForm.patientName').valid ||
+                                    formStatusLocale == 'SA' || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'  || ((!teacherForm.get('transferRelatedForm.patientName').valid ||
                                     !teacherForm.get('transferRelatedForm.patientAilment').valid || 
                                     !teacherForm.get('transferRelatedForm.patientHospital').valid ||
                                     !teacherForm.get('transferRelatedForm.patientMedicalOfficerName').valid ||
@@ -3755,7 +3755,7 @@
                                     
                                   </button> -->
                                 <input [disabled]="!confirmEnable || formStatusLocale == 'TA' || formStatusLocale == 'SEM' || 
-                                formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
+                                formStatusLocale == 'SA' || formStatusLocale == 'TTS' || formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                   type="submit" id="submit33" value="Confirm" class="action-save  me-2" />
                                 <input type="button" name="previous" class="previous action-button-previous"
                                     (click)=" onPreviousClick(4)" value="Previous" />
