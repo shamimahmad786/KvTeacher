@@ -565,7 +565,7 @@
                                 !teacherForm.get('profileForm.presentPostName').valid ||
                                 !teacherForm.get('profileForm.presentSubjectName').valid" type="button" name="next"
                                     (click)=" nextClick(2)" class="next action-button mt-2" value="Next" /> -->
-                                   {{formStatusLocale}}
+                                 
                                 <input
                                     *ngIf="formStatusLocale == 'TA' || formStatusLocale == 'TTS' || formStatusLocale == 'SEM' || formStatusLocale == 'SA'|| formStatusLocale == 'SE' || formStatusLocale == 'SES' || formStatusLocale == 'TTD'"
                                     type="button" name="next" (click)=" nextClick(2)" class="next action-button mt-2"
