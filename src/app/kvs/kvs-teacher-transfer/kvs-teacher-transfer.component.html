@@ -458,6 +458,17 @@
 </div>
 </div>
 
+<!-- Condition for both true  -->
+<div class="d-flex justify-content-center align-items-center h-100 w-50 mx-auto" *ngIf="spouseStationFlag && flagsBasedMessages">
+    <div class="cardsett shadow rounded justify-content-center align-items-center">
+    <div class="setImg">
+
+        <span class="fw-bold" [innerHTML]="dynamicFlagBasedMessages"></span>
+    </div>
+</div>
+</div>
+
+
 
 <!-- School not verified message -->
 <div class="d-flex justify-content-center align-items-center h-100 w-50 mx-auto" *ngIf="!schoolVerifyStatus && !spouseStationFlag && !flagsBasedMessages">

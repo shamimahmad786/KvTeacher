@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
   // this.userDto={"username":"kv_9999","password":"system123#"};
   var encriptedPassword=encriptedText(this.loginForm.controls['username'].value,this.loginForm.controls['password'].value);
 
-  this.auth.login(encriptedPassword).subscribe(res => {
+  this.auth.login(encriptedPassword,this.loginForm.controls['username'].value).subscribe(res => {
     //console.log(res);
     sessionStorage.setItem("loginType","jwt");
     // alert(res);

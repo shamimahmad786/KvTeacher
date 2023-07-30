@@ -532,7 +532,9 @@ console.log(res?.response?.rowValue[0]?.unfrez_flag);
           }
           }
           else {
+ 
             this.spouseStationFlag = true;
+
           }
         }
         else {

@@ -103,9 +103,12 @@ export const environment = {
 //  BASE_URL_MEUSER:'https://demopgi.udiseplus.gov.in/UserService/api/user/',
 //  LOGIN_URL_JWT:'https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/login/',
 //  BASE_URL_REPORT:'https://demopgi.udiseplus.gov.in/MOE-KVS-PDF/api/kvsreport/',
+//  udiseApi:'https://demo.udiseplus.gov.in/api-v1/public/getSchoolMaster/',
 //  BASE_URL_DATA_MASTER1:'https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/unee-api/v1/master/',
 //  BASE_URL_DATA_MAPPING:'https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/unee-api/v1/mapping/',
- 
+//  BASE_URL_DATA: 'https://demopgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/teacher/',
+//  auth_service:'https://demopgi.udiseplus.gov.in/UserService/api/userCradential',
+
   //Demo 1
   // BASE_URL_DATA_TEACHER: 'https://pgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/teacher/',
   // BASE_URL_DATA_MASTER: 'https://pgi.udiseplus.gov.in/MOE-RAD-TEACHER/api/master/',

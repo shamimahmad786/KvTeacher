@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 
@@ -11,9 +11,14 @@ export class AuthService {
     
    }
 
-  login(userDto) {
+  login(userDto,userName:any) {
     //alert("At service--->"+JSON.stringify(userDto));
-     return this.http.post<any>(environment.LOGIN_URL_JWT + "sign-in", userDto);
+    debugger
+    var headers = new HttpHeaders({
+     'username':userName
+    });
+     return this.http.post<any>(environment.LOGIN_URL_JWT + "sign-in", userDto,{ headers });
+  
   }
 
 //   getRoles()
